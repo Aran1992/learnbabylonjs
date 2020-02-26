@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" content="text/html" http-equiv="Content-Type"/>
+    <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+          name="viewport"/>
+    <title>Babylon - Getting Started</title>
+    <!--- Link to the last version of BabylonJS --->
+    <script src="babylon.js"></script>
+    <script src="physicsengine/ammo.js"></script>
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            position: absolute;
+        }
+
+        #control {
+            position: absolute;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+<div id="control">
+    <button onclick="repeat();">重复一遍</button>
+</div>
+<canvas></canvas>
+<script>
+    let restitution = 0.1;
+    let friction = 0.5;
+    let saveList = [];
+    let shakeList = [
+        [10, () => -5 - Math.random()],
+        [20, () => 5 + Math.random()],
+        [30, () => -3 - Math.random()],
+        [40, () => 3 + Math.random()],
+        [50, () => -2 - Math.random()],
+        [60, () => 2 + Math.random()],
+        [70, () => -1 * Math.random()],
+        [80, () => 1 * Math.random()],
+    ];
+
+    function repeat() {
+        restart(saveList);
+    }
+
+    function restart(inputList) {
+        if (inputList === undefined) {
+            saveList = [];
+        }
+        // get the canvas DOM element
+        let canvas = document.getElementsByTagName('canvas')[0];
+        canvas.parentElement.removeChild(canvas);
+        canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+
+        // load the 3D engine
+        let engine = new BABYLON.Engine(canvas, true);
+
+        // createScene function that creates and return the scene
+        let createScene = function () {
+            // create a basic BJS Scene object
+            let scene = new BABYLON.Scene(engine);
+            scene.enablePhysics(undefined, new BABYLON.AmmoJSPlugin(false));
+
+            // Create a FreeCamera, and set its position to (x:0, y:5, z:-10).
+            var camera = new BABYLON.FreeCamera('camera', new BABYLON.Vector3(0, 5, -10), scene);
+
+            // Target the camera to scene origin.
+            camera.setTarget(BABYLON.Vector3.Zero());
+
+            // Attach the camera to the canvas.
+            camera.attachControl(canvas, false);
+
+            // Create a basic light, aiming 0,1,0 - meaning, to the sky.
+            var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
+
+            let createDices = () => {
+                let boxes = [];
+                let count = 5;
+                let size = 0.5;
+                let mat = new BABYLON.StandardMaterial("mat", scene);
+                mat.diffuseTexture = new BABYLON.Texture("touzi.jpg", scene);
+                let columns = 6;
+                let rows = 1;
+                let faceUV = new Array(6);
+                for (let i = 0; i < 6; i++) {
+                    faceUV[i] = new BABYLON.Vector4(i / columns, 0, (i + 1) / columns, 1 / rows);
+                }
+                let options = {
+                    wrap: true,
+                    size,
+                    faceUV,
+                };
+                for (let i = 0; i < count; i++) {
+                    let box = new BABYLON.MeshBuilder.CreateBox(`box${i}`, options, scene);
+                    box.material = mat;
+                    box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, {
+                        mass: 2,
+                        friction: friction,
+                        restitution: restitution,
+                    }, scene);
+                    box.position.y = -1;
+                    boxes.push(box);
+                }
+            };
+
+            let createHolder = (diceCup) => {
+                let b = 0.1;
+                let holder = BABYLON.MeshBuilder.CreateSphere("holder", {diameter: b, segments: 4}, scene);
+                // the center mesh that turns the wheel
+                holder.physicsImpostor = new BABYLON.PhysicsImpostor(holder, BABYLON.PhysicsImpostor.SphereImpostor, {mass: 0});
+                let joint1 = new BABYLON.HingeJoint({
+                    mainPivot: new BABYLON.Vector3(0, 0, 0),
+                    connectedPivot: new BABYLON.Vector3(0, 0, 0),
+                    mainAxis: new BABYLON.Vector3(0, 0, -1),
+                    connectedAxis: new BABYLON.Vector3(0, 0, -1),
+                    nativeParams: {}
+                });
+                // add the joint and the motor
+                holder.physicsImpostor.addJoint(diceCup.physicsImpostor, joint1);
+                let frame = 0;
+                scene.onBeforeRenderObservable.add(() => {
+                    for (let i = 0; i < shakeList.length; i++) {
+                        if (frame < shakeList[i][0]) {
+                            let z;
+                            if (inputList && inputList[i] !== undefined) {
+                                z = inputList[i];
+                            } else {
+                                if (saveList[i] === undefined) {
+                                    saveList[i] = shakeList[i][1]();
+                                }
+                                z = saveList[i];
+                            }
+                            diceCup.physicsImpostor.setAngularVelocity(new BABYLON.Vector3(0, 0, z));
+                            break;
+                        }
+                    }
+                    frame++;
+                });
+            };
+
+            let createDiceCup = () => {
+                let diameter = 3;
+                let thickness = 0.2;
+                let height = 3;
+                let tessellation = 128;
+                let percent = 0.3;
+                let mat0 = new BABYLON.StandardMaterial("mat0", scene);
+                mat0.opacityTexture = new BABYLON.Texture("bg.png", scene);
+                let createThickness = (name) => {
+                    return BABYLON.MeshBuilder.CreateCylinder(name, {
+                        diameter: diameter,
+                        height: thickness,
+                        tessellation: tessellation,
+                    }, scene);
+                };
+                let createSide = (index, top) => {
+                    let radian = Math.PI / tessellation;
+                    let width = diameter / 2 * Math.sin(radian) * 2;
+                    let side = new BABYLON.MeshBuilder.CreateBox(`side${index}`, {
+                        width: width,
+                        height: height,
+                        depth: thickness,
+                    }, scene);
+                    let rotation = radian + radian * 2 * index;
+                    let innerRadius = diameter / 2 * Math.cos(radian) + thickness / 2;
+                    side.parent = top;
+                    side.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(new BABYLON.Vector3(0, 1, 0), rotation);
+                    side.position.x = innerRadius * Math.sin(rotation);
+                    side.position.y = -(height + thickness) / 2;
+                    side.position.z = innerRadius * Math.cos(rotation);
+                    side.physicsImpostor = new BABYLON.PhysicsImpostor(side, BABYLON.PhysicsImpostor.BoxImpostor, {
+                        mass: 10,
+                        friction: friction,
+                        restitution: restitution,
+                    }, scene);
+                    return side;
+                };
+                let top = createThickness("top");
+                top.position.y = (height + thickness) / 2;
+                top.material = mat0;
+                let bottom = createThickness("bottom");
+                bottom.parent = top;
+                bottom.position.y = -height - thickness;
+                let sides = [];
+                for (let i = 0; i < tessellation; i++) {
+                    sides.push(createSide(i, top));
+                    if (i >= tessellation * (1 - percent) / 2 && i < tessellation * ((1 - percent) / 2 + percent)) {
+                        sides[i].material = mat0;
+                    }
+                }
+                bottom.physicsImpostor = new BABYLON.PhysicsImpostor(bottom, BABYLON.PhysicsImpostor.CylinderImpostor, {
+                    mass: 100,
+                    friction: friction,
+                    restitution: restitution,
+                }, scene);
+                top.physicsImpostor = new BABYLON.PhysicsImpostor(top, BABYLON.PhysicsImpostor.CylinderImpostor, {
+                    mass: 10,
+                    friction: friction,
+                    restitution: restitution,
+                }, scene);
+                return top;
+            };
+
+            let diceCup = createDiceCup();
+            createDices();
+            createHolder(diceCup);
+
+            return scene;
+        };
+
+        // call the createScene function
+        let scene = createScene();
+        // run the render loop
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+
+        // the canvas/window resize event handler
+        window.addEventListener('resize', function () {
+            engine.resize();
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', function () {
+        restart();
+    });
+</script>
+</body>
+</html>
