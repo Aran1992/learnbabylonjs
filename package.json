@@ -1,0 +1,32 @@
+{
+  "name": "learnbabylonjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aran1992/learnbabylonjs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aran1992/learnbabylonjs/issues"
+  },
+  "homepage": "https://github.com/Aran1992/learnbabylonjs#readme",
+  "devDependencies": {
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "babylonjs": "^4.1.0",
+    "babylonjs-gui": "^4.1.0",
+    "babylonjs-loaders": "^4.1.0",
+    "cannon": "github:schteppe/cannon.js"
+  }
+}
