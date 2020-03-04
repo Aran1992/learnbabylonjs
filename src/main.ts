@@ -1,8 +1,9 @@
 import {
     AbstractMesh,
+    ArcRotateCamera,
     CannonJSPlugin,
+    Color3,
     Engine,
-    FreeCamera,
     HemisphericLight,
     HingeJoint,
     Mesh,
@@ -24,12 +25,12 @@ class Main {
     private readonly thickness = 0.2;
     private readonly diameter = 3;
     private readonly tessellation = 8;
-    private readonly percent = 0.5;
+    private readonly percent = 1;
     private readonly createShakeList: [number, () => number | undefined][] = [
-        [10, () => -10 - Math.random()],
-        [20, () => 10 + Math.random()],
-        [30, () => -5 - Math.random()],
-        [40, () => 5 + Math.random()],
+        [10, () => -5 - Math.random()],
+        [20, () => 5 + Math.random()],
+        [30, () => -4 - Math.random()],
+        [40, () => 4 + Math.random()],
         [50, () => -2 - Math.random()],
         [60, () => 2 + Math.random()],
         [70, () => -1 * Math.random()],
@@ -39,6 +40,13 @@ class Main {
     private diceMesh: AbstractMesh;
     private readonly scene: Scene;
     private cup: Mesh;
+    private dices: {
+        dice: Mesh,
+        sides: {
+            side: Mesh,
+            point: number
+        }[]
+    }[];
     private joint: HingeJoint;
     private shakeList: [number, number | undefined][];
     private frame = 0;
@@ -47,7 +55,7 @@ class Main {
         this.scene = this.createScene();
         this.loadDiceMesh(() => {
             this.cup = this.createCup();
-            this.createDices();
+            this.dices = this.createDices();
             this.joint = this.createHingeJoint();
             this.start();
         });
@@ -59,14 +67,16 @@ class Main {
         let scene = new Scene(engine);
         const cannonJSPlugin = new CannonJSPlugin(false, 1000);
         scene.enablePhysics(undefined, cannonJSPlugin);
-        let camera = new FreeCamera("", new Vector3(0, 5, -5), scene);
-        camera.setTarget(Vector3.Zero());
-        camera.attachControl(canvas, false);
+        let camera = new ArcRotateCamera("Camera", Math.PI / 8, Math.PI / 2.5, 10, new Vector3(0, -(this.height + this.thickness) / 2, 0), scene);
+        camera.attachControl(canvas, true);
+        // let camera = new FreeCamera("", new Vector3(0, 5, -5), scene);
+        // camera.setTarget(Vector3.Zero());
+        // camera.attachControl(canvas, false);
         new HemisphericLight("", new Vector3(0, 1, 0), scene);
         engine.runRenderLoop(() => {
             scene.render();
         });
-        window.addEventListener('resize', () => {
+        window.addEventListener("resize", () => {
             engine.resize();
         });
         return scene;
@@ -160,12 +170,9 @@ class Main {
 
     private createDices() {
         let dices = [];
-        let count = 5;
         let size = 0.5;
-        let modelScale2Size = 0.005875;
-        let modelScale = size / modelScale2Size;
-        let centerDistance = 0.75;
         let y = size / 2 - (this.height + this.thickness / 2);
+        let centerDistance = 0.75;
         let dicesPos = [
             [0, y, 0],
             [centerDistance, y, 0],
@@ -173,6 +180,9 @@ class Main {
             [0, y, centerDistance],
             [0, y, -centerDistance],
         ];
+        let count = dicesPos.length;
+        let modelScale2Size = 0.005875;
+        let modelScale = size / modelScale2Size;
         for (let i = 0; i < count; i++) {
             let model = this.diceMesh.clone("", null);
             model.scaling = new Vector3(modelScale, modelScale, modelScale);
@@ -180,9 +190,31 @@ class Main {
             let collider = Mesh.CreateBox("", size);
             collider.isVisible = false;
 
+            const sides = [
+                {pos: new Vector3(size / 2, 0, 0,), point: 4, color: new Color3(255, 0, 0)},
+                {pos: new Vector3(-size / 2, 0, 0,), point: 3, color: new Color3(0, 255, 0)},
+                {pos: new Vector3(0, size / 2, 0,), point: 5, color: new Color3(0, 0, 255)},
+                {pos: new Vector3(0, -size / 2, 0,), point: 1, color: new Color3(255, 255, 0)},
+                {pos: new Vector3(0, 0, size / 2,), point: 2, color: new Color3(0, 255, 255)},
+                {pos: new Vector3(0, 0, -size / 2,), point: 6, color: new Color3(255, 0, 255)},
+            ].map(({pos, point, color}) => {
+                let side = Mesh.CreateBox("", size / 5);
+                side.position = pos;
+                side.isVisible = false;
+                let greenMat = new StandardMaterial("green", this.scene);
+                greenMat.diffuseColor = color;
+                side.material = greenMat;
+                return {side, point};
+            });
+
             let dice = new Mesh("");
             dice.addChild(model);
             dice.addChild(collider);
+            for (let side in sides) {
+                if (sides.hasOwnProperty(side)) {
+                    dice.addChild(sides[side].side);
+                }
+            }
             dice.position.x = dicesPos[i][0];
             dice.position.y = dicesPos[i][1];
             dice.position.z = dicesPos[i][2];
@@ -194,7 +226,7 @@ class Main {
                 restitution: this.restitution
             });
 
-            dices.push(dice);
+            dices.push({dice, sides});
         }
         return dices;
     }
@@ -241,6 +273,24 @@ class Main {
             this.joint.setMotor(0, 1000);
         }
         this.frame++;
+        const isDynamic = this.isDynamic(this.cup);
+        if (isDynamic) {
+        } else {
+            console.log(this.dices.map(({sides}) =>
+                sides.sort((a, b) => this.getWorldPosition(b.side).y - this.getWorldPosition(a.side).y)[0].point)
+                .sort());
+        }
+    }
+
+    private isDynamic(mesh: AbstractMesh) {
+        return mesh.physicsImpostor.getLinearVelocity().asArray().some(v => v >= 0.00001)
+            || mesh.physicsImpostor.getAngularVelocity().asArray().some(v => v >= 0.0001);
+    }
+
+    private getWorldPosition(box: AbstractMesh) {
+        const matrix = box.computeWorldMatrix(true);
+        const local = new Vector3(0, 0, 0);
+        return Vector3.TransformCoordinates(local, matrix);
     }
 }
 
