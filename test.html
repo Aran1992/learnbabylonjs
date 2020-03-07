@@ -2,6 +2,8 @@
 <html lang="zh">
 <head>
     <meta charset="utf-8" content="text/html" http-equiv="Content-Type"/>
+    <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+          name="viewport"/>
     <title>Babylon - Getting Started</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <style>
@@ -22,7 +24,13 @@
 </head>
 <body>
 <canvas id="renderCanvas"></canvas>
+<button onclick="onClick();" style="position:absolute;width:100px;height:100px;top:0;left:0;">click</button>
 <script>
+    let ground;
+    window.onClick = () => {
+        ground.position.y -= 1;
+        console.log(ground.position.y);
+    };
     window.addEventListener('DOMContentLoaded', function () {
         function localAxes(size, scene) {
             const makeTextPlane = function (text, color, size) {
@@ -74,16 +82,24 @@
         const createScene = function () {
             const scene = new BABYLON.Scene(engine);
             const x = 0;
-            const y = 0;
-            const z = -10;
+            const y = 1;
+            const z = 0;
+            const target = BABYLON.Vector3.Zero();
             const camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(x, y, z), scene);
-            camera.setTarget(BABYLON.Vector3.Zero());
+            // const camera = new BABYLON.ArcRotateCamera("", 0, 0, 10, target, scene);
+            camera.setTarget(target);
             camera.attachControl(canvas, false);
-            const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(-1, 0, -1), scene);
-            localAxes(5, scene);
+            const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(x, y, z), scene);
+            localAxes(3, scene);
             // const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 3, scene);
-            const box = BABYLON.Mesh.CreateBox('box1', 2, scene);
-            const ground = BABYLON.Mesh.CreateGround('ground1', 6, 4, 2, scene);
+            ground = BABYLON.Mesh.CreateGround('ground1', 16, 9, 2, scene);
+            const groundMaterial = new BABYLON.StandardMaterial("", this.scene);
+            const texture = new BABYLON.Texture("assets/image/bg.jpg", null);
+            texture.uScale = 1;
+            texture.vScale = 1;
+            texture.level = 1;
+            groundMaterial.diffuseTexture = texture;
+            ground.material = groundMaterial;
             const getAngle = (x, y) => {
                 if (x === 0) {
                     if (y === 0) {
@@ -111,15 +127,9 @@
                     }
                 }
             };
-            const rx = getAngle(z, y) - Math.PI / 2;
-            // const ry = getAngle(x, z) - Math.PI / 2;
-            // const rz = getAngle(y, x) - Math.PI / 2;
-            const ry = 0;
-            const rz = 0;
-            console.log(rx / Math.PI * 180);
-            console.log(ry / Math.PI * 180);
-            console.log(rz / Math.PI * 180);
-            ground.rotation = new BABYLON.Vector3(-Math.PI / 2, ry, rz);
+            ground.rotation = new BABYLON.Vector3(camera.rotation.x - Math.PI / 2, camera.rotation.y, camera.rotation.z);
+            // 向轴正方向顺时针转是负数
+            // 向轴正方向逆时针转是正数
             return scene;
         };
         const scene = createScene();

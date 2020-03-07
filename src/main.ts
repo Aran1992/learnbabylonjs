@@ -1,8 +1,8 @@
 import {
     AbstractMesh,
-    ArcRotateCamera,
     CannonJSPlugin,
     Engine,
+    FreeCamera,
     HemisphericLight,
     HingeJoint,
     Mesh,
@@ -13,7 +13,7 @@ import {
     SceneLoader,
     StandardMaterial,
     Texture,
-    Vector3
+    Vector3,
 } from "babylonjs";
 import "babylonjs-loaders";
 import {AdvancedDynamicTexture, Button, Image} from "babylonjs-gui";
@@ -254,15 +254,18 @@ class Main {
         [80, () => Math.random()],
         [90, undefined],
     ];
-    private readonly scene: Scene;
+    private scene: Scene;
+    private camera: FreeCamera;
     private gui: GUI;
     private cup: Cup;
     private dices: Dice[];
     private shakeList: [number, number | undefined][];
     private frame = 0;
+    private targetVector3 = Vector3.Zero();
+    private cameraPosition = new Vector3(11, 11, 7);
 
     constructor() {
-        this.scene = this.createScene();
+        this.createScene();
         this.createBg();
         this.gui = new GUI();
         this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
@@ -274,33 +277,40 @@ class Main {
     private createScene() {
         let canvas = document.getElementById("canvas") as HTMLCanvasElement;
         let engine = new Engine(canvas, true);
-        let scene = new Scene(engine);
+        this.scene = new Scene(engine);
         const cannonJSPlugin = new CannonJSPlugin(false, 1000);
-        scene.enablePhysics(undefined, cannonJSPlugin);
-        let camera = new ArcRotateCamera("", Math.PI / 8, Math.PI / 2.5, 10, new Vector3(0, -(Cup.height + Cup.thickness) / 2, 0), scene);
-        // let camera = new FreeCamera("", new Vector3(0, 5, -5), scene);
-        // camera.setTarget(Vector3.Zero());
-        camera.attachControl(canvas, true);
-        new HemisphericLight("", new Vector3(0, 1, 0), scene);
+        this.scene.enablePhysics(undefined, cannonJSPlugin);
+        this.camera = new FreeCamera("", this.cameraPosition, this.scene);
+        this.camera.setTarget(this.targetVector3);
+        this.camera.attachControl(canvas, true);
+        new HemisphericLight("", new Vector3(0, 1, 0), this.scene);
         engine.runRenderLoop(() => {
-            scene.render();
+            this.scene.render();
             this.onFrame();
         });
         window.addEventListener("resize", () => {
             engine.resize();
         });
-        return scene;
     }
 
     private createBg() {
-        const ground = Mesh.CreateGround("", 25, 25, 25);
+        const heightWidthRate = 9 / 16;
+        const width = 32;
+        const height = width * heightWidthRate;
+        const distance = (height / 2) / Math.tan(this.camera.fov / 2);
+        const baseVector3 = this.targetVector3.subtract(this.cameraPosition);
+        const rate = distance / baseVector3.length();
+        const newVector3 = baseVector3.scale(rate);
+        const ground = Mesh.CreateGround("", width, height, 1);
+        ground.position = this.cameraPosition.add(newVector3);
         const groundMaterial = new StandardMaterial("", this.scene);
         const texture = new Texture("assets/image/bg.jpg", null);
         texture.uScale = 1;
         texture.vScale = 1;
-        texture.level = 1; //It is kind of z-index
+        texture.level = 1;
         groundMaterial.diffuseTexture = texture;
         ground.material = groundMaterial;
+        ground.rotation = new Vector3(this.camera.rotation.x - Math.PI / 2, this.camera.rotation.y, this.camera.rotation.z);
     }
 
     private loadDiceMesh(callback: CallableFunction) {
@@ -369,7 +379,7 @@ class Main {
         if (!flag) {
             this.cup.setMotor(0);
             if (!this.dices.some(dice => dice.isDynamic)) {
-                console.log(this.dices.map(dice => dice.point).sort());
+                // console.log(this.dices.map(dice => dice.point).sort());
             }
         }
         if (this.frame > 180) {
