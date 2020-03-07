@@ -16,7 +16,7 @@ import {
     Vector3,
 } from "babylonjs";
 import "babylonjs-loaders";
-import {AdvancedDynamicTexture, Button, Image} from "babylonjs-gui";
+import {AdvancedDynamicTexture, Button, Image, XmlLoader} from "babylonjs-gui";
 import {EventState} from "babylonjs/Misc/observable";
 
 class Util {
@@ -208,23 +208,32 @@ class Cup {
 }
 
 class GUI {
-    private ui: AdvancedDynamicTexture;
+    private background: AdvancedDynamicTexture;
+    private foreground: AdvancedDynamicTexture;
 
     constructor() {
-        this.ui = AdvancedDynamicTexture.CreateFullscreenUI("");
+        this.background = AdvancedDynamicTexture.CreateFullscreenUI("", false);
+        this.foreground = AdvancedDynamicTexture.CreateFullscreenUI("", true);
+        const bg = new Image("", "assets/image/bg.jpg");
+        this.background.addControl(bg);
         this.createButton("assets/image/return.png", this.onClickReturnButton.bind(this));
         this.createButton("assets/image/help.png", this.onClickHelpButton.bind(this));
         this.createButton("assets/image/setting.png", this.onClickSettingButton.bind(this));
+        const frame = new Image("", "assets/image/frame.png");
+        frame.autoScale = true;
+        frame.stretch = Image.STRETCH_NONE;
+        this.foreground.addControl(frame);
+        const xmlLoader = new XmlLoader();
+        xmlLoader.loadLayout("ui.xml", this.foreground, null);
     }
 
     private createButton(path: string, callback: (eventData: any, eventState: EventState) => void) {
         const button = Button.CreateImageOnlyButton("", path);
         button.onPointerUpObservable.add(callback);
-        const image = button.children[0] as Image;
-        image.autoScale = true;
-        image.stretch = BABYLON.GUI.Image.STRETCH_EXTEND;
+        button.image.autoScale = true;
+        button.image.stretch = Image.STRETCH_EXTEND;
         button.thickness = 0;
-        this.ui.addControl(button);
+        this.foreground.addControl(button);
     }
 
     private onClickReturnButton() {
@@ -266,7 +275,6 @@ class Main {
 
     constructor() {
         this.createScene();
-        this.createBg();
         this.gui = new GUI();
         this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
         this.loadDiceMesh(() => {
@@ -291,26 +299,6 @@ class Main {
         window.addEventListener("resize", () => {
             engine.resize();
         });
-    }
-
-    private createBg() {
-        const heightWidthRate = 9 / 16;
-        const width = 32;
-        const height = width * heightWidthRate;
-        const distance = (height / 2) / Math.tan(this.camera.fov / 2);
-        const baseVector3 = this.targetVector3.subtract(this.cameraPosition);
-        const rate = distance / baseVector3.length();
-        const newVector3 = baseVector3.scale(rate);
-        const ground = Mesh.CreateGround("", width, height, 1);
-        ground.position = this.cameraPosition.add(newVector3);
-        const groundMaterial = new StandardMaterial("", this.scene);
-        const texture = new Texture("assets/image/bg.jpg", null);
-        texture.uScale = 1;
-        texture.vScale = 1;
-        texture.level = 1;
-        groundMaterial.diffuseTexture = texture;
-        ground.material = groundMaterial;
-        ground.rotation = new Vector3(this.camera.rotation.x - Math.PI / 2, this.camera.rotation.y, this.camera.rotation.z);
     }
 
     private loadDiceMesh(callback: CallableFunction) {
