@@ -1,8 +1,77 @@
 <?xml version="1.0"?>
 <root>
-    <Rectangle verticalAlignment="Control.HORIZONTAL_ALIGNMENT_TOP" background="yellow" id="firstContainer" width=".8" name="firstContainer" height=".4" color="Orange">
-        <Button id="imageButton" width="0.2" background="red" height="0.3" name="imageButton">
-            <Image id="image" source="assets/icon.png" width="1" height="1" name="image" stretch="Image.STRETCH_FILL" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT"/>
+    <Rectangle thickness="0" width="210px" height="60px" left="-530" top="-320">
+        <Button id="returnButton" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="8">
+            <Image source="assets/image/return.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
+        <Button id="settingButton" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="76">
+            <Image source="assets/image/setting.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
+        <Button id="helpButton" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="149">
+            <Image source="assets/image/help.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </Button>
     </Rectangle>
+    <Rectangle thickness="0" width="264px" height="44px" left="275" top="150">
+        <Button thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="0">
+            <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
+        <Button thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="44">
+            <Image source="assets/image/yyl_ludan_2.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
+        <Button thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="88">
+            <Image source="assets/image/yyl_ludan_3.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
+        <Button thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="132">
+            <Image source="assets/image/yyl_ludan_4.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
+        <Button thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="176">
+            <Image source="assets/image/yyl_ludan_5.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
+        <Button thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="220">
+            <Image source="assets/image/yyl_ludan_6.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
+    </Rectangle>
+    <Rectangle thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-500" top="100">
+        <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <TextBlock text="玩家名字" color="white" fontSize="24" top="-25"/>
+        <TextBlock text="玩家金钱" color="white" fontSize="24" top="25"/>
+    </Rectangle>
+    <Rectangle thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="500" top="100">
+        <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <TextBlock text="玩家名字" color="white" fontSize="24" top="-25"/>
+        <TextBlock text="玩家金钱" color="white" fontSize="24" top="25"/>
+    </Rectangle>
+    <Rectangle thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-500" top="-100">
+        <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <TextBlock text="玩家名字" color="white" fontSize="24" top="-25"/>
+        <TextBlock text="玩家金钱" color="white" fontSize="24" top="25"/>
+    </Rectangle>
+    <Rectangle thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="500" top="-100">
+        <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <TextBlock text="玩家名字" color="white" fontSize="24" top="-25"/>
+        <TextBlock text="玩家金钱" color="white" fontSize="24" top="25"/>
+    </Rectangle>
+    <Rectangle thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" top="-300">
+        <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <TextBlock text="玩家名字" color="white" fontSize="24" top="-25"/>
+        <TextBlock text="玩家金钱" color="white" fontSize="24" top="25"/>
+    </Rectangle>
+    <Rectangle thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" top="300">
+        <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <TextBlock text="玩家名字" color="white" fontSize="24" top="-25"/>
+        <TextBlock text="玩家金钱" color="white" fontSize="24" top="25"/>
+    </Rectangle>
+    <Rectangle thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+        <Image source="assets/image/yyl_bg_clock.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <TextBlock text="aa" color="white" fontSize="24"/>
+    </Rectangle>
+    <Button thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" top="150" left="-200">
+        <Image source="assets/image/leave.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+    </Button>
+    <Button thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" top="150">
+        <Image source="assets/image/start.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+    </Button>
+    <Button thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" top="150" left="200">
+        <Image source="assets/image/change.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+    </Button>
 </root>

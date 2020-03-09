@@ -16,8 +16,7 @@ import {
     Vector3,
 } from "babylonjs";
 import "babylonjs-loaders";
-import {AdvancedDynamicTexture, Button, Image, XmlLoader} from "babylonjs-gui";
-import {EventState} from "babylonjs/Misc/observable";
+import {AdvancedDynamicTexture, Image, XmlLoader} from "babylonjs-gui";
 
 class Util {
     public static getWorldPosition(box: AbstractMesh): Vector3 {
@@ -98,16 +97,19 @@ class Cup {
     private mesh: Mesh;
     private holder: Mesh;
     private joint: HingeJoint;
+    private dices: Dice[];
 
-    constructor(scene: Scene) {
+    constructor(scene: Scene, position: Vector3) {
         this.scene = scene;
-        this.mesh = this.createCup();
-        this.createHingeJoint();
+        this.mesh = this.createCup(position);
+        this.createHingeJoint(position);
+        this.dices = this.createDices(position);
     }
 
     public destroy() {
         this.holder.dispose();
         this.mesh.dispose();
+        this.dices.forEach(dice => dice.destroy());
     }
 
     public setMotor(v) {
@@ -118,7 +120,15 @@ class Cup {
         return this.mesh.rotationQuaternion.toEulerAngles();
     }
 
-    private createCup() {
+    public isDynamic() {
+        return this.dices.some(dice => dice.isDynamic);
+    }
+
+    public getPoints() {
+        return this.dices.map(dice => dice.point).sort();
+    }
+
+    private createCup(position: Vector3) {
         let opacityMaterial = new StandardMaterial("", this.scene);
         opacityMaterial.opacityTexture = new Texture("bg.png", null);
 
@@ -142,6 +152,8 @@ class Cup {
         cup.addChild(top);
         cup.addChild(bottom);
         sides.forEach(side => cup.addChild(side));
+
+        cup.position = position;
 
         top.physicsImpostor = new PhysicsImpostor(top, PhysicsImpostor.CylinderImpostor, {
             mass: 0,
@@ -192,8 +204,9 @@ class Cup {
         return side;
     }
 
-    private createHingeJoint() {
+    private createHingeJoint(position: Vector3) {
         this.holder = MeshBuilder.CreateSphere("", {diameter: 0, segments: 4});
+        this.holder.position = position;
         this.holder.isVisible = false;
         this.holder.physicsImpostor = new PhysicsImpostor(this.holder, PhysicsImpostor.SphereImpostor, {mass: 0});
         this.joint = new HingeJoint({
@@ -205,35 +218,61 @@ class Cup {
         });
         this.holder.physicsImpostor.addJoint(this.mesh.physicsImpostor, this.joint);
     }
+
+    private createDices(position: Vector3) {
+        Dice.staticY = Dice.SIZE / 2 - (Cup.height + Cup.thickness / 2);
+        let centerDistance = 0.75;
+        return [
+            new Vector3(0, Dice.staticY, 0),
+            new Vector3(centerDistance, Dice.staticY, 0),
+            new Vector3(-centerDistance, Dice.staticY, 0),
+            new Vector3(0, Dice.staticY, centerDistance),
+            new Vector3(0, Dice.staticY, -centerDistance),
+        ].map(pos => new Dice(pos.add(position)));
+    }
 }
 
 class GUI {
-    private background: AdvancedDynamicTexture;
-    private foreground: AdvancedDynamicTexture;
+    private readonly canvas: HTMLCanvasElement;
+    private readonly background: AdvancedDynamicTexture;
+    private readonly foreground: AdvancedDynamicTexture;
+    private designWidth = 1280;
+    private designHeight = 720;
+    private renderScale = 1;
 
-    constructor() {
+    constructor(canvas: HTMLCanvasElement) {
+        this.canvas = canvas;
+        this.calcRenderScale();
         this.background = AdvancedDynamicTexture.CreateFullscreenUI("", false);
+        this.background.renderScale = this.renderScale;
         this.foreground = AdvancedDynamicTexture.CreateFullscreenUI("", true);
-        const bg = new Image("", "assets/image/bg.jpg");
-        this.background.addControl(bg);
-        this.createButton("assets/image/return.png", this.onClickReturnButton.bind(this));
-        this.createButton("assets/image/help.png", this.onClickHelpButton.bind(this));
-        this.createButton("assets/image/setting.png", this.onClickSettingButton.bind(this));
-        const frame = new Image("", "assets/image/frame.png");
-        frame.autoScale = true;
-        frame.stretch = Image.STRETCH_NONE;
-        this.foreground.addControl(frame);
-        const xmlLoader = new XmlLoader();
-        xmlLoader.loadLayout("ui.xml", this.foreground, null);
+        this.foreground.renderScale = this.renderScale;
+        this.createImage("assets/image/bg.jpg", this.background);
+        // const xmlLoader = new XmlLoader();
+        // xmlLoader.loadLayout("ui.xml", this.foreground, () => {
+        //     this.onClick(xmlLoader.getNodeById("returnButton"),this.onClickReturnButton.bind(this));
+        //     this.onClick(xmlLoader.getNodeById("settingButton"),this.onClickSettingButton.bind(this));
+        //     this.onClick(xmlLoader.getNodeById("helpButton"),this.onClickHelpButton.bind(this));
+        // });
     }
 
-    private createButton(path: string, callback: (eventData: any, eventState: EventState) => void) {
-        const button = Button.CreateImageOnlyButton("", path);
+    private createImage(path, parent) {
+        const bg = new Image("", path);
+        bg.autoScale = true;
+        bg.stretch = Image.STRETCH_NONE;
+        (parent || this.foreground).addControl(bg);
+    }
+
+    private calcRenderScale() {
+        if (this.canvas.width / this.canvas.height > this.designWidth / this.designHeight) {
+            this.renderScale = this.designHeight / this.canvas.height;
+        } else {
+            this.renderScale = this.designWidth / this.canvas.width;
+        }
+    }
+
+    private onClick(button, callback) {
         button.onPointerUpObservable.add(callback);
-        button.image.autoScale = true;
-        button.image.stretch = Image.STRETCH_EXTEND;
-        button.thickness = 0;
-        this.foreground.addControl(button);
     }
 
     private onClickReturnButton() {
@@ -263,19 +302,33 @@ class Main {
         [80, () => Math.random()],
         [90, undefined],
     ];
+    private readonly canvas: HTMLCanvasElement;
     private scene: Scene;
     private camera: FreeCamera;
     private gui: GUI;
-    private cup: Cup;
-    private dices: Dice[];
+    private cups: Cup[];
     private shakeList: [number, number | undefined][];
     private frame = 0;
     private targetVector3 = Vector3.Zero();
     private cameraPosition = new Vector3(11, 11, 7);
+    private width = 10;
+    private height1 = 5;
+    private height2 = 3;
+    private height3 = -3;
+    private cupPosList = [
+        // new Vector3(0, 0, -this.height1),
+        // new Vector3(0, 0, this.height1),
+        // new Vector3(this.width, 0, this.height2),
+        // new Vector3(-this.width, 0, this.height2),
+        // new Vector3(this.width, 0, this.height3),
+        // new Vector3(-this.width, 0, this.height3),
+        new Vector3(0, 0, 0),
+    ];
 
     constructor() {
+        this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
         this.createScene();
-        this.gui = new GUI();
+        this.gui = new GUI(this.canvas);
         this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
         this.loadDiceMesh(() => {
             this.start();
@@ -283,21 +336,17 @@ class Main {
     }
 
     private createScene() {
-        let canvas = document.getElementById("canvas") as HTMLCanvasElement;
-        let engine = new Engine(canvas, true);
+        let engine = new Engine(this.canvas, true);
         this.scene = new Scene(engine);
         const cannonJSPlugin = new CannonJSPlugin(false, 1000);
         this.scene.enablePhysics(undefined, cannonJSPlugin);
         this.camera = new FreeCamera("", this.cameraPosition, this.scene);
         this.camera.setTarget(this.targetVector3);
-        this.camera.attachControl(canvas, true);
+        this.camera.attachControl(this.canvas, true);
         new HemisphericLight("", new Vector3(0, 1, 0), this.scene);
         engine.runRenderLoop(() => {
             this.scene.render();
             this.onFrame();
-        });
-        window.addEventListener("resize", () => {
-            engine.resize();
         });
     }
 
@@ -313,37 +362,25 @@ class Main {
         );
     }
 
-    private createDices() {
-        Dice.staticY = Dice.SIZE / 2 - (Cup.height + Cup.thickness / 2);
-        let centerDistance = 0.75;
-        return [
-            new Vector3(0, Dice.staticY, 0),
-            new Vector3(centerDistance, Dice.staticY, 0),
-            new Vector3(-centerDistance, Dice.staticY, 0),
-            new Vector3(0, Dice.staticY, centerDistance),
-            new Vector3(0, Dice.staticY, -centerDistance),
-        ].map(pos => new Dice(pos));
-    }
-
     private start() {
         this.frame = 0;
-        this.cup = new Cup(this.scene);
-        this.dices = this.createDices();
+        this.cups = this.cupPosList.map((pos, i) => {
+            console.log(i, pos);
+            return new Cup(this.scene, pos);
+        });
     }
 
     private end() {
-        this.dices.forEach(dice => dice.destroy());
-        this.cup.destroy();
-        this.dices = undefined;
+        this.cups.forEach(cup => cup.destroy());
     }
 
     private onFrame() {
-        if (this.cup === undefined) {
+        if (this.cups === undefined) {
             return;
         }
         this.frame++;
-        if (this.dices === undefined) {
-            if (this.frame > 200) {
+        if (this.frame > 241) {
+            if (this.frame > 300) {
                 this.start();
             }
             return;
@@ -354,23 +391,27 @@ class Main {
             if (this.frame < shake[0]) {
                 flag = true;
                 if (shake[1]) {
-                    this.cup.setMotor(shake[1]);
+                    this.cups.forEach(cup => cup.setMotor(shake[1]));
                 } else {
-                    let a = this.cup.getEulerAngles();
-                    let time = (shake[0] - this.frame) / 60;
-                    let v = -a.z / time;
-                    this.cup.setMotor(v);
+                    this.cups.forEach(cup => {
+                        let a = cup.getEulerAngles();
+                        let time = (shake[0] - this.frame) / 60;
+                        let v = -a.z / time;
+                        cup.setMotor(v);
+                    });
                 }
                 break;
             }
         }
         if (!flag) {
-            this.cup.setMotor(0);
-            if (!this.dices.some(dice => dice.isDynamic)) {
-                // console.log(this.dices.map(dice => dice.point).sort());
+            this.cups.forEach(cup => cup.setMotor(0));
+            if (!this.cups.some(cup => cup.isDynamic())) {
+                this.cups.forEach((cup, i) => {
+                    console.log(i, cup.getPoints());
+                });
             }
         }
-        if (this.frame > 180) {
+        if (this.frame > 240) {
             this.end();
         }
     }
