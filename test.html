@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html>
 <head>
     <meta charset="utf-8" content="text/html" http-equiv="Content-Type"/>
-    <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
-          name="viewport"/>
     <title>Babylon - Getting Started</title>
+    <!--- Link to the last version of BabylonJS --->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/dist/preview%20release/loaders/babylon.glTF2FileLoader.min.js"></script>
+    <script src="https://cdn.babylonjs.com/cannon.js"></script>
     <style>
         html, body {
             overflow: hidden;
@@ -24,118 +26,63 @@
 </head>
 <body>
 <canvas id="renderCanvas"></canvas>
-<button onclick="onClick();" style="position:absolute;width:100px;height:100px;top:0;left:0;">click</button>
 <script>
-    let ground;
-    window.onClick = () => {
-        ground.position.y -= 1;
-        console.log(ground.position.y);
-    };
     window.addEventListener('DOMContentLoaded', function () {
-        function localAxes(size, scene) {
-            const makeTextPlane = function (text, color, size) {
-                const dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
-                dynamicTexture.hasAlpha = true;
-                dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
-                const plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
-                plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
-                plane.material.backFaceCulling = false;
-                plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
-                plane.material.diffuseTexture = dynamicTexture;
-                plane.billBoardMode = 7;
-                return plane;
-            };
+        var canvas = document.getElementById('renderCanvas');
 
-            const pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX", [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
-                new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-            ], scene);
-            pilot_local_axisX.color = new BABYLON.Color3(1, 0, 0);
-            const xChar = makeTextPlane("X", "red", size / 10);
-            xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+        var engine = new BABYLON.Engine(canvas, true);
 
-            pilot_local_axisY = BABYLON.Mesh.CreateLines("pilot_local_axisY", [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
-                new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
-            ], scene);
-            pilot_local_axisY.color = new BABYLON.Color3(0, 1, 0);
-            const yChar = makeTextPlane("Y", "green", size / 10);
-            yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+        var createScene = function () {
+            var scene = new BABYLON.Scene(engine);
 
-            const pilot_local_axisZ = BABYLON.Mesh.CreateLines("pilot_local_axisZ", [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
-                new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
-            ], scene);
-            pilot_local_axisZ.color = new BABYLON.Color3(0, 0, 1);
-            const zChar = makeTextPlane("Z", "blue", size / 10);
-            zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+            var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 2.5, 50, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
 
+            var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = 0.7;
 
-            const local_origin = BABYLON.MeshBuilder.CreateBox("local_origin", {size: 1}, scene);
-            local_origin.isVisible = false;
+            var mesh = BABYLON.Mesh.CreateBox("", 2, scene);
+            var box = new BABYLON.Mesh("");
+            box.addChild(mesh);
+            box.position.y = 3;
 
-            return local_origin;
-        }
+            var mesh2 = BABYLON.Mesh.CreateBox("", 2, scene);
+            var box2 = new BABYLON.Mesh("");
+            box2.addChild(mesh2);
+            box2.position.y = 3;
+            box2.position.x = -5;
 
-        const canvas = document.getElementById('renderCanvas');
-        const engine = new BABYLON.Engine(canvas, true);
-        const createScene = function () {
-            const scene = new BABYLON.Scene(engine);
-            const x = 0;
-            const y = 1;
-            const z = 0;
-            const target = BABYLON.Vector3.Zero();
-            const camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(x, y, z), scene);
-            // const camera = new BABYLON.ArcRotateCamera("", 0, 0, 10, target, scene);
-            camera.setTarget(target);
-            camera.attachControl(canvas, false);
-            const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(x, y, z), scene);
-            localAxes(3, scene);
-            // const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 3, scene);
-            ground = BABYLON.Mesh.CreateGround('ground1', 16, 9, 2, scene);
-            const groundMaterial = new BABYLON.StandardMaterial("", this.scene);
-            const texture = new BABYLON.Texture("assets/image/bg.jpg", null);
-            texture.uScale = 1;
-            texture.vScale = 1;
-            texture.level = 1;
-            groundMaterial.diffuseTexture = texture;
-            ground.material = groundMaterial;
-            const getAngle = (x, y) => {
-                if (x === 0) {
-                    if (y === 0) {
-                        return 0;
-                    } else if (y > 0) {
-                        return Math.PI / 2;
-                    } else if (y < 0) {
-                        return -Math.PI / 2;
-                    }
-                } else if (x > 0) {
-                    if (y === 0) {
-                        return 0;
-                    } else if (y > 0) {
-                        return Math.atan(y / x);
-                    } else if (y < 0) {
-                        return Math.atan(y / x);
-                    }
-                } else if (x < 0) {
-                    if (y === 0) {
-                        return Math.PI;
-                    } else if (y > 0) {
-                        return Math.atan(y / x) + Math.PI;
-                    } else if (y < 0) {
-                        return Math.atan(y / x) + Math.PI;
-                    }
-                }
-            };
-            ground.rotation = new BABYLON.Vector3(camera.rotation.x - Math.PI / 2, camera.rotation.y, camera.rotation.z);
-            // 向轴正方向顺时针转是负数
-            // 向轴正方向逆时针转是正数
+            var ground = BABYLON.Mesh.CreateGround("ground1", 60, 60, 2, scene);
+
+            scene.enablePhysics(null, new BABYLON.CannonJSPlugin(null, false));
+
+            mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.BoxImpostor);
+            box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.NoImpostor, {
+                mass: 1,
+                restitution: 0.9
+            }, scene);
+            ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, {
+                mass: 0,
+                restitution: 0.9
+            }, scene);
+
+            scene.registerBeforeRender(function () {
+                box.rotate(BABYLON.Axis.X, 0.05);
+                box.rotate(BABYLON.Axis.Y, 0.05);
+                box.rotate(BABYLON.Axis.Z, 0.05);
+                box2.position = new BABYLON.Vector3(box.position.x - 5, box.position.y, box.position.z);
+                box2.rotationQuaternion = box.rotationQuaternion;
+            });
+
             return scene;
         };
-        const scene = createScene();
+
+        var scene = createScene();
+
         engine.runRenderLoop(function () {
             scene.render();
         });
+
         window.addEventListener('resize', function () {
             engine.resize();
         });

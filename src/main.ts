@@ -26,70 +26,9 @@ class Util {
     }
 }
 
-class Dice {
-    public static model: AbstractMesh;
-    public static staticY: number;
-    public static readonly SIZE = 0.5;
-    private static readonly MODEL_SIZE = 0.005875;
-    private static readonly STATIC_Y_ERROR: number = 0.01;
-    private static readonly MODEL_SCALE = Dice.SIZE / Dice.MODEL_SIZE;
-    private static readonly SIDES_POINT = [
-        {pos: new Vector3(Dice.SIZE / 2, 0, 0,), point: 4},
-        {pos: new Vector3(-Dice.SIZE / 2, 0, 0,), point: 3},
-        {pos: new Vector3(0, Dice.SIZE / 2, 0,), point: 5},
-        {pos: new Vector3(0, -Dice.SIZE / 2, 0,), point: 1},
-        {pos: new Vector3(0, 0, Dice.SIZE / 2,), point: 2},
-        {pos: new Vector3(0, 0, -Dice.SIZE / 2,), point: 6},
-    ];
-    private readonly mesh: Mesh;
-    private sides: { mesh: Mesh, point: number, }[];
-
-    constructor(pos: Vector3) {
-        let model = Dice.model.clone("", null);
-        model.scaling = new Vector3(Dice.MODEL_SCALE, Dice.MODEL_SCALE, Dice.MODEL_SCALE);
-
-        let collider = Mesh.CreateBox("", Dice.SIZE);
-        collider.isVisible = false;
-
-        this.sides = Dice.SIDES_POINT.map(({pos, point}) => {
-            let mesh = Mesh.CreateBox("", 0);
-            mesh.position = pos;
-            mesh.isVisible = false;
-            return {mesh, point};
-        });
-
-        this.mesh = new Mesh("");
-        this.mesh.addChild(model);
-        this.mesh.addChild(collider);
-        this.sides.forEach(side => this.mesh.addChild(side.mesh));
-
-        this.mesh.position = pos;
-
-        collider.physicsImpostor = new PhysicsImpostor(collider, PhysicsImpostor.BoxImpostor, {mass: 0});
-        this.mesh.physicsImpostor = new PhysicsImpostor(this.mesh, PhysicsImpostor.NoImpostor, {
-            mass: 1,
-            friction: Main.friction,
-            restitution: Main.restitution
-        });
-    }
-
-    public get isDynamic(): boolean {
-        return this.mesh.position.y > Dice.staticY + Dice.STATIC_Y_ERROR
-            || this.mesh.position.y < Dice.staticY - Dice.STATIC_Y_ERROR;
-    }
-
-    public get point(): number {
-        return this.sides.sort((a, b) => Util.getWorldPosition(b.mesh).y - Util.getWorldPosition(a.mesh).y)[0].point;
-    }
-
-    public destroy() {
-        this.mesh.dispose();
-    }
-}
-
 class Cup {
-    public static readonly height = 3;
-    public static readonly thickness = 0.2;
+    public static readonly HEIGHT = 3;
+    public static readonly THICKNESS = 0.2;
     private readonly scene: Scene;
     private readonly diameter = 3;
     private readonly tessellation = 8;
@@ -97,11 +36,11 @@ class Cup {
     private mesh: Mesh;
     private holder: Mesh;
     private joint: HingeJoint;
-    private dices: Dice[];
+    private dices: PhysicalDice[];
 
-    constructor(scene: Scene, position: Vector3) {
+    constructor(scene: Scene, camera: FreeCamera, position: Vector3) {
         this.scene = scene;
-        this.mesh = this.createCup(position);
+        this.mesh = this.createCup(position, camera);
         this.createHingeJoint(position);
         this.dices = this.createDices(position);
     }
@@ -128,7 +67,14 @@ class Cup {
         return this.dices.map(dice => dice.point).sort();
     }
 
-    private createCup(position: Vector3) {
+    public getDetailPoints() {
+        return this.dices.map(dice => ({
+            position: dice.position.clone(),
+            rotationQuaternion: dice.rotationQuaternion.clone()
+        }));
+    }
+
+    private createCup(position: Vector3, camera: FreeCamera) {
         let opacityMaterial = new StandardMaterial("", this.scene);
         opacityMaterial.opacityTexture = new Texture("bg.png", null);
 
@@ -136,7 +82,7 @@ class Cup {
         top.material = opacityMaterial;
 
         let bottom = this.createThickness();
-        bottom.position.y = -Cup.height - Cup.thickness;
+        bottom.position.y = -Cup.HEIGHT - Cup.THICKNESS;
 
         let sides = [];
         for (let i = 0; i < this.tessellation; i++) {
@@ -148,10 +94,13 @@ class Cup {
             }
         }
 
+        let bg = this.createBg(this.scene, camera);
+
         let cup = new Mesh("");
         cup.addChild(top);
         cup.addChild(bottom);
         sides.forEach(side => cup.addChild(side));
+        cup.addChild(bg);
 
         cup.position = position;
 
@@ -180,11 +129,13 @@ class Cup {
     }
 
     private createThickness() {
-        return MeshBuilder.CreateCylinder("", {
+        const thickness = MeshBuilder.CreateCylinder("", {
             diameter: this.diameter,
-            height: Cup.thickness,
+            height: Cup.THICKNESS,
             tessellation: this.tessellation,
         });
+        thickness.isVisible = false;
+        return thickness;
     }
 
     private createSide(i) {
@@ -192,16 +143,33 @@ class Cup {
         let width = this.diameter / 2 * Math.sin(radian) * 2;
         let side = MeshBuilder.CreateBox("", {
             width: width,
-            height: Cup.height,
-            depth: Cup.thickness,
+            height: Cup.HEIGHT,
+            depth: Cup.THICKNESS,
         });
         let rotation = radian + radian * 2 * i;
-        let innerRadius = this.diameter / 2 * Math.cos(radian) + Cup.thickness / 2;
+        let innerRadius = this.diameter / 2 * Math.cos(radian) + Cup.THICKNESS / 2;
         side.rotationQuaternion = Quaternion.RotationAxis(new Vector3(0, 1, 0), rotation);
         side.position.x = innerRadius * Math.sin(rotation);
-        side.position.y = -(Cup.height + Cup.thickness) / 2;
+        side.position.y = -(Cup.HEIGHT + Cup.THICKNESS) / 2;
         side.position.z = innerRadius * Math.cos(rotation);
+        side.isVisible = false;
         return side;
+    }
+
+    private createBg(scene: Scene, camera: FreeCamera) {
+        const ground = MeshBuilder.CreatePlane('', {
+            width: 3,
+            height: 3
+        }, scene);
+        let groundMaterial = new StandardMaterial("", scene);
+        const texture = new Texture("assets/image/cup.png", null);
+        texture.uScale = 1;
+        texture.vScale = 1;
+        texture.level = 1;
+        groundMaterial.opacityTexture = texture;
+        ground.material = groundMaterial;
+        ground.rotation = new Vector3(camera.rotation.x, camera.rotation.y, camera.rotation.z);
+        return ground;
     }
 
     private createHingeJoint(position: Vector3) {
@@ -220,15 +188,105 @@ class Cup {
     }
 
     private createDices(position: Vector3) {
-        Dice.staticY = Dice.SIZE / 2 - (Cup.height + Cup.thickness / 2);
-        let centerDistance = 0.75;
-        return [
-            new Vector3(0, Dice.staticY, 0),
-            new Vector3(centerDistance, Dice.staticY, 0),
-            new Vector3(-centerDistance, Dice.staticY, 0),
-            new Vector3(0, Dice.staticY, centerDistance),
-            new Vector3(0, Dice.staticY, -centerDistance),
-        ].map(pos => new Dice(pos.add(position)));
+        return PhysicalDice.DICE_POS_LIST.map(pos => new PhysicalDice(pos.add(position)));
+    }
+}
+
+class PhysicalDice {
+    public static model: AbstractMesh;
+    public static readonly SIZE = 0.5;
+    public static readonly STATIC_Y = PhysicalDice.SIZE / 2 - (Cup.HEIGHT + Cup.THICKNESS / 2);
+    public static readonly CENTER_DISTANCE = 0.75;
+    public static readonly DICE_POS_LIST = [
+        new Vector3(0, PhysicalDice.STATIC_Y, 0),
+        new Vector3(PhysicalDice.CENTER_DISTANCE, PhysicalDice.STATIC_Y, 0),
+        new Vector3(-PhysicalDice.CENTER_DISTANCE, PhysicalDice.STATIC_Y, 0),
+        new Vector3(0, PhysicalDice.STATIC_Y, PhysicalDice.CENTER_DISTANCE),
+        new Vector3(0, PhysicalDice.STATIC_Y, -PhysicalDice.CENTER_DISTANCE),
+    ];
+    private static readonly MODEL_SIZE = 0.005875;
+    public static readonly MODEL_SCALE = PhysicalDice.SIZE / PhysicalDice.MODEL_SIZE;
+    private static readonly STATIC_Y_ERROR: number = 0.01;
+    private static readonly SIDES_POINT = [
+        {pos: new Vector3(PhysicalDice.SIZE / 2, 0, 0,), point: 4},
+        {pos: new Vector3(-PhysicalDice.SIZE / 2, 0, 0,), point: 3},
+        {pos: new Vector3(0, PhysicalDice.SIZE / 2, 0,), point: 5},
+        {pos: new Vector3(0, -PhysicalDice.SIZE / 2, 0,), point: 1},
+        {pos: new Vector3(0, 0, PhysicalDice.SIZE / 2,), point: 2},
+        {pos: new Vector3(0, 0, -PhysicalDice.SIZE / 2,), point: 6},
+    ];
+    private readonly mesh: Mesh;
+    private sides: { mesh: Mesh, point: number, }[];
+
+    constructor(pos: Vector3) {
+        let model = PhysicalDice.model.clone("", null);
+        model.scaling = new Vector3(PhysicalDice.MODEL_SCALE, PhysicalDice.MODEL_SCALE, PhysicalDice.MODEL_SCALE);
+
+        let collider = Mesh.CreateBox("", PhysicalDice.SIZE);
+        collider.isVisible = false;
+
+        this.sides = PhysicalDice.SIDES_POINT.map(({pos, point}) => {
+            let mesh = Mesh.CreateBox("", 0);
+            mesh.position = pos;
+            mesh.isVisible = false;
+            return {mesh, point};
+        });
+
+        this.mesh = new Mesh("");
+        this.mesh.addChild(model);
+        this.mesh.addChild(collider);
+        this.sides.forEach(side => this.mesh.addChild(side.mesh));
+
+        this.mesh.position = pos;
+
+        collider.physicsImpostor = new PhysicsImpostor(collider, PhysicsImpostor.BoxImpostor, {mass: 0});
+        this.mesh.physicsImpostor = new PhysicsImpostor(this.mesh, PhysicsImpostor.NoImpostor, {
+            mass: 1,
+            friction: Main.friction,
+            restitution: Main.restitution
+        });
+    }
+
+    public get isDynamic(): boolean {
+        return this.mesh.position.y > PhysicalDice.STATIC_Y + PhysicalDice.STATIC_Y_ERROR
+            || this.mesh.position.y < PhysicalDice.STATIC_Y - PhysicalDice.STATIC_Y_ERROR;
+    }
+
+    public get point(): number {
+        return this.sides.sort((a, b) => Util.getWorldPosition(b.mesh).y - Util.getWorldPosition(a.mesh).y)[0].point;
+    }
+
+    public get position() {
+        return this.mesh.position;
+    }
+
+    public get rotationQuaternion() {
+        return this.mesh.rotationQuaternion;
+    }
+
+    public destroy() {
+        this.mesh.dispose();
+    }
+}
+
+class Dice {
+    private mesh: AbstractMesh;
+    private readonly originPosition: Vector3;
+
+    constructor(position: Vector3) {
+        let model = PhysicalDice.model.clone("", null);
+        model.scaling = new Vector3(PhysicalDice.MODEL_SCALE, PhysicalDice.MODEL_SCALE, PhysicalDice.MODEL_SCALE);
+
+        this.mesh = new Mesh("");
+        this.mesh.addChild(model);
+
+        this.originPosition = position.clone();
+        this.mesh.position = this.originPosition.clone();
+    }
+
+    public setPoint(position: Vector3, rotationQuaternion: Quaternion) {
+        this.mesh.position = position.add(this.originPosition);
+        this.mesh.rotationQuaternion = rotationQuaternion;
     }
 }
 
@@ -248,11 +306,11 @@ class GUI {
         this.foreground = AdvancedDynamicTexture.CreateFullscreenUI("", true);
         this.foreground.renderScale = this.renderScale;
         this.createImage("assets/image/bg.jpg", this.background);
-        // const xmlLoader = new XmlLoader();
+        const xmlLoader = new XmlLoader();
         // xmlLoader.loadLayout("ui.xml", this.foreground, () => {
-        //     this.onClick(xmlLoader.getNodeById("returnButton"),this.onClickReturnButton.bind(this));
-        //     this.onClick(xmlLoader.getNodeById("settingButton"),this.onClickSettingButton.bind(this));
-        //     this.onClick(xmlLoader.getNodeById("helpButton"),this.onClickHelpButton.bind(this));
+        //     this.onClick(xmlLoader.getNodeById("returnButton"), this.onClickReturnButton.bind(this));
+        //     this.onClick(xmlLoader.getNodeById("settingButton"), this.onClickSettingButton.bind(this));
+        //     this.onClick(xmlLoader.getNodeById("helpButton"), this.onClickHelpButton.bind(this));
         // });
     }
 
@@ -316,14 +374,14 @@ class Main {
     private height2 = 3;
     private height3 = -3;
     private cupPosList = [
-        // new Vector3(0, 0, -this.height1),
-        // new Vector3(0, 0, this.height1),
-        // new Vector3(this.width, 0, this.height2),
-        // new Vector3(-this.width, 0, this.height2),
-        // new Vector3(this.width, 0, this.height3),
-        // new Vector3(-this.width, 0, this.height3),
-        new Vector3(0, 0, 0),
+        new Vector3(0, 0, -this.height1),
+        new Vector3(0, 0, this.height1),
+        new Vector3(this.width, 0, this.height2),
+        new Vector3(-this.width, 0, this.height2),
+        new Vector3(this.width, 0, this.height3),
+        new Vector3(-this.width, 0, this.height3),
     ];
+    private virtualCups: Dice[][];
 
     constructor() {
         this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -331,6 +389,11 @@ class Main {
         this.gui = new GUI(this.canvas);
         this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
         this.loadDiceMesh(() => {
+            this.virtualCups = this.cupPosList.map(cupPos => {
+                return PhysicalDice.DICE_POS_LIST.map(dicePos => {
+                    return new Dice(cupPos)
+                });
+            });
             this.start();
         });
     }
@@ -346,8 +409,8 @@ class Main {
         new HemisphericLight("", new Vector3(0, 1, 0), this.scene);
         engine.runRenderLoop(() => {
             this.scene.render();
-            this.onFrame();
         });
+        this.scene.registerBeforeRender(this.onFrame.bind(this));
     }
 
     private loadDiceMesh(callback: CallableFunction) {
@@ -356,7 +419,7 @@ class Main {
             "touzi.gltf",
             this.scene,
             (newMeshes) => {
-                Dice.model = newMeshes[0];
+                PhysicalDice.model = newMeshes[0];
                 callback();
             }
         );
@@ -364,10 +427,7 @@ class Main {
 
     private start() {
         this.frame = 0;
-        this.cups = this.cupPosList.map((pos, i) => {
-            console.log(i, pos);
-            return new Cup(this.scene, pos);
-        });
+        this.cups = [new Cup(this.scene, this.camera, Vector3.Zero())];
     }
 
     private end() {
@@ -385,6 +445,8 @@ class Main {
             }
             return;
         }
+        const detailPoints = this.cups[0].getDetailPoints();
+        this.virtualCups.forEach(dices => dices.forEach((dice, i) => dice.setPoint(detailPoints[i].position, detailPoints[i].rotationQuaternion)));
         let flag = false;
         for (let i = 0; i < this.shakeList.length; i++) {
             let shake = this.shakeList[i];
