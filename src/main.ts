@@ -74,104 +74,6 @@ class Cup {
         }));
     }
 
-    private createCup(position: Vector3, camera: FreeCamera) {
-        let opacityMaterial = new StandardMaterial("", this.scene);
-        opacityMaterial.opacityTexture = new Texture("bg.png", null);
-
-        let top = this.createThickness();
-        top.material = opacityMaterial;
-
-        let bottom = this.createThickness();
-        bottom.position.y = -Cup.HEIGHT - Cup.THICKNESS;
-
-        let sides = [];
-        for (let i = 0; i < this.tessellation; i++) {
-            const side = this.createSide(i);
-            sides.push(side);
-            if (i >= this.tessellation * (1 - this.percent) / 2
-                && i < this.tessellation * ((1 - this.percent) / 2 + this.percent)) {
-                side.material = opacityMaterial;
-            }
-        }
-
-        let bg = this.createBg(this.scene, camera);
-
-        let cup = new Mesh("");
-        cup.addChild(top);
-        cup.addChild(bottom);
-        sides.forEach(side => cup.addChild(side));
-        cup.addChild(bg);
-
-        cup.position = position;
-
-        top.physicsImpostor = new PhysicsImpostor(top, PhysicsImpostor.CylinderImpostor, {
-            mass: 0,
-            friction: Main.friction,
-            restitution: Main.restitution,
-        });
-        bottom.physicsImpostor = new PhysicsImpostor(bottom, PhysicsImpostor.CylinderImpostor, {
-            mass: 0,
-            friction: Main.friction,
-            restitution: Main.restitution,
-        });
-        sides.forEach(side => side.physicsImpostor = new PhysicsImpostor(side, PhysicsImpostor.BoxImpostor, {
-            mass: 0,
-            friction: Main.friction,
-            restitution: Main.restitution,
-        }));
-        cup.physicsImpostor = new PhysicsImpostor(cup, PhysicsImpostor.NoImpostor, {
-            mass: 1,
-            friction: Main.friction,
-            restitution: Main.restitution,
-        });
-
-        return cup;
-    }
-
-    private createThickness() {
-        const thickness = MeshBuilder.CreateCylinder("", {
-            diameter: this.diameter,
-            height: Cup.THICKNESS,
-            tessellation: this.tessellation,
-        });
-        thickness.isVisible = false;
-        return thickness;
-    }
-
-    private createSide(i) {
-        let radian = Math.PI / this.tessellation;
-        let width = this.diameter / 2 * Math.sin(radian) * 2;
-        let side = MeshBuilder.CreateBox("", {
-            width: width,
-            height: Cup.HEIGHT,
-            depth: Cup.THICKNESS,
-        });
-        let rotation = radian + radian * 2 * i;
-        let innerRadius = this.diameter / 2 * Math.cos(radian) + Cup.THICKNESS / 2;
-        side.rotationQuaternion = Quaternion.RotationAxis(new Vector3(0, 1, 0), rotation);
-        side.position.x = innerRadius * Math.sin(rotation);
-        side.position.y = -(Cup.HEIGHT + Cup.THICKNESS) / 2;
-        side.position.z = innerRadius * Math.cos(rotation);
-        side.isVisible = false;
-        return side;
-    }
-
-    private createBg(scene: Scene, camera: FreeCamera) {
-        const ground = MeshBuilder.CreatePlane('', {
-            width: 3,
-            height: 3
-        }, scene);
-        let groundMaterial = new StandardMaterial("", scene);
-        const texture = new Texture("assets/image/cup.png", null);
-        texture.uScale = 1;
-        texture.vScale = 1;
-        texture.level = 1;
-        groundMaterial.opacityTexture = texture;
-        ground.material = groundMaterial;
-        ground.rotation = new Vector3(camera.rotation.x, camera.rotation.y, camera.rotation.z);
-        return ground;
-    }
-
     private createHingeJoint(position: Vector3) {
         this.holder = MeshBuilder.CreateSphere("", {diameter: 0, segments: 4});
         this.holder.position = position;
@@ -297,6 +199,7 @@ class GUI {
     private designWidth = 1280;
     private designHeight = 720;
     private renderScale = 1;
+    private xmlLoader: XmlLoader;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -306,12 +209,12 @@ class GUI {
         this.foreground = AdvancedDynamicTexture.CreateFullscreenUI("", true);
         this.foreground.renderScale = this.renderScale;
         this.createImage("assets/image/bg.jpg", this.background);
-        const xmlLoader = new XmlLoader();
-        // xmlLoader.loadLayout("ui.xml", this.foreground, () => {
-        //     this.onClick(xmlLoader.getNodeById("returnButton"), this.onClickReturnButton.bind(this));
-        //     this.onClick(xmlLoader.getNodeById("settingButton"), this.onClickSettingButton.bind(this));
-        //     this.onClick(xmlLoader.getNodeById("helpButton"), this.onClickHelpButton.bind(this));
-        // });
+        this.xmlLoader = new XmlLoader();
+        this.xmlLoader.loadLayout("ui.xml", this.foreground, () => {
+            this.onClick(this.xmlLoader.getNodeById("returnButton"), this.onClickReturnButton.bind(this));
+            this.onClick(this.xmlLoader.getNodeById("settingButton"), this.onClickSettingButton.bind(this));
+            this.onClick(this.xmlLoader.getNodeById("helpButton"), this.onClickHelpButton.bind(this));
+        });
     }
 
     private createImage(path, parent) {
