@@ -11,7 +11,7 @@ export default {
         diameter: 3,
         thickness: 0.1,
         tessellation: 8,
-        opacityPartPercent: 0.5,
+        opacityPartPercent: 1,
         dices: [
             [0, 0],
             [0.75, 0],
@@ -34,11 +34,11 @@ export default {
         ],
     },
     cups: [
-        [0, -7],
-        [7, -5],
-        [7, 5],
-        [0, 7],
-        [-7, 5],
-        [-7, -5],
+        [0, -4],
+        [7, -4],
+        [7, 4],
+        [0, 4],
+        [-7, 4],
+        [-7, -4],
     ],
 };

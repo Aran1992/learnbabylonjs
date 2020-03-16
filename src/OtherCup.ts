@@ -11,13 +11,11 @@ export default class OtherCup {
         this.dices = this.createDices(diceModelTemplate, position);
     }
 
+    public roll() {
+    }
+
     private createCup(position: Vector3) {
         const top = this.createThickness();
-        top.isVisible = false;
-
-        const bottom = this.createThickness();
-        bottom.position.y = -Config.cup.height - Config.cup.thickness;
-        bottom.isVisible = false;
 
         const sides = [];
         for (let i = 0; i < Config.cup.tessellation; i++) {
@@ -27,7 +25,6 @@ export default class OtherCup {
 
         const cup = new Mesh("");
         cup.addChild(top);
-        cup.addChild(bottom);
         sides.forEach(side => cup.addChild(side));
 
         cup.position = position;

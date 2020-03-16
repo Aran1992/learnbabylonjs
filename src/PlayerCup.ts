@@ -14,13 +14,23 @@ import {
 import PlayerDice from "./PlayerDice";
 
 export default class PlayerCup {
+    private readonly scene: Scene;
     private readonly cup: Mesh;
+    private readonly joint: HingeJoint;
     private readonly dices: PlayerDice[];
+    private rollArgs: number[] = [];
+    private frame: number = 0;
 
     constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh) {
+        this.scene = scene;
         this.cup = this.createCup(scene, position);
-        this.createHingeJoint(this.cup, position);
+        this.joint = this.createHingeJoint(this.cup, position);
         this.dices = this.createDices(diceModelTemplate, position);
+        this.scene.registerBeforeRender(this.onFrame.bind(this));
+    }
+
+    public roll(points: number[]) {
+        this.shakeList = [];
     }
 
     private createCup(scene: Scene, position: Vector3) {
@@ -113,7 +123,6 @@ export default class PlayerCup {
             nativeParams: {}
         });
         holder.physicsImpostor.addJoint(cup.physicsImpostor, joint);
-        joint.setMotor(0);
         return joint;
     }
 
@@ -123,5 +132,35 @@ export default class PlayerCup {
             const position = cupPos.add(new Vector3(dicePos[0], y, dicePos[1]));
             return new PlayerDice(diceModelTemplate, position);
         });
+    }
+
+    private onFrame() {
+        let flag = false;
+        for (let i = 0; i < this.shakeList.length; i++) {
+            let shake = this.shakeList[i];
+            if (this.frame < shake[0]) {
+                flag = true;
+                if (shake[1]) {
+                    this.cups.forEach(cup => cup.setMotor(shake[1]));
+                } else {
+                    this.cups.forEach(cup => {
+                        let a = cup.getEulerAngles();
+                        let time = (shake[0] - this.frame) / 60;
+                        let v = -a.z / time;
+                        cup.setMotor(v);
+                    });
+                }
+                break;
+            }
+        }
+        if (!flag) {
+            this.cups.forEach(cup => cup.setMotor(0));
+            if (!this.cups.some(cup => cup.isDynamic())) {
+                this.cups.forEach((cup, i) => {
+                    console.log(i, cup.getPoints());
+                });
+            }
+        }
+        this.joint.setMotor(0);
     }
 }
