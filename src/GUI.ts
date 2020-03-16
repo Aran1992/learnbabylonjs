@@ -68,6 +68,9 @@ export default class GUI {
             money.text = "";
         }
         this.onClick(this.xmlLoader.getNodeById("startBtn"), this.onClickStartBtn.bind(this));
+        for (let i = 1; i <= 6; i++) {
+            this.onClick(this.xmlLoader.getNodeById(`point${i}`), () => this.onClickPoint(i));
+        }
         this._loaded = true;
         if (this.gameMgr.inited) {
             this.onStartPreparation();
@@ -84,8 +87,18 @@ export default class GUI {
     private onClickChangeBtn() {
     }
 
+    private onClickPoint(point: number) {
+        console.log("onClickPoint", point);
+        this.gameMgr.selectPoint(point);
+    }
+
     private onClick(button, callback) {
         button.onPointerUpObservable.add(callback);
+    }
+
+    public onStart() {
+        this.xmlLoader.getNodeById("preparationRect").isVisible = false;
+        this.xmlLoader.getNodeById("pointsRect").isVisible = this.gameMgr.isSelfBanker;
     }
 }
 

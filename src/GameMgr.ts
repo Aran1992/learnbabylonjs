@@ -8,6 +8,7 @@ export default class GameMgr {
     private gui: GUI;
     private networkMgr: NetworkMgr;
     private readonly eventMgr: EventMgr;
+    public isSelfBanker: boolean;
 
     constructor() {
         this.eventMgr = new EventMgr();
@@ -15,6 +16,7 @@ export default class GameMgr {
         this.gameScene = new GameScene();
         this.gui = new GUI(this, this.eventMgr);
         this.networkMgr.registerStart(this.onStart.bind(this));
+        this.networkMgr.registerEliminate(this.onEliminate.bind(this));
         this.networkMgr.requestInitData(this.onResponseInitData.bind(this));
     }
 
@@ -28,6 +30,10 @@ export default class GameMgr {
         this.networkMgr.requestPrepare(this.onResponsePrepare.bind(this));
     }
 
+    public selectPoint(point: number) {
+        this.networkMgr.requestSelectPoint(point, this.onResponseSelectPoint.bind(this));
+    }
+
     private onResponseInitData(data) {
         this._inited = true;
         this.eventMgr.notify("gameInit");
@@ -37,7 +43,17 @@ export default class GameMgr {
         this.gui.onPrepared();
     }
 
-    private onStart() {
+    private onResponseSelectPoint() {
+
+    }
+
+    private onStart(data) {
+        this.isSelfBanker = data.isSelfBanker;
+        this.gui.onStart();
         this.gameScene.onStart();
+    }
+
+    private onEliminate(data) {
+        this.gameScene.onEliminate(data.point);
     }
 }

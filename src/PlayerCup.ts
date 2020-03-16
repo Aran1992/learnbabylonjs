@@ -18,8 +18,19 @@ export default class PlayerCup {
     private readonly cup: Mesh;
     private readonly joint: HingeJoint;
     private readonly dices: PlayerDice[];
-    private rollArgs: number[] = [];
     private frame: number = 0;
+    private readonly createShakeList: [number, () => number | undefined][] = [
+        [10, () => -5 - Math.random()],
+        [20, () => 5 + Math.random()],
+        [30, () => -4 - Math.random()],
+        [40, () => 4 + Math.random()],
+        [50, () => -2 - Math.random()],
+        [60, () => 2 + Math.random()],
+        [70, () => -1 * Math.random()],
+        [80, () => Math.random()],
+        [90, undefined],
+    ];
+    private shakeList: [number, number | undefined][];
 
     constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh) {
         this.scene = scene;
@@ -29,8 +40,8 @@ export default class PlayerCup {
         this.scene.registerBeforeRender(this.onFrame.bind(this));
     }
 
-    public roll(points: number[]) {
-        this.shakeList = [];
+    public roll() {
+        this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
     }
 
     private createCup(scene: Scene, position: Vector3) {
@@ -128,39 +139,83 @@ export default class PlayerCup {
 
     private createDices(diceModelTemplate: AbstractMesh, cupPos: Vector3) {
         const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
-        return Config.cup.dices.map(dicePos => {
+        return Config.cup.dices[5].map(dicePos => {
             const position = cupPos.add(new Vector3(dicePos[0], y, dicePos[1]));
-            return new PlayerDice(diceModelTemplate, position);
+            return new PlayerDice(this, this.scene, diceModelTemplate, position);
         });
     }
 
     private onFrame() {
-        let flag = false;
-        for (let i = 0; i < this.shakeList.length; i++) {
-            let shake = this.shakeList[i];
-            if (this.frame < shake[0]) {
-                flag = true;
-                if (shake[1]) {
-                    this.cups.forEach(cup => cup.setMotor(shake[1]));
-                } else {
-                    this.cups.forEach(cup => {
-                        let a = cup.getEulerAngles();
+        if (this.shakeList) {
+            let flag = false;
+            for (let i = 0; i < this.shakeList.length; i++) {
+                let shake = this.shakeList[i];
+                if (this.frame < shake[0]) {
+                    flag = true;
+                    if (shake[1]) {
+                        this.joint.setMotor(shake[1]);
+                    } else {
+                        let a = this.cup.rotationQuaternion.toEulerAngles();
                         let time = (shake[0] - this.frame) / 60;
                         let v = -a.z / time;
-                        cup.setMotor(v);
-                    });
+                        this.joint.setMotor(v);
+                    }
+                    break;
                 }
-                break;
             }
+            if (!flag) {
+                this.joint.setMotor(0);
+            }
+            this.frame++;
+        } else {
+            this.joint.setMotor(0);
         }
-        if (!flag) {
-            this.cups.forEach(cup => cup.setMotor(0));
-            if (!this.cups.some(cup => cup.isDynamic())) {
-                this.cups.forEach((cup, i) => {
-                    console.log(i, cup.getPoints());
+    }
+
+    public eliminate(point: number, callback: CallableFunction) {
+        // 打开罩子 展示骰子 移除骰子 如果没有骰子就算是输了
+        this.openCup(() => {
+            setTimeout(() => {
+                this.removeDice(point, callback);
+                if (this.dices.length === 0) {
+
+                } else {
+                    const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
+                    Config.cup.dices[this.dices.length].forEach(([x, z], i) => this.dices[i].position = this.cup.position.add(new Vector3(x, y, z)))
+                }
+                // 判断是否还剩下骰子
+                // 如果没有骰子了 那么就算是输了
+                // 如果还有骰子 那么就需要把杯子盖回去 把骰子重新摆回去
+                //
+            });
+        });
+    }
+
+    private openCup(callback: CallableFunction) {
+        // 修改他的中心点 沿着哪个点进行旋转
+        callback();
+    }
+
+    private removeDice(point: number, callback: CallableFunction) {
+        let count = 0;
+        this.dices.forEach(dice => {
+            if (dice.point === point) {
+                count++;
+                dice.playRemove(() => {
+                    count--;
+                    if (count === 0) {
+                        callback();
+                    }
                 });
             }
+        });
+    }
+
+    public destroyDice(dice: PlayerDice) {
+        const index = this.dices.indexOf(dice);
+        if (index !== -1) {
+            this.dices.splice(index, 1);
+            dice.destroy();
         }
-        this.joint.setMotor(0);
     }
 }

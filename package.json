@@ -28,7 +28,7 @@
     "babylonjs": "^4.1.0",
     "babylonjs-gui": "^4.1.0",
     "babylonjs-loaders": "^4.1.0",
-    "cannon": "github:schteppe/cannon.js",
+    "http-server": "^0.12.1",
     "pomelo-jsclient-websocket": "^0.1.1"
   }
 }
