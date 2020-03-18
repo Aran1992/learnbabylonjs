@@ -1,4 +1,4 @@
-import {AbstractMesh, Mesh, MeshBuilder, Quaternion, Vector3, Scene} from "babylonjs";
+import {AbstractMesh, Mesh, MeshBuilder, Quaternion, Scene, Vector3} from "babylonjs";
 import Config from "./Config";
 import OtherDice from "./OtherDice";
 
@@ -28,7 +28,10 @@ export default class OtherCup {
     }
 
     public roll() {
-        this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
+        this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && (creator() * 0.01)]);
+    }
+
+    public eliminate(befDice: number[], removeDice: number[]) {
     }
 
     private createCup(position: Vector3) {
@@ -90,7 +93,7 @@ export default class OtherCup {
                 if (this.frame < shake[0]) {
                     flag = true;
                     if (shake[1]) {
-                        this.cup.rotation.z += shake[1] * 0.01;
+                        this.cup.rotation.z += shake[1];
                     } else {
                         let time = shake[0] - this.frame;
                         let v = -this.cup.rotation.z / time;

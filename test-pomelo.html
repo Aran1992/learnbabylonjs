@@ -1,68 +1,66 @@
 <html>
 <head>
-    <script src="protobuf.js"></script>
-    <script src="pomelo-client.js"></script>
+    <script src="lib/protobuf.js"></script>
+    <script src="lib/pomelo-client.js"></script>
 </head>
 <body>
+<div id="panel">
+    <div>
+        <p id="yourDices">你的骰子</p>
+        <p id="opePlayer">操作玩家</p>
+        <p id="ope">剔除操作</p>
+        <p id="gameOver">游戏结束</p>
+    </div>
+    <div>
+        <button onclick="game.prepare();">prepare</button>
+    </div>
+    <div>
+        <input id="eliminateTarget" placeholder="要剔除的骰子">
+        <button onclick="game.eliminate(eliminateTarget.value.split(','));">eliminate</button>
+    </div>
+</div>
 <script>
-    var request = (method, url, data, callback) => {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            console.log("xmlhttp.readyState", url, xmlhttp.readyState);
-            console.log("xmlhttp.status", url, xmlhttp.status);
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                console.log("xmlhttp.responseText", url, xmlhttp.responseText);
-                var response = JSON.parse(xmlhttp.responseText);
-                callback(response);
-            }
-        };
-        xmlhttp.open(method, url, true);
-        if (data) {
-            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-            xmlhttp.send(JSON.stringify(data));
-        } else {
-            xmlhttp.send();
+    class Game {
+        constructor() {
+            this.register();
+            this.init();
         }
-    };
-    request("GET", "http://192.168.18.80:28302/products/dwc_29.json", undefined, function (response) {
-        request(
-            "POST",
-            `http://${response.platSvrHost}:${response.platSvrPort}`,
-            {
-                head: {route: "http.ReqLogin", msgindex: 0, token: null},
-                body: {plat: 2, username: new Date().getTime().toString(), password: '13456'},
-            },
-            function (response2) {
-                pomelo.init({
-                    host: response.gameSvrHost,
-                    port: response.gameSvrPort,
-                    user: {},
-                    handshakeCallback: function (...args) {
-                        console.log("pomelo.init handshakeCallback", ...args);
-                    }
-                }, function () {
-                    pomelo.request("gate.gateHandler.queryEntry", {}, function (data) {
-                        console.log("gate.gateHandler.queryEntry response", data);
-                        pomelo.disconnect();
-                        pomelo.init({
-                            host: data.host,
-                            port: data.port,
-                            user: {},
-                            handshakeCallback: function (...args) {
-                                console.log("pomelo.init handshakeCallback 2", ...args);
-                            }
-                        }, function () {
-                            pomelo.request("connector.entryHandler.login", {token: response2.body.token}, function (data) {
-                                console.log("connector.entryHandler.login response", data);
-                                pomelo.request("roomBamao.roomHandler.enterRoom", {
-                                    gameId: 1,
-                                    roomType: 1
-                                }, function (data) {
-                                    console.log("roomBamao.roomHandler.enterRoom", data);
-                                    pomelo.request("roomBamao.roomHandler.ready", {}, function (data) {
-                                        console.log("roomBamao.roomHandler.ready", data);
-                                        pomelo.request("roomBamao.roomHandler.exitRoom", {}, function (data) {
-                                            console.log("roomBamao.roomHandler.exitRoom", data);
+
+        request(name, data, callback) {
+            console.log(new Date(), "pomelo request", name, data);
+            pomelo.request(name, data, (...args) => {
+                console.log(new Date(), "pomelo response", name, ...args);
+                callback(...args);
+            });
+        }
+
+        init() {
+            fetch("http://192.168.18.80:28302/products/dwc_29.json").then(initResponse => {
+                initResponse.json().then(initData => {
+                    fetch(`http://${initData.platSvrHost}:${initData.platSvrPort}`, {
+                        method: "POST",
+                        headers: [["Content-Type", "application/json;charset=utf-8"]],
+                        body: JSON.stringify({
+                            head: {route: "http.ReqLogin", msgindex: 0, token: null},
+                            body: {plat: 2, username: new Date().getTime().toString(), password: '13456'},
+                        })
+                    }).then(loginResponse => {
+                        loginResponse.json().then(loginData => {
+                            this.selfUid = loginData.body.uid;
+                            pomelo.init({host: initData.gameSvrHost, port: initData.gameSvrPort,}, () => {
+                                this.request("gate.gateHandler.queryEntry", {}, data => {
+                                    pomelo.disconnect();
+                                    pomelo.init({
+                                        host: data.host,
+                                        port: data.port,
+                                    }, () => {
+                                        this.request("connector.entryHandler.login", {token: loginData.body.token}, data => {
+                                            this.request("roomBamao.roomHandler.enterRoom", {
+                                                gameId: 2,
+                                                roomType: 1
+                                            }, data => {
+                                                // 获取到房间初始信息
+                                            });
                                         });
                                     });
                                 });
@@ -70,9 +68,79 @@
                         });
                     });
                 });
-            }
-        );
-    });
+            });
+        }
+
+        register() {
+            const eventList = [
+                "onStartReadyForBamao",
+                "onEnterRoom",
+                "onReadyForBamao",
+                "onLeaveRoom",
+                "onStartForBamao",
+                "onSendDiceForBamao",
+                "onEliminateStartForBamao",
+                "onEliminateOpeForBamao",
+                "onGameOverForBamao",
+            ];
+            eventList.forEach(event => {
+                pomelo.on(event, (...args) => {
+                    console.log(new Date(), "pomelo event", event, ...args);
+                    this[event] && this[event](...args);
+                });
+            });
+        }
+
+        onStartReadyForBamao(data) {
+            // 获取到准备最后时间 这个时间之前不准备的话 就会被踢出房间
+            console.log(new Date(data.readyEndTime * 1000));
+        }
+
+        onEnterRoom() {
+            // 别的玩家进入房间
+        }
+
+        onReadyForBamao() {
+            // 玩家进行准备
+        }
+
+        onLeaveRoom() {
+        }
+
+        onStartForBamao(data) {
+            gameOver.hidden = true;
+        }
+
+        onSendDiceForBamao(data) {
+            yourDices.innerHTML = `你的骰子：${data.dice.sort().join(",")}`;
+        }
+
+        onEliminateStartForBamao(data) {
+            opePlayer.innerHTML = `操作玩家：${data.opeUid === this.selfUid ? "你" : data.opeUid}`;
+        }
+
+        onEliminateOpeForBamao(data) {
+            ope.innerHTML = `剔除操作：${data.removeDice.join(",")}`;
+        }
+
+        onGameOverForBamao(data) {
+            gameOver.hidden = false;
+        }
+
+        prepare() {
+            this.request("roomBamao.roomHandler.ready", {}, () => {
+
+            });
+        }
+
+        eliminate(target) {
+            this.request("roomBamao.roomHandler.eliminate", {target}, () => {
+
+            });
+        }
+    }
+
+    const game = new Game();
 </script>
 </body>
 </html>

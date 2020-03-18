@@ -40,8 +40,35 @@ export default class PlayerCup {
         this.scene.registerBeforeRender(this.onFrame.bind(this));
     }
 
-    public roll() {
+    private set isVisible(visible) {
+        this.cup.isVisible = visible;
+        this.cup.getChildMeshes().forEach(child => child.isVisible = visible);
+    }
+
+    public roll(dices: number[]) {
         this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
+    }
+
+    public eliminate(removeDices: number[]) {
+        this.playOpen(() => {
+            this.playRemove(removeDices, () => {
+
+            });
+        });
+    }
+
+    private playOpen(callback: CallableFunction) {
+        this.isVisible = false;
+        callback();
+    }
+
+    private playRemove(removeDices: number[], callback: CallableFunction) {
+        this.dices.forEach(dice => {
+            if (removeDices.indexOf(dice.point) !== -1) {
+                dice.isVisible = false;
+            }
+        });
+        callback();
     }
 
     private createCup(scene: Scene, position: Vector3) {
@@ -169,53 +196,6 @@ export default class PlayerCup {
             this.frame++;
         } else {
             this.joint.setMotor(0);
-        }
-    }
-
-    public eliminate(point: number, callback: CallableFunction) {
-        // 打开罩子 展示骰子 移除骰子 如果没有骰子就算是输了
-        this.openCup(() => {
-            setTimeout(() => {
-                this.removeDice(point, callback);
-                if (this.dices.length === 0) {
-
-                } else {
-                    const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
-                    Config.cup.dices[this.dices.length].forEach(([x, z], i) => this.dices[i].position = this.cup.position.add(new Vector3(x, y, z)))
-                }
-                // 判断是否还剩下骰子
-                // 如果没有骰子了 那么就算是输了
-                // 如果还有骰子 那么就需要把杯子盖回去 把骰子重新摆回去
-                //
-            });
-        });
-    }
-
-    private openCup(callback: CallableFunction) {
-        // 修改他的中心点 沿着哪个点进行旋转
-        callback();
-    }
-
-    private removeDice(point: number, callback: CallableFunction) {
-        let count = 0;
-        this.dices.forEach(dice => {
-            if (dice.point === point) {
-                count++;
-                dice.playRemove(() => {
-                    count--;
-                    if (count === 0) {
-                        callback();
-                    }
-                });
-            }
-        });
-    }
-
-    public destroyDice(dice: PlayerDice) {
-        const index = this.dices.indexOf(dice);
-        if (index !== -1) {
-            this.dices.splice(index, 1);
-            dice.destroy();
         }
     }
 }

@@ -1,3 +1,3 @@
 import GameMgr from "./GameMgr";
 
-new GameMgr();
+GameMgr.init();

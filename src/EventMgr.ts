@@ -1,4 +1,4 @@
-export default class EventMgr {
+class EventMgr_ {
     private eventTable = {};
 
     public register(event: string, handler: CallableFunction) {
@@ -25,3 +25,6 @@ export default class EventMgr {
         }
     }
 }
+
+const EventMgr = new EventMgr_();
+export default EventMgr;

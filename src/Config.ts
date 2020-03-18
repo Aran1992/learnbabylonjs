@@ -5,6 +5,10 @@ export default {
     designHeight: 720,
     friction: 0.1,
     restitution: 0.1,
+    camera: {
+        pos: [0, 18, -18],
+        target: [0, 0, -4]
+    },
     cup: {
         texturePath: "assets/image/bg.png",
         height: 3,
@@ -54,11 +58,11 @@ export default {
         ],
     },
     cups: [
-        [0, -4],
-        [7, -4],
-        [7, 4],
-        [0, 4],
-        [-7, 4],
-        [-7, -4],
+        [0, -5],
+        [10, -4],
+        [10, 4],
+        [0, 5],
+        [-10, 4],
+        [-10, -4],
     ],
 };

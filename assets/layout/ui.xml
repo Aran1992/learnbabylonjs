@@ -12,35 +12,41 @@
         </Button>
     </Rectangle>
     <Rectangle id="playerInfoPanel" thickness="0">
-        <Rectangle id="playerInfo0" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-500" top="100">
+        <Rectangle id="playerInfo0" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" top="300">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
         </Rectangle>
         <Rectangle id="playerInfo1" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="500" top="100">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
         </Rectangle>
-        <Rectangle id="playerInfo2" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-500" top="-100">
+        <Rectangle id="playerInfo2" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="500" top="-100">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
         </Rectangle>
-        <Rectangle id="playerInfo3" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="500" top="-100">
+        <Rectangle id="playerInfo3" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" top="-300">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
         </Rectangle>
-        <Rectangle id="playerInfo4" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" top="-300">
+        <Rectangle id="playerInfo4" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-500" top="-100">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
         </Rectangle>
-        <Rectangle id="playerInfo5" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" top="300">
+        <Rectangle id="playerInfo5" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-500" top="100">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
         </Rectangle>
     </Rectangle>
     <Rectangle id="pointsRect" isVisible="false" thickness="0" width="264px" height="44px" left="275" top="150">

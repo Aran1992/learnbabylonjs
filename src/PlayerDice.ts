@@ -9,9 +9,6 @@ export default class PlayerDice {
     private readonly mesh: Mesh;
     private readonly model: AbstractMesh;
     private sides: { mesh: Mesh, point: number }[];
-    private startRemove: boolean;
-    private removeEndCallback: CallableFunction;
-    private onFrameHandler: () => void;
 
     constructor(parent: PlayerCup, scene: Scene, diceModelTemplate: AbstractMesh, position: Vector3) {
         this.parent = parent;
@@ -44,33 +41,18 @@ export default class PlayerDice {
             friction: Config.friction,
             restitution: Config.restitution
         });
-        this.onFrameHandler = this.onFrame.bind(this);
-        this.scene.registerBeforeRender(this.onFrameHandler);
-    }
-
-    public destroy() {
-        this.scene.unregisterBeforeRender(this.onFrameHandler);
-        this.mesh.dispose();
     }
 
     public get point() {
         return this.sides.sort((a, b) => Util.getWorldPosition(b.mesh).y - Util.getWorldPosition(a.mesh).y)[0].point;
     }
 
-    public playRemove(callback: CallableFunction) {
-        this.startRemove = true;
-        this.removeEndCallback = callback;
-    }
-
-    public onFrame() {
-        if (this.startRemove) {
-            this.parent.destroyDice(this);
-            this.removeEndCallback();
-        }
-    }
-
     public set position(p: Vector3) {
         this.mesh.position = p;
+    }
+
+    public set isVisible(visible) {
+        this.model.getChildMeshes()[0].isVisible = visible;
     }
 }
 
