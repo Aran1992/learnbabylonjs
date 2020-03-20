@@ -1,4 +1,4 @@
-import {AbstractMesh, Mesh, PhysicsImpostor, Scene, Vector3} from "babylonjs";
+import {AbstractMesh, Mesh, PhysicsImpostor, Quaternion, Scene, Vector3} from "babylonjs";
 import Config from "./Config";
 import Util from "./Util";
 import PlayerCup from "./PlayerCup";
@@ -51,8 +51,20 @@ export default class PlayerDice {
         this.mesh.position = p;
     }
 
+    public set rotationQuaternion(p: Quaternion) {
+        this.mesh.rotationQuaternion = p;
+    }
+
+    public get isVisible() {
+        return this.model.getChildMeshes()[0].isVisible;
+    }
+
     public set isVisible(visible) {
         this.model.getChildMeshes()[0].isVisible = visible;
+    }
+
+    public dispose() {
+        this.mesh.dispose();
     }
 }
 

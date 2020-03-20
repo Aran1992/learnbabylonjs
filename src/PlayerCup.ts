@@ -30,11 +30,25 @@ export default class PlayerCup {
     }
 
     private set isVisible(visible) {
-        this.cup.isVisible = visible;
-        this.cup.getChildMeshes().forEach(child => child.isVisible = visible);
+        this.cup.getChildMeshes()[0].getChildMeshes()[0].isVisible = visible;
+    }
+
+    public reset() {
+
     }
 
     public roll(dices: number[]) {
+        this.frame = 0;
+        this.cup.rotationQuaternion = new Quaternion();
+        this.isVisible = true;
+        for (let i = this.dices.length - 1; i >= 0; i--) {
+            const dice = this.dices[i];
+            if (!dice.isVisible) {
+                dice.dispose();
+                this.dices.splice(i, 1);
+            }
+        }
+        this.resetDices();
         this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
     }
 
@@ -159,6 +173,14 @@ export default class PlayerCup {
         return Config.cup.dices[5].map(dicePos => {
             const position = cupPos.add(new Vector3(dicePos[0], y, dicePos[1]));
             return new PlayerDice(this, this.scene, diceModelTemplate, position);
+        });
+    }
+
+    private resetDices() {
+        const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
+        Config.cup.dices[this.dices.length].map((dicePos, i) => {
+            this.dices[i].position = this.cup.position.add(new Vector3(dicePos[0], y, dicePos[1]));
+            this.dices[i].rotationQuaternion = new Quaternion();
         });
     }
 

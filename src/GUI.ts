@@ -55,10 +55,25 @@ export default class GUI {
         this.startClock(GameMgr.readyEndTime);
     }
 
+    public onStartForBamao() {
+        this.updatePlayerInfo(GameMgr.selfInfo);
+        for (const uid in GameMgr.otherPlayerInfo) {
+            if (GameMgr.otherPlayerInfo.hasOwnProperty(uid)) {
+                const info = GameMgr.otherPlayerInfo[uid];
+                this.updatePlayerInfo(info);
+            }
+        }
+    }
+
     public onSelfReady() {
         this.clockEndTime = 0;
         this.xmlLoader.getNodeById("preparationRect").isVisible = false;
         this.updatePlayerInfo(GameMgr.selfInfo);
+    }
+
+    public onSelfEliminate() {
+        this.xmlLoader.getNodeById("pointsRect").isVisible = false;
+        this.startClock(0);
     }
 
     public onEliminateStartForBamao(data) {

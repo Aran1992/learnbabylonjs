@@ -1,13 +1,4 @@
-import {
-    AbstractMesh,
-    CannonJSPlugin,
-    Engine,
-    FreeCamera,
-    HemisphericLight,
-    Scene,
-    SceneLoader,
-    Vector3
-} from "babylonjs";
+import {CannonJSPlugin, Engine, FreeCamera, HemisphericLight, Scene, SceneLoader, Vector3} from "babylonjs";
 import "babylonjs-loaders";
 import Config from "./Config";
 import PlayerCup from "./PlayerCup";
@@ -20,7 +11,6 @@ export default class GameScene {
     private playerCup: PlayerCup;
     private otherCups: OtherCup[] = [];
     private loaded: boolean;
-    private diceModelTemplate: AbstractMesh;
     private meshTable = {};
 
     constructor() {
@@ -35,7 +25,7 @@ export default class GameScene {
         camera.setTarget(new Vector3(tx, ty, tz));
         // 不知道为啥默认旋转角度不是0 需要转回来
         camera.rotation.y = 0;
-        camera.attachControl(canvas);
+        // camera.attachControl(canvas);
         new HemisphericLight("", new Vector3(1, 1, -1), this.scene);
         engine.runRenderLoop(() => {
             this.scene.render();
@@ -84,6 +74,11 @@ export default class GameScene {
         this.createCup(GameMgr.otherPlayerInfo[data.uid]);
     }
 
+    public onStartForBamao() {
+        this.playerCup.reset();
+        this.otherCups.forEach(cup => cup && cup.reset());
+    }
+
     public onSendDiceForBamao(data) {
         this.playerCup.roll(data.dice.sort());
         this.otherCups.forEach(cup => cup && cup.roll());
@@ -96,7 +91,8 @@ export default class GameScene {
 
     private onSceneLoaded() {
         const [playerCup] = Config.cups;
-        this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]), this.meshTable["touzi"], this.meshTable["shaizhong"]);
+        this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]),
+            this.meshTable["touzi"], this.meshTable["shaizhong"]);
         this.loaded = true;
         this.onGameInited();
     }
@@ -104,6 +100,7 @@ export default class GameScene {
     private createCup(info) {
         const index = GameMgr.getPlayerIndex(info.seatNum);
         const [x, z] = Config.cups[index];
-        this.otherCups[index] = new OtherCup(this.scene, new Vector3(x, 0, z), this.meshTable["touzi"], this.meshTable["shaizhong2"]);
+        this.otherCups[index] = new OtherCup(this.scene, new Vector3(x, 0, z),
+            this.meshTable["touzi"], this.meshTable["shaizhong2"]);
     }
 }

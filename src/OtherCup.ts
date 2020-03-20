@@ -1,4 +1,4 @@
-import {AbstractMesh, Mesh, MeshBuilder, Quaternion, Scene, Vector3} from "babylonjs";
+import {AbstractMesh, Mesh, Scene, Vector3} from "babylonjs";
 import Config from "./Config";
 import OtherDice from "./OtherDice";
 
@@ -25,6 +25,10 @@ export default class OtherCup {
         this.cup = this.createCup(position, cupModelTemplate);
         this.dices = this.createDices(diceModelTemplate, position);
         this.scene.registerBeforeRender(this.onFrame.bind(this));
+    }
+
+    public reset() {
+
     }
 
     public roll() {

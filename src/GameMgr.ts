@@ -30,6 +30,7 @@ class GameMgr_ {
 
     public eliminate(target: number[]) {
         this.request("roomBamao.roomHandler.eliminate", {target}, () => {
+            this.gui.onSelfEliminate();
         });
     }
 
@@ -43,6 +44,16 @@ class GameMgr_ {
 
     public onReadyForBamao(data) {
         this.otherPlayerInfo[data.uid].ready = data.ready;
+    }
+
+    public onStartForBamao() {
+        this.selfInfo.ready = false;
+        for (const uid in this.otherPlayerInfo) {
+            if (this.otherPlayerInfo.hasOwnProperty(uid)) {
+                const info = this.otherPlayerInfo[uid];
+                info.ready = false;
+            }
+        }
     }
 
     public getPlayerIndex(seatNum) {
