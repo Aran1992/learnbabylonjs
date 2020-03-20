@@ -15,7 +15,8 @@ export default {
         diameter: 3,
         thickness: 0.1,
         tessellation: 8,
-        opacityPartPercent: 1,
+        position: [0, -3, 0],
+        scale: 60,
         dices: {
             5: [
                 [0, 0],

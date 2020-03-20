@@ -21,6 +21,7 @@ export default class GameScene {
     private otherCups: OtherCup[] = [];
     private loaded: boolean;
     private diceModelTemplate: AbstractMesh;
+    private meshTable = {};
 
     constructor() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -39,12 +40,26 @@ export default class GameScene {
         engine.runRenderLoop(() => {
             this.scene.render();
         });
-        SceneLoader.ImportMesh("",
-            "./assets/model/touzi/",
-            "touzi.gltf",
-            this.scene,
-            this.onSceneLoaded.bind(this)
-        );
+        const meshList = ["touzi", "shaizhong", "shaizhong2"];
+        meshList.forEach(name => {
+            SceneLoader.ImportMesh("",
+                `./assets/model/${name}/`,
+                `${name}.gltf`,
+                this.scene,
+                ([mesh]) => {
+                    this.meshTable[name] = mesh;
+                    let count = 0;
+                    for (const key in this.meshTable) {
+                        if (this.meshTable.hasOwnProperty(key)) {
+                            count++;
+                        }
+                    }
+                    if (count === meshList.length) {
+                        this.onSceneLoaded();
+                    }
+                }
+            );
+        });
         [
             "onGameInited"
         ].forEach(event => {
@@ -79,10 +94,9 @@ export default class GameScene {
         this.otherCups.forEach(cup => cup && cup.eliminate(data.befDice, data.removeDice))
     }
 
-    private onSceneLoaded([diceModelTemplate]) {
-        this.diceModelTemplate = diceModelTemplate;
+    private onSceneLoaded() {
         const [playerCup] = Config.cups;
-        this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]), diceModelTemplate);
+        this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]), this.meshTable["touzi"], this.meshTable["shaizhong"]);
         this.loaded = true;
         this.onGameInited();
     }
@@ -90,6 +104,6 @@ export default class GameScene {
     private createCup(info) {
         const index = GameMgr.getPlayerIndex(info.seatNum);
         const [x, z] = Config.cups[index];
-        this.otherCups[index] = new OtherCup(this.scene, new Vector3(x, 0, z), this.diceModelTemplate);
+        this.otherCups[index] = new OtherCup(this.scene, new Vector3(x, 0, z), this.meshTable["touzi"], this.meshTable["shaizhong2"]);
     }
 }

@@ -1,16 +1,5 @@
 import Config from "./Config";
-import {
-    AbstractMesh,
-    HingeJoint,
-    Mesh,
-    MeshBuilder,
-    PhysicsImpostor,
-    Quaternion,
-    Scene,
-    StandardMaterial,
-    Texture,
-    Vector3
-} from "babylonjs";
+import {AbstractMesh, HingeJoint, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scene, Vector3} from "babylonjs";
 import PlayerDice from "./PlayerDice";
 
 export default class PlayerCup {
@@ -32,9 +21,9 @@ export default class PlayerCup {
     ];
     private shakeList: [number, number | undefined][];
 
-    constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh) {
+    constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh, cupModelTemplate: AbstractMesh) {
         this.scene = scene;
-        this.cup = this.createCup(scene, position);
+        this.cup = this.createCup(position, cupModelTemplate);
         this.joint = this.createHingeJoint(this.cup, position);
         this.dices = this.createDices(diceModelTemplate, position);
         this.scene.registerBeforeRender(this.onFrame.bind(this));
@@ -71,12 +60,13 @@ export default class PlayerCup {
         callback();
     }
 
-    private createCup(scene: Scene, position: Vector3) {
-        const opacityMaterial = new StandardMaterial("", scene);
-        opacityMaterial.opacityTexture = new Texture(Config.cup.texturePath, null);
+    private createCup(position: Vector3, cupModelTemplate: AbstractMesh) {
+        const model = cupModelTemplate.clone("", null);
+        model.scaling = new Vector3(Config.cup.scale, Config.cup.scale, Config.cup.scale);
+        const [x, y, z] = Config.cup.position;
+        model.position = new Vector3(x, y, z);
 
         const top = this.createThickness();
-        top.material = opacityMaterial;
 
         const bottom = this.createThickness();
         bottom.position.y = -Config.cup.height - Config.cup.thickness;
@@ -86,13 +76,10 @@ export default class PlayerCup {
         for (let i = 0; i < Config.cup.tessellation; i++) {
             const side = this.createSide(i);
             sides.push(side);
-            if (i >= Config.cup.tessellation * (1 - Config.cup.opacityPartPercent) / 2
-                && i < Config.cup.tessellation * ((1 - Config.cup.opacityPartPercent) / 2 + Config.cup.opacityPartPercent)) {
-                side.material = opacityMaterial;
-            }
         }
 
         const cup = new Mesh("");
+        cup.addChild(model);
         cup.addChild(top);
         cup.addChild(bottom);
         sides.forEach(side => cup.addChild(side));
@@ -124,11 +111,13 @@ export default class PlayerCup {
     }
 
     private createThickness() {
-        return MeshBuilder.CreateCylinder("", {
+        const t = MeshBuilder.CreateCylinder("", {
             diameter: Config.cup.diameter,
             height: Config.cup.thickness,
             tessellation: Config.cup.tessellation,
         });
+        t.isVisible = false;
+        return t;
     }
 
     private createSide(i) {
@@ -145,6 +134,7 @@ export default class PlayerCup {
         side.position.x = innerRadius * Math.sin(rotation);
         side.position.y = -(Config.cup.height + Config.cup.thickness) / 2;
         side.position.z = innerRadius * Math.cos(rotation);
+        side.isVisible = false;
         return side;
     }
 

@@ -51,8 +51,8 @@ export default class GUI {
     }
 
     public onStartReadyForBamao() {
-        this.startClock(GameMgr.readyEndTime);
         this.xmlLoader.getNodeById("preparationRect").isVisible = true;
+        this.startClock(GameMgr.readyEndTime);
     }
 
     public onSelfReady() {

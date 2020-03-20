@@ -20,9 +20,9 @@ export default class OtherCup {
     ];
     private shakeList: [number, number | undefined][];
 
-    constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh) {
+    constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh, cupModelTemplate: AbstractMesh) {
         this.scene = scene;
-        this.cup = this.createCup(position);
+        this.cup = this.createCup(position, cupModelTemplate);
         this.dices = this.createDices(diceModelTemplate, position);
         this.scene.registerBeforeRender(this.onFrame.bind(this));
     }
@@ -34,47 +34,18 @@ export default class OtherCup {
     public eliminate(befDice: number[], removeDice: number[]) {
     }
 
-    private createCup(position: Vector3) {
-        const top = this.createThickness();
-
-        const sides = [];
-        for (let i = 0; i < Config.cup.tessellation; i++) {
-            const side = this.createSide(i);
-            sides.push(side);
-        }
+    private createCup(position: Vector3, cupModelTemplate: AbstractMesh) {
+        const model = cupModelTemplate.clone("", null);
+        model.scaling = new Vector3(Config.cup.scale, Config.cup.scale, Config.cup.scale);
+        const [x, y, z] = Config.cup.position;
+        model.position = new Vector3(x, y, z);
 
         const cup = new Mesh("");
-        cup.addChild(top);
-        sides.forEach(side => cup.addChild(side));
+        cup.addChild(model);
 
         cup.position = position;
 
         return cup;
-    }
-
-    private createThickness() {
-        return MeshBuilder.CreateCylinder("", {
-            diameter: Config.cup.diameter,
-            height: Config.cup.thickness,
-            tessellation: Config.cup.tessellation,
-        });
-    }
-
-    private createSide(i) {
-        let radian = Math.PI / Config.cup.tessellation;
-        let width = Config.cup.diameter / 2 * Math.sin(radian) * 2;
-        let side = MeshBuilder.CreateBox("", {
-            width: width,
-            height: Config.cup.height,
-            depth: Config.cup.thickness,
-        });
-        let rotation = radian + radian * 2 * i;
-        let innerRadius = Config.cup.diameter / 2 * Math.cos(radian) + Config.cup.thickness / 2;
-        side.rotationQuaternion = Quaternion.RotationAxis(new Vector3(0, 1, 0), rotation);
-        side.position.x = innerRadius * Math.sin(rotation);
-        side.position.y = -(Config.cup.height + Config.cup.thickness) / 2;
-        side.position.z = innerRadius * Math.cos(rotation);
-        return side;
     }
 
     private createDices(diceModelTemplate: AbstractMesh, cupPos: Vector3) {
