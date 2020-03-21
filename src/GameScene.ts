@@ -91,8 +91,10 @@ export default class GameScene {
 
     private onSceneLoaded() {
         const [playerCup] = Config.cups;
-        this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]),
-            this.meshTable["touzi"], this.meshTable["shaizhong"]);
+        setTimeout(() => {
+            this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]),
+                this.meshTable["touzi"], this.meshTable["shaizhong"]);
+        }, 1000);
         this.loaded = true;
         this.onGameInited();
     }

@@ -1,81 +1,42 @@
 import Config from "./Config";
-import {AbstractMesh, HingeJoint, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scene, Vector3} from "babylonjs";
-import PlayerDice from "./PlayerDice";
+import PhysicalDice from "./PhysicalDice";
+import {HingeJoint, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scene, Vector3} from "babylonjs";
 
-export default class PlayerCup {
-    private readonly scene: Scene;
-    private readonly cup: Mesh;
-    private readonly joint: HingeJoint;
-    private readonly dices: PlayerDice[];
-    private frame: number = 0;
-    private readonly createShakeList: [number, () => number | undefined][] = [
-        [10, () => -5 - Math.random()],
-        [20, () => 5 + Math.random()],
-        [30, () => -4 - Math.random()],
-        [40, () => 4 + Math.random()],
-        [50, () => -2 - Math.random()],
-        [60, () => 2 + Math.random()],
-        [70, () => -1 * Math.random()],
-        [80, () => Math.random()],
-        [90, undefined],
-    ];
-    private shakeList: [number, number | undefined][];
+export default class PhysicalCup {
+    protected readonly cup: Mesh;
+    protected readonly joint: HingeJoint;
+    protected readonly holder: Mesh;
+    protected readonly dices: PhysicalDice[];
+    private frame = 0;
+    private shakeList = [];
+    private rollCallback: CallableFunction;
+    private scene: Scene;
+    private frameHandler;
 
-    constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh, cupModelTemplate: AbstractMesh) {
+    constructor(position: Vector3, scene: Scene) {
         this.scene = scene;
-        this.cup = this.createCup(position, cupModelTemplate);
-        this.joint = this.createHingeJoint(this.cup, position);
-        this.dices = this.createDices(diceModelTemplate, position);
-        //1,4,4,5,6
-        this.shakeList = [[10, -5.682770889356593], [20, 5.261282736873518], [30, -4.521011282358746], [40, 4.501058969542266], [50, -2.061774020530656], [60, 2.339427333998123], [70, -0.5115494559287483], [80, 0.2445071835686432], [90, null]];
-        this.scene.registerBeforeRender(this.onFrame.bind(this));
+        this.cup = this.createCup(position);
+        const {holder, joint} = this.createHingeJoint(this.cup, position);
+        this.holder = holder;
+        this.joint = joint;
+        this.dices = this.createDices(this.cup.position);
+        this.frameHandler = this.onFrame.bind(this);
+        this.scene.registerBeforeRender(this.frameHandler);
     }
 
-    private set isVisible(visible) {
-        this.cup.getChildMeshes()[0].getChildMeshes()[0].isVisible = visible;
+    public dispose() {
+        this.scene.unregisterBeforeRender(this.frameHandler);
+        this.dices.forEach(dice => dice.dispose());
+        this.holder.dispose();
+        this.cup.dispose();
     }
 
-    public reset() {
-
+    public roll(args, callback) {
+        this.shakeList = args;
+        this.rollCallback = callback;
     }
 
-    public roll(dices: number[]) {
-        // this.frame = 0;
-        // this.cup.rotationQuaternion = new Quaternion();
-        // this.isVisible = true;
-        // for (let i = this.dices.length - 1; i >= 0; i--) {
-        //     const dice = this.dices[i];
-        //     if (!dice.isVisible) {
-        //         dice.dispose();
-        //         this.dices.splice(i, 1);
-        //     }
-        // }
-        // this.resetDices();
-    }
-
-    public eliminate(removeDices: number[]) {
-        // this.playOpen(() => {
-        //     this.playRemove(removeDices, () => {
-        //
-        //     });
-        // });
-    }
-
-    private playOpen(callback: CallableFunction) {
-        this.isVisible = false;
-        callback();
-    }
-
-    private playRemove(removeDices: number[], callback: CallableFunction) {
-        this.dices.forEach(dice => {
-            if (removeDices.indexOf(dice.point) !== -1) {
-                dice.isVisible = false;
-            }
-        });
-        callback();
-    }
-
-    private createCup(position: Vector3, cupModelTemplate: AbstractMesh) {
+    private createCup(position: Vector3) {
         const top = this.createThickness();
 
         const bottom = this.createThickness();
@@ -124,7 +85,7 @@ export default class PlayerCup {
             height: Config.cup.thickness,
             tessellation: Config.cup.tessellation,
         });
-        t.isVisible = false;
+        t.isVisible = true;
         return t;
     }
 
@@ -142,14 +103,14 @@ export default class PlayerCup {
         side.position.x = innerRadius * Math.sin(rotation);
         side.position.y = -(Config.cup.height + Config.cup.thickness) / 2;
         side.position.z = innerRadius * Math.cos(rotation);
-        side.isVisible = false;
+        side.isVisible = true;
         return side;
     }
 
     private createHingeJoint(cup: Mesh, position: Vector3) {
         const holder = MeshBuilder.CreateSphere("", {diameter: 0});
         holder.position = position;
-        holder.isVisible = false;
+        holder.isVisible = true;
         holder.physicsImpostor = new PhysicsImpostor(holder, PhysicsImpostor.SphereImpostor, {mass: 0});
         const joint = new HingeJoint({
             mainPivot: new Vector3(0, 0, 0),
@@ -159,22 +120,15 @@ export default class PlayerCup {
             nativeParams: {}
         });
         holder.physicsImpostor.addJoint(cup.physicsImpostor, joint);
-        return joint;
+        return {joint, holder};
     }
 
-    private createDices(diceModelTemplate: AbstractMesh, cupPos: Vector3) {
+
+    private createDices(cupPos: Vector3) {
         const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
         return Config.cup.dices[5].map(dicePos => {
             const position = cupPos.add(new Vector3(dicePos[0], y, dicePos[1]));
-            return new PlayerDice(this, this.scene, diceModelTemplate, position);
-        });
-    }
-
-    private resetDices() {
-        const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
-        Config.cup.dices[this.dices.length].map((dicePos, i) => {
-            this.dices[i].position = this.cup.position.add(new Vector3(dicePos[0], y, dicePos[1]));
-            this.dices[i].rotationQuaternion = new Quaternion();
+            return new PhysicalDice(position);
         });
     }
 
@@ -202,9 +156,9 @@ export default class PlayerCup {
             }
             if (this.frame >= 300) {
                 if (!this.dices.some(dice => !dice.isStatic)) {
-                    console.log(this.dices.map(dice => dice.point).sort().join(","));
+                    this.rollCallback(this.dices.map(dice => dice.point).sort().join(","));
                 } else {
-                    console.log();
+                    this.rollCallback();
                 }
             }
             this.frame++;
