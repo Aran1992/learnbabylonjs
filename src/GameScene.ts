@@ -75,7 +75,6 @@ export default class GameScene {
     }
 
     public onStartForBamao() {
-        this.playerCup.reset();
         this.otherCups.forEach(cup => cup && cup.reset());
     }
 
@@ -91,9 +90,47 @@ export default class GameScene {
 
     private onSceneLoaded() {
         const [playerCup] = Config.cups;
+        this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]),
+            this.meshTable["touzi"], this.meshTable["shaizhong"]);
         setTimeout(() => {
-            this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]),
-                this.meshTable["touzi"], this.meshTable["shaizhong"]);
+            this.playerCup.roll([]);
+            setTimeout(() => {
+                this.playerCup.eliminate([2, 3], () => {
+                    setTimeout(() => {
+                        this.playerCup.reset(4);
+                        setTimeout(() => {
+                            this.playerCup.roll([]);
+                            setTimeout(() => {
+                                this.playerCup.eliminate([1, 2], () => {
+
+                                });
+                            }, 6000);
+                        }, 1000);
+                    }, 1000);
+                });
+            }, 6000);
+        }, 1000);
+        const index = 1;
+        const [x, z] = Config.cups[index];
+        this.otherCups[index] = new OtherCup(this.scene, new Vector3(x, 0, z),
+            this.meshTable["touzi"], this.meshTable["shaizhong2"]);
+        setTimeout(() => {
+            this.otherCups[index].roll();
+            setTimeout(() => {
+                this.otherCups[index].eliminate([2, 3], [2, 5], () => {
+                    setTimeout(() => {
+                        this.otherCups[index].reset();
+                        setTimeout(() => {
+                            this.otherCups[index].roll();
+                            setTimeout(() => {
+                                this.otherCups[index].eliminate([1, 5], [5, 2], () => {
+
+                                });
+                            }, 6000);
+                        }, 1000);
+                    }, 1000);
+                });
+            }, 6000);
         }, 1000);
         this.loaded = true;
         this.onGameInited();

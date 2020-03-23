@@ -4,9 +4,14 @@ import OtherDice from "./OtherDice";
 
 export default class OtherCup {
     private scene: Scene;
-    private readonly cup: Mesh;
+    private position: Vector3;
+    private diceModelTemplate: AbstractMesh;
+    private cupModelTemplate: AbstractMesh;
+    private cup: Mesh;
     private dices: OtherDice[];
-    private frame = 0;
+    private frame;
+    private onFrameHandler;
+    private shakeList: [number, number | undefined][];
     private readonly createShakeList: [number, () => number | undefined][] = [
         [10, () => -5 - Math.random()],
         [20, () => 5 + Math.random()],
@@ -18,24 +23,75 @@ export default class OtherCup {
         [80, () => 1 * Math.random()],
         [90, undefined],
     ];
-    private shakeList: [number, number | undefined][];
 
     constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh, cupModelTemplate: AbstractMesh) {
         this.scene = scene;
-        this.cup = this.createCup(position, cupModelTemplate);
-        this.dices = this.createDices(diceModelTemplate, position);
-        this.scene.registerBeforeRender(this.onFrame.bind(this));
+        this.position = position;
+        this.diceModelTemplate = diceModelTemplate;
+        this.cupModelTemplate = cupModelTemplate;
+        this.reset();
     }
 
     public reset() {
-
+        this.clear();
+        this.cup = this.createCup(this.position, this.cupModelTemplate);
     }
 
     public roll() {
         this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && (creator() * 0.01)]);
+        this.frame = 0;
+        this.onFrameHandler = this.onFrame.bind(this);
+        this.scene.registerBeforeRender(this.onFrameHandler);
     }
 
-    public eliminate(befDice: number[], removeDice: number[]) {
+    public eliminate(befDice: number[], removeDices: number[], callback?: CallableFunction) {
+        this.dices = this.createDices(befDice, this.diceModelTemplate, this.position);
+        this.playOpen(() => {
+            this.playEliminate(removeDices, () => {
+                callback();
+            });
+        });
+    }
+
+    private clear() {
+        if (this.cup) {
+            this.cup.dispose();
+            this.cup = undefined;
+        }
+        if (this.dices) {
+            this.dices.forEach(dice => dice.dispose());
+            this.dices = [];
+        }
+    }
+
+    private playOpen(callback: CallableFunction) {
+        const frameHandler = () => {
+            const mesh = this.cup.getChildMeshes()[0].getChildMeshes()[0];
+            mesh.visibility -= 1 / 60;
+            if (mesh.visibility <= 0) {
+                this.scene.unregisterBeforeRender(frameHandler);
+                callback();
+            }
+        };
+        this.scene.registerBeforeRender(frameHandler);
+    }
+
+    private playEliminate(removeDices: number[], callback: CallableFunction) {
+        let count = 0;
+        this.dices.forEach(dice => {
+            if (removeDices.indexOf(dice.point) !== -1) {
+                count++;
+                dice.playEliminate(() => {
+                    count--;
+                    if (count === 0) {
+                        callback();
+                    }
+                });
+            }
+        });
+        if (count === 0) {
+            callback();
+        }
     }
 
     private createCup(position: Vector3, cupModelTemplate: AbstractMesh) {
@@ -52,11 +108,11 @@ export default class OtherCup {
         return cup;
     }
 
-    private createDices(diceModelTemplate: AbstractMesh, cupPos: Vector3) {
+    private createDices(befDice: number[], diceModelTemplate: AbstractMesh, cupPos: Vector3) {
         const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
-        return Config.cup.dices[5].map(dicePos => {
+        return Config.cup.dices[befDice.length].map((dicePos, i) => {
             const position = cupPos.add(new Vector3(dicePos[0], y, dicePos[1]));
-            return new OtherDice(diceModelTemplate, position);
+            return new OtherDice(this.scene, diceModelTemplate, position, befDice[i]);
         });
     }
 

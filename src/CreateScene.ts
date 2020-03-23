@@ -61,10 +61,11 @@ class CreateScene {
     private start() {
         const result = [];
         const start = new Date().getTime();
-        const totalCount = 2;
+        const totalCount = 1;
         let completeCount = totalCount;
         for (let i = 0; i < totalCount; i++) {
-            const cup = new PhysicalCup(new Vector3(0, 0, i * 200), this.scene);
+            const [playerCup] = Config.cups;
+            const cup = new PhysicalCup(new Vector3(playerCup[0], 0, playerCup[1]), this.scene);
             // const args = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
             const args = //1,4,4,5,6
                 [[10, -5.682770889356593], [20, 5.261282736873518], [30, -4.521011282358746], [40, 4.501058969542266], [50, -2.061774020530656], [60, 2.339427333998123], [70, -0.5115494559287483], [80, 0.2445071835686432], [90, null]];

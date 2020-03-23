@@ -3,12 +3,19 @@ import {AbstractMesh, HingeJoint, Mesh, MeshBuilder, PhysicsImpostor, Quaternion
 import PlayerDice from "./PlayerDice";
 
 export default class PlayerCup {
-    private readonly scene: Scene;
-    private readonly cup: Mesh;
-    private readonly joint: HingeJoint;
-    private readonly dices: PlayerDice[];
-    private frame: number = 0;
-    private readonly createShakeList: [number, () => number | undefined][] = [
+    private scene: Scene;
+    private position: Vector3;
+    private diceModelTemplate: AbstractMesh;
+    private cupModelTemplate: AbstractMesh;
+    private cup: Mesh;
+    private dices: PlayerDice[];
+    private holder: Mesh;
+    private joint: HingeJoint;
+    private count: number;
+    private frame: number;
+    private onFrameHandler;
+    private shakeList: [number, number | undefined][];
+    private createShakeList: [number, () => number | undefined][] = [
         [10, () => -5 - Math.random()],
         [20, () => 5 + Math.random()],
         [30, () => -4 - Math.random()],
@@ -19,101 +26,142 @@ export default class PlayerCup {
         [80, () => Math.random()],
         [90, undefined],
     ];
-    private shakeList: [number, number | undefined][];
 
     constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh, cupModelTemplate: AbstractMesh) {
         this.scene = scene;
-        this.cup = this.createCup(position, cupModelTemplate);
-        this.joint = this.createHingeJoint(this.cup, position);
-        this.dices = this.createDices(diceModelTemplate, position);
-        //1,4,4,5,6
-        this.shakeList = [[10, -5.682770889356593], [20, 5.261282736873518], [30, -4.521011282358746], [40, 4.501058969542266], [50, -2.061774020530656], [60, 2.339427333998123], [70, -0.5115494559287483], [80, 0.2445071835686432], [90, null]];
-        this.scene.registerBeforeRender(this.onFrame.bind(this));
+        this.position = position;
+        this.diceModelTemplate = diceModelTemplate;
+        this.cupModelTemplate = cupModelTemplate;
+        this.reset(5);
     }
 
-    private set isVisible(visible) {
-        this.cup.getChildMeshes()[0].getChildMeshes()[0].isVisible = visible;
+    public reset(count: number) {
+        this.count = count;
+        this.clear();
+        this.cup = this.createCup(this.position, this.cupModelTemplate, false);
+        this.dices = this.createDices(count, this.diceModelTemplate, this.position, false);
     }
 
-    public reset() {
-
+    private clear() {
+        if (this.cup) {
+            this.cup.dispose();
+            this.cup = undefined;
+        }
+        if (this.holder) {
+            this.holder.dispose();
+            this.holder = undefined;
+        }
+        if (this.dices) {
+            this.dices.forEach(dice => dice.dispose());
+            this.dices = [];
+        }
     }
 
     public roll(dices: number[]) {
-        // this.frame = 0;
-        // this.cup.rotationQuaternion = new Quaternion();
-        // this.isVisible = true;
-        // for (let i = this.dices.length - 1; i >= 0; i--) {
-        //     const dice = this.dices[i];
-        //     if (!dice.isVisible) {
-        //         dice.dispose();
-        //         this.dices.splice(i, 1);
-        //     }
-        // }
-        // this.resetDices();
+        this.cup.dispose();
+        this.cup = this.createCup(this.position, this.cupModelTemplate, true);
+        const {joint, holder} = this.createHingeJoint(this.cup, this.cup.position);
+        this.joint = joint;
+        this.holder = holder;
+        this.dices.forEach(dice => dice.dispose());
+        this.dices = this.createDices(this.count, this.diceModelTemplate, this.position, true);
+        //1,4,4,5,6
+        this.shakeList = [[10, -5.682770889356593], [20, 5.261282736873518], [30, -4.521011282358746], [40, 4.501058969542266], [50, -2.061774020530656], [60, 2.339427333998123], [70, -0.5115494559287483], [80, 0.2445071835686432], [90, null]];
+        this.frame = 0;
+        this.onFrameHandler = this.onFrame.bind(this);
+        this.scene.registerBeforeRender(this.onFrameHandler);
     }
 
-    public eliminate(removeDices: number[]) {
-        // this.playOpen(() => {
-        //     this.playRemove(removeDices, () => {
-        //
-        //     });
-        // });
+    public eliminate(removeDices: number[], callback?: CallableFunction) {
+        this.playOpen(() => {
+            this.playEliminate(removeDices, () => {
+                callback();
+            });
+        });
     }
 
     private playOpen(callback: CallableFunction) {
-        this.isVisible = false;
-        callback();
+        const frameHandler = () => {
+            const mesh = this.cup.getChildMeshes()[0].getChildMeshes()[0];
+            mesh.visibility -= 1 / 60;
+            if (mesh.visibility <= 0) {
+                this.scene.unregisterBeforeRender(frameHandler);
+                callback();
+            }
+        };
+        this.scene.registerBeforeRender(frameHandler);
     }
 
-    private playRemove(removeDices: number[], callback: CallableFunction) {
+    private playEliminate(removeDices: number[], callback: CallableFunction) {
+        let count = 0;
         this.dices.forEach(dice => {
             if (removeDices.indexOf(dice.point) !== -1) {
-                dice.isVisible = false;
+                count++;
+                dice.playEliminate(() => {
+                    count--;
+                    if (count === 0) {
+                        callback();
+                    }
+                });
             }
         });
-        callback();
+        if (count === 0) {
+            callback();
+        }
     }
 
-    private createCup(position: Vector3, cupModelTemplate: AbstractMesh) {
-        const top = this.createThickness();
+    private createCup(position: Vector3, cupModelTemplate: AbstractMesh, isPhysical: boolean) {
+        const model = cupModelTemplate.clone("", null);
+        model.scaling = new Vector3(Config.cup.scale, Config.cup.scale, Config.cup.scale);
+        const [x, y, z] = Config.cup.position;
+        model.position = new Vector3(x, y, z);
 
-        const bottom = this.createThickness();
-        bottom.position.y = -Config.cup.height - Config.cup.thickness;
+        let top, bottom, sides;
+        if (isPhysical) {
+            top = this.createThickness();
 
-        const sides = [];
-        for (let i = 0; i < Config.cup.tessellation; i++) {
-            const side = this.createSide(i);
-            sides.push(side);
+            bottom = this.createThickness();
+            bottom.position.y = -Config.cup.height - Config.cup.thickness;
+
+            sides = [];
+            for (let i = 0; i < Config.cup.tessellation; i++) {
+                const side = this.createSide(i);
+                sides.push(side);
+            }
         }
 
         const cup = new Mesh("");
-        cup.addChild(top);
-        cup.addChild(bottom);
-        sides.forEach(side => cup.addChild(side));
+        cup.addChild(model);
+        if (isPhysical) {
+            cup.addChild(top);
+            cup.addChild(bottom);
+            sides.forEach(side => cup.addChild(side));
+        }
 
         cup.position = position;
 
-        top.physicsImpostor = new PhysicsImpostor(top, PhysicsImpostor.CylinderImpostor, {
-            mass: 0,
-            friction: Config.friction,
-            restitution: Config.restitution,
-        });
-        bottom.physicsImpostor = new PhysicsImpostor(bottom, PhysicsImpostor.CylinderImpostor, {
-            mass: 0,
-            friction: Config.friction,
-            restitution: Config.restitution,
-        });
-        sides.forEach(side => side.physicsImpostor = new PhysicsImpostor(side, PhysicsImpostor.BoxImpostor, {
-            mass: 0,
-            friction: Config.friction,
-            restitution: Config.restitution,
-        }));
-        cup.physicsImpostor = new PhysicsImpostor(cup, PhysicsImpostor.NoImpostor, {
-            mass: 1,
-            friction: Config.friction,
-            restitution: Config.restitution,
-        });
+        if (isPhysical) {
+            top.physicsImpostor = new PhysicsImpostor(top, PhysicsImpostor.CylinderImpostor, {
+                mass: 0,
+                friction: Config.friction,
+                restitution: Config.restitution,
+            });
+            bottom.physicsImpostor = new PhysicsImpostor(bottom, PhysicsImpostor.CylinderImpostor, {
+                mass: 0,
+                friction: Config.friction,
+                restitution: Config.restitution,
+            });
+            sides.forEach(side => side.physicsImpostor = new PhysicsImpostor(side, PhysicsImpostor.BoxImpostor, {
+                mass: 0,
+                friction: Config.friction,
+                restitution: Config.restitution,
+            }));
+            cup.physicsImpostor = new PhysicsImpostor(cup, PhysicsImpostor.NoImpostor, {
+                mass: 1,
+                friction: Config.friction,
+                restitution: Config.restitution,
+            });
+        }
 
         return cup;
     }
@@ -159,22 +207,14 @@ export default class PlayerCup {
             nativeParams: {}
         });
         holder.physicsImpostor.addJoint(cup.physicsImpostor, joint);
-        return joint;
+        return {joint, holder};
     }
 
-    private createDices(diceModelTemplate: AbstractMesh, cupPos: Vector3) {
+    private createDices(count: number, diceModelTemplate: AbstractMesh, cupPos: Vector3, isPhysical: boolean) {
         const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
-        return Config.cup.dices[5].map(dicePos => {
+        return Config.cup.dices[count].map(dicePos => {
             const position = cupPos.add(new Vector3(dicePos[0], y, dicePos[1]));
-            return new PlayerDice(this, this.scene, diceModelTemplate, position);
-        });
-    }
-
-    private resetDices() {
-        const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
-        Config.cup.dices[this.dices.length].map((dicePos, i) => {
-            this.dices[i].position = this.cup.position.add(new Vector3(dicePos[0], y, dicePos[1]));
-            this.dices[i].rotationQuaternion = new Quaternion();
+            return new PlayerDice(this.scene, diceModelTemplate, position, isPhysical);
         });
     }
 
@@ -201,6 +241,11 @@ export default class PlayerCup {
                 this.cup.rotationQuaternion = new Quaternion();
             }
             if (this.frame >= 300) {
+                this.cup.physicsImpostor.dispose();
+                this.holder.dispose();
+                this.holder = undefined;
+                this.dices.forEach(dice => dice.disposePhysicsImpostor());
+                this.scene.unregisterBeforeRender(this.onFrameHandler);
                 if (!this.dices.some(dice => !dice.isStatic)) {
                     console.log(this.dices.map(dice => dice.point).sort().join(","));
                 } else {
