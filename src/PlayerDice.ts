@@ -5,15 +5,14 @@ import Util from "./Util";
 export default class PlayerDice {
     private readonly scene: Scene;
     private readonly mesh: Mesh;
-    private readonly model: AbstractMesh;
     private sides: { mesh: Mesh, point: number }[];
     private initY: number;
 
     constructor(scene: Scene, diceModelTemplate: AbstractMesh, position: Vector3, isPhysical: boolean) {
         this.scene = scene;
 
-        this.model = diceModelTemplate.clone("", null);
-        this.model.scaling = new Vector3(Config.dice.scale, Config.dice.scale, Config.dice.scale);
+        const model = diceModelTemplate.clone("", null);
+        model.scaling = new Vector3(Config.dice.scale, Config.dice.scale, Config.dice.scale);
 
         let collider;
         if (isPhysical) {
@@ -30,7 +29,7 @@ export default class PlayerDice {
         });
 
         this.mesh = new Mesh("");
-        this.mesh.addChild(this.model);
+        this.mesh.addChild(model);
         if (isPhysical) {
             this.mesh.addChild(collider);
         }

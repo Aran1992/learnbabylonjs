@@ -32,29 +32,16 @@ export default class PlayerCup {
         this.position = position;
         this.diceModelTemplate = diceModelTemplate;
         this.cupModelTemplate = cupModelTemplate;
-        this.reset(5);
+        this.count = Config.cup.initCount;
+        this.cup = this.createCup(this.position, this.cupModelTemplate, false);
+        this.dices = this.createDices(this.count, this.diceModelTemplate, this.position, false);
     }
 
     public reset(count: number) {
-        this.count = count;
         this.clear();
+        this.count = count;
         this.cup = this.createCup(this.position, this.cupModelTemplate, false);
-        this.dices = this.createDices(count, this.diceModelTemplate, this.position, false);
-    }
-
-    private clear() {
-        if (this.cup) {
-            this.cup.dispose();
-            this.cup = undefined;
-        }
-        if (this.holder) {
-            this.holder.dispose();
-            this.holder = undefined;
-        }
-        if (this.dices) {
-            this.dices.forEach(dice => dice.dispose());
-            this.dices = [];
-        }
+        this.dices = this.createDices(this.count, this.diceModelTemplate, this.position, false);
     }
 
     public roll(dices: number[]) {
@@ -75,9 +62,24 @@ export default class PlayerCup {
     public eliminate(removeDices: number[], callback?: CallableFunction) {
         this.playOpen(() => {
             this.playEliminate(removeDices, () => {
-                callback();
+                callback && callback();
             });
         });
+    }
+
+    private clear() {
+        if (this.cup) {
+            this.cup.dispose();
+            this.cup = undefined;
+        }
+        if (this.holder) {
+            this.holder.dispose();
+            this.holder = undefined;
+        }
+        if (this.dices) {
+            this.dices.forEach(dice => dice.dispose());
+            this.dices = [];
+        }
     }
 
     private playOpen(callback: CallableFunction) {
@@ -105,6 +107,7 @@ export default class PlayerCup {
                 });
             }
         });
+        this.count -= count;
         if (count === 0) {
             callback();
         }
@@ -240,7 +243,7 @@ export default class PlayerCup {
                 this.joint.setMotor(0);
                 this.cup.rotationQuaternion = new Quaternion();
             }
-            if (this.frame >= 300) {
+            if (this.frame >= 180) {
                 this.cup.physicsImpostor.dispose();
                 this.holder.dispose();
                 this.holder = undefined;

@@ -1,11 +1,12 @@
 import Config from "./Config";
-import {AdvancedDynamicTexture, Image, Rectangle, TextBlock, XmlLoader} from "babylonjs-gui";
+import {AdvancedDynamicTexture, Button, Image, Rectangle, TextBlock, XmlLoader} from "babylonjs-gui";
 import GameMgr from "./GameMgr";
 
 export default class GUI {
     private xmlLoader: XmlLoader;
     private loaded: boolean;
     private clockEndTime: number;
+    private points: number[];
 
     constructor() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -46,13 +47,22 @@ export default class GUI {
         this.updatePlayerInfo(GameMgr.otherPlayerInfo[data.uid]);
     }
 
+    public onLeaveRoom(data) {
+        const info = GameMgr.otherPlayerInfo[data.uid];
+        if (info) {
+            const index = GameMgr.getPlayerIndex(info.seatNum);
+            const playerInfo = this.xmlLoader.getNodeById(`playerInfo${index}`) as Rectangle;
+            playerInfo.isVisible = false;
+        }
+    }
+
     public onReadyForBamao(data) {
         this.updatePlayerInfo(GameMgr.otherPlayerInfo[data.uid]);
     }
 
-    public onStartReadyForBamao() {
+    public onStartReadyForBamao(data) {
         this.xmlLoader.getNodeById("preparationRect").isVisible = true;
-        this.startClock(GameMgr.readyEndTime);
+        this.startClock(data.readyEndTime, "准备阶段");
     }
 
     public onStartForBamao() {
@@ -66,21 +76,28 @@ export default class GUI {
     }
 
     public onSelfReady() {
-        this.clockEndTime = 0;
         this.xmlLoader.getNodeById("preparationRect").isVisible = false;
         this.updatePlayerInfo(GameMgr.selfInfo);
     }
 
-    public onSelfEliminate() {
-        this.xmlLoader.getNodeById("pointsRect").isVisible = false;
-        this.startClock(0);
-    }
-
     public onEliminateStartForBamao(data) {
         if (data.opeUid === GameMgr.selfInfo.uid) {
+            this.points = [];
             this.xmlLoader.getNodeById("pointsRect").isVisible = true;
-            this.startClock(data.endTime);
+            // todo 根据阶段显示不同的拔毛条件
+            this.xmlLoader.getNodeById("numberPointsRect").isVisible = true;
+            for (let i = 1; i <= 6; i++) {
+                (this.xmlLoader.getNodeById(`point${i}`) as Button).getChildByName("selected").isVisible = false;
+            }
+            this.xmlLoader.getNodeById("DSPointsRect").isVisible = false;
+            this.xmlLoader.getNodeById("DXPointsRect").isVisible = false;
         }
+        this.startClock(data.endTime, "剔除选择阶段");
+    }
+
+    public onEliminateOpeForBamao(data) {
+        this.xmlLoader.getNodeById("pointsRect").isVisible = false;
+        this.startClock(data.endTime, "剔除结果展示");
     }
 
     private onLoaded() {
@@ -91,8 +108,12 @@ export default class GUI {
         }
         this.onClick(this.xmlLoader.getNodeById("startBtn"), this.onClickStartBtn.bind(this));
         for (let i = 1; i <= 6; i++) {
-            this.onClick(this.xmlLoader.getNodeById(`point${i}`), () => this.onClickPoint(i));
+            this.onClick(this.xmlLoader.getNodeById(`point${i}`), () => this.onClickDoublePoint(i));
         }
+        this.onClick(this.xmlLoader.getNodeById("point_single"), () => this.onClickSinglePoint([1, 3, 5]));
+        this.onClick(this.xmlLoader.getNodeById("point_double"), () => this.onClickSinglePoint([2, 4, 6]));
+        this.onClick(this.xmlLoader.getNodeById("point_small"), () => this.onClickSinglePoint([1, 2, 3]));
+        this.onClick(this.xmlLoader.getNodeById("point_big"), () => this.onClickSinglePoint([4, 5, 6]));
         this.loaded = true;
         this.onGameInited();
     }
@@ -101,8 +122,16 @@ export default class GUI {
         GameMgr.ready();
     }
 
-    private onClickPoint(point: number) {
-        GameMgr.eliminate([point]);
+    private onClickDoublePoint(point: number) {
+        (this.xmlLoader.getNodeById(`point${point}`) as Button).getChildByName("selected").isVisible = true;
+        this.points.push(point);
+        if (this.points.length === 2) {
+            GameMgr.eliminate(this.points);
+        }
+    }
+
+    private onClickSinglePoint(points: number[]) {
+        GameMgr.eliminate(points);
     }
 
     private onClick(button, callback) {
@@ -121,8 +150,9 @@ export default class GUI {
         readyText.isVisible = !!info.ready;
     }
 
-    private startClock(endTime) {
-        this.clockEndTime = endTime;
+    private startClock(endTime: number, waitForText: string) {
+        this.xmlLoader.getNodeById("waitForText").text = waitForText || "";
+        this.clockEndTime = endTime * 1000;
         this.onClock();
     }
 

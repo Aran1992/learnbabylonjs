@@ -126,7 +126,7 @@ export default class PhysicalCup {
 
     private createDices(cupPos: Vector3) {
         const y = -(Config.cup.height + Config.cup.thickness / 2 - Config.dice.size / 2);
-        return Config.cup.dices[5].map(dicePos => {
+        return Config.cup.dices[Config.cup.initCount].map(dicePos => {
             const position = cupPos.add(new Vector3(dicePos[0], y, dicePos[1]));
             return new PhysicalDice(position);
         });

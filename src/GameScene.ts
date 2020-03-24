@@ -74,65 +74,62 @@ export default class GameScene {
         this.createCup(GameMgr.otherPlayerInfo[data.uid]);
     }
 
+    public onLeaveRoom(data) {
+        const index = GameMgr.getPlayerIndex(data.seatNum);
+        const cup = this.otherCups[index];
+        if (cup) {
+            cup.dispose();
+            this.otherCups[index] = undefined;
+        }
+    }
+
     public onStartForBamao() {
+        this.playerCup.reset(Config.cup.initCount);
         this.otherCups.forEach(cup => cup && cup.reset());
     }
 
     public onSendDiceForBamao(data) {
-        this.playerCup.roll(data.dice.sort());
-        this.otherCups.forEach(cup => cup && cup.roll());
+        if (GameMgr.selfInfo.ready) {
+            this.playerCup.roll(data.dice.sort());
+        }
+        for (const uid in GameMgr.otherPlayerInfo) {
+            if (GameMgr.otherPlayerInfo.hasOwnProperty(uid)) {
+                const info = GameMgr.otherPlayerInfo[uid];
+                if (info.ready) {
+                    const cup = this.otherCups[GameMgr.getPlayerIndex(info.seatNum)];
+                    if (cup) {
+                        cup.roll();
+                    }
+                }
+            }
+        }
     }
 
     public onEliminateOpeForBamao(data) {
-        this.playerCup.eliminate(data.removeDice);
-        this.otherCups.forEach(cup => cup && cup.eliminate(data.befDice, data.removeDice))
+        if (GameMgr.selfInfo.ready) {
+            this.playerCup.eliminate(data.removeDice);
+        }
+        for (const seat in data.befDice) {
+            if (data.befDice.hasOwnProperty(seat)) {
+                const dice = data.befDice[seat];
+                const index = GameMgr.getPlayerIndex(seat);
+                if (this.otherCups[index]) {
+                    this.otherCups[index].eliminate(dice, data.removeDice || []);
+                }
+            }
+        }
     }
 
     private onSceneLoaded() {
         const [playerCup] = Config.cups;
         this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]),
             this.meshTable["touzi"], this.meshTable["shaizhong"]);
-        setTimeout(() => {
-            this.playerCup.roll([]);
-            setTimeout(() => {
-                this.playerCup.eliminate([2, 3], () => {
-                    setTimeout(() => {
-                        this.playerCup.reset(4);
-                        setTimeout(() => {
-                            this.playerCup.roll([]);
-                            setTimeout(() => {
-                                this.playerCup.eliminate([1, 2], () => {
-
-                                });
-                            }, 6000);
-                        }, 1000);
-                    }, 1000);
-                });
-            }, 6000);
-        }, 1000);
-        const index = 1;
-        const [x, z] = Config.cups[index];
-        this.otherCups[index] = new OtherCup(this.scene, new Vector3(x, 0, z),
-            this.meshTable["touzi"], this.meshTable["shaizhong2"]);
-        setTimeout(() => {
-            this.otherCups[index].roll();
-            setTimeout(() => {
-                this.otherCups[index].eliminate([2, 3], [2, 5], () => {
-                    setTimeout(() => {
-                        this.otherCups[index].reset();
-                        setTimeout(() => {
-                            this.otherCups[index].roll();
-                            setTimeout(() => {
-                                this.otherCups[index].eliminate([1, 5], [5, 2], () => {
-
-                                });
-                            }, 6000);
-                        }, 1000);
-                    }, 1000);
-                });
-            }, 6000);
-        }, 1000);
         this.loaded = true;
+        // const [_, ...otherCups] = Config.cups;
+        // otherCups.forEach(([x, z], index) => {
+        //     this.otherCups[index] = new OtherCup(this.scene, new Vector3(x, 0, z),
+        //         this.meshTable["touzi"], this.meshTable["shaizhong2"]);
+        // });
         this.onGameInited();
     }
 

@@ -6,10 +6,11 @@ export default {
     friction: 0.1,
     restitution: 0.1,
     camera: {
-        pos: [0, 18, -18],
+        pos: [0, 12, -12],
         target: [0, 0, -4]
     },
     cup: {
+        initCount: 6,
         texturePath: "assets/image/bg.png",
         height: 3,
         diameter: 3,
@@ -18,6 +19,14 @@ export default {
         position: [0, -3, 0],
         scale: 60,
         dices: {
+            6: [
+                [0.6, 0.7],
+                [-0.6, 0.7],
+                [0.6, 0],
+                [-0.6, 0],
+                [0.6, -0.7],
+                [-0.6, -0.7],
+            ],
             5: [
                 [0, 0],
                 [0.75, 0],
@@ -59,11 +68,11 @@ export default {
         ],
     },
     cups: [
-        [0, -5],
-        [10, -4],
-        [10, 4],
-        [0, 5],
-        [-10, 4],
-        [-10, -4],
+        [0, -7],
+        [9, -3],
+        [5, -0.5],
+        [0, 1],
+        [-5, -0.5],
+        [-9, -3],
     ],
 };

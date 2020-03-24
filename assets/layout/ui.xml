@@ -1,6 +1,49 @@
 <?xml version="1.0"?>
 <root>
-    <Rectangle thickness="0" width="210px" height="60px" left="-530" top="-320">
+    <Rectangle id="playerInfoPanel" thickness="0">
+        <Rectangle id="playerInfo0" thickness="0" top="250" left="-250">
+            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
+            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24"/>
+        </Rectangle>
+        <Rectangle id="playerInfo1" thickness="0" left="500" top="-200">
+            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
+            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+        </Rectangle>
+        <Rectangle id="playerInfo2" thickness="0" left="250" top="-250">
+            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
+            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+        </Rectangle>
+        <Rectangle id="playerInfo3" thickness="0" top="-300">
+            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
+            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+        </Rectangle>
+        <Rectangle id="playerInfo4" thickness="0" left="-250" top="-250">
+            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
+            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+        </Rectangle>
+        <Rectangle id="playerInfo5" thickness="0" left="-500" top="-200">
+            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
+            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+        </Rectangle>
+    </Rectangle>
+    <Rectangle id="clockRect" isVisible="false" thickness="0">
+        <Image source="assets/image/yyl_bg_clock.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <TextBlock id="clockText" text="aa" color="white" fontSize="24"/>
+        <TextBlock id="waitForText" text="aa" color="white" fontSize="24" top="50"/>
+    </Rectangle>
+    <Rectangle thickness="0" width="210px" height="60px" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" top="-320">
         <Button id="returnBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="8">
             <Image source="assets/image/return.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </Button>
@@ -11,73 +54,49 @@
             <Image source="assets/image/help.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </Button>
     </Rectangle>
-    <Rectangle id="playerInfoPanel" thickness="0">
-        <Rectangle id="playerInfo0" thickness="0" top="300">
-            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
-            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24"/>
-            <TextBlock name="status" text="状态" color="white" fontSize="24" top="-75"/>
+    <Rectangle id="pointsRect" thickness="0" width="345px" height="44px" left="275" top="150" isVisible="false">
+        <Rectangle id="numberPointsRect" thickness="0" isVisible="false">
+            <Button id="point1" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="0">
+                <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                <Image name="selected" source="assets/image/point_change.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
+            <Button id="point2" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="44">
+                <Image source="assets/image/yyl_ludan_2.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                <Image name="selected" source="assets/image/point_change.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
+            <Button id="point3" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="88">
+                <Image source="assets/image/yyl_ludan_3.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                <Image name="selected" source="assets/image/point_change.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
+            <Button id="point4" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="132">
+                <Image source="assets/image/yyl_ludan_4.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                <Image name="selected" source="assets/image/point_change.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
+            <Button id="point5" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="176">
+                <Image source="assets/image/yyl_ludan_5.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                <Image name="selected" source="assets/image/point_change.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
+            <Button id="point6" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="220">
+                <Image source="assets/image/yyl_ludan_6.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                <Image name="selected" source="assets/image/point_change.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
         </Rectangle>
-        <Rectangle id="playerInfo1" thickness="0" left="500" top="100">
-            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
-            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
-            <TextBlock name="status" text="状态" color="white" fontSize="24" top="-75"/>
+        <Rectangle id="DSPointsRect" thickness="0" isVisible="false">
+            <Button id="point_single" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="0">
+                <Image source="assets/image/point_single.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
+            <Button id="point_double" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="44">
+                <Image source="assets/image/point_double.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
         </Rectangle>
-        <Rectangle id="playerInfo2" thickness="0" left="500" top="-100">
-            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
-            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
-            <TextBlock name="status" text="状态" color="white" fontSize="24" top="-75"/>
+        <Rectangle id="DXPointsRect" thickness="0" isVisible="false">
+            <Button id="point_small" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="0">
+                <Image source="assets/image/point_small.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
+            <Button id="point_big" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="44">
+                <Image source="assets/image/point_big.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </Button>
         </Rectangle>
-        <Rectangle id="playerInfo3" thickness="0" top="-300">
-            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
-            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
-            <TextBlock name="status" text="状态" color="white" fontSize="24" top="75"/>
-        </Rectangle>
-        <Rectangle id="playerInfo4" thickness="0" left="-500" top="-100">
-            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
-            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
-            <TextBlock name="status" text="状态" color="white" fontSize="24" top="-75"/>
-        </Rectangle>
-        <Rectangle id="playerInfo5" thickness="0" left="-500" top="100">
-            <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
-            <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
-            <TextBlock name="status" text="状态" color="white" fontSize="24" top="-75"/>
-        </Rectangle>
-    </Rectangle>
-    <Rectangle id="pointsRect" isVisible="false" thickness="0" width="264px" height="44px" left="275" top="150">
-        <Button id="point1" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="0">
-            <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-        </Button>
-        <Button id="point2" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="44">
-            <Image source="assets/image/yyl_ludan_2.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-        </Button>
-        <Button id="point3" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="88">
-            <Image source="assets/image/yyl_ludan_3.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-        </Button>
-        <Button id="point4" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="132">
-            <Image source="assets/image/yyl_ludan_4.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-        </Button>
-        <Button id="point5" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="176">
-            <Image source="assets/image/yyl_ludan_5.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-        </Button>
-        <Button id="point6" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="220">
-            <Image source="assets/image/yyl_ludan_6.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-        </Button>
-    </Rectangle>
-    <Rectangle id="clockRect" isVisible="false" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
-        <Image source="assets/image/yyl_bg_clock.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-        <TextBlock id="clockText" text="aa" color="white" fontSize="24"/>
     </Rectangle>
     <Rectangle id="preparationRect" thickness="0" top="150" isVisible="false">
         <Button id="leaveBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-200">
@@ -91,7 +110,7 @@
         </Button>
         <TextBlock id="preparedText" text="已准备，等待其他玩家就绪" fontSize="20" color="white" isVisible="false"/>
     </Rectangle>
-    <Rectangle id="loadingRect" background="black" alpha="0.5" isPointerBlocker="true">
+    <Rectangle id="loadingRect" background="black" alpha="0.5">
         <TextBlock text="loading..." fontSize="100" color="white"/>
     </Rectangle>
 </root>

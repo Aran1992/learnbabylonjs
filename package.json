@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Aran1992/learnbabylonjs#readme",
   "devDependencies": {
+    "http-server": "^0.12.1",
     "ts-loader": "^6.2.1",
     "typescript": "^3.8.3",
     "webpack": "^4.41.6",
@@ -28,7 +29,7 @@
     "babylonjs": "^4.1.0",
     "babylonjs-gui": "^4.1.0",
     "babylonjs-loaders": "^4.1.0",
-    "http-server": "^0.12.1",
+    "cannon": "^0.6.2",
     "pomelo-jsclient-websocket": "^0.1.1"
   }
 }

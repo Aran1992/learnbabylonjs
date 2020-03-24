@@ -29,7 +29,12 @@ export default class OtherCup {
         this.position = position;
         this.diceModelTemplate = diceModelTemplate;
         this.cupModelTemplate = cupModelTemplate;
-        this.reset();
+        this.cup = this.createCup(this.position, this.cupModelTemplate);
+    }
+
+    public dispose() {
+        this.cup.dispose();
+        this.dices.forEach(dice => dice.dispose());
     }
 
     public reset() {
@@ -38,6 +43,8 @@ export default class OtherCup {
     }
 
     public roll() {
+        this.clear();
+        this.cup = this.createCup(this.position, this.cupModelTemplate);
         this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && (creator() * 0.01)]);
         this.frame = 0;
         this.onFrameHandler = this.onFrame.bind(this);
@@ -48,7 +55,7 @@ export default class OtherCup {
         this.dices = this.createDices(befDice, this.diceModelTemplate, this.position);
         this.playOpen(() => {
             this.playEliminate(removeDices, () => {
-                callback();
+                callback && callback();
             });
         });
     }
