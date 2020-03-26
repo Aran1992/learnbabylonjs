@@ -5,43 +5,60 @@
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24"/>
+            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-100px"/>
+            <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
+            <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
         </Rectangle>
         <Rectangle id="playerInfo1" thickness="0" left="500" top="-200">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
+            <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
+            <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
         </Rectangle>
         <Rectangle id="playerInfo2" thickness="0" left="250" top="-250">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
+            <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
+            <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
         </Rectangle>
         <Rectangle id="playerInfo3" thickness="0" top="-300">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
+            <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
+            <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
         </Rectangle>
         <Rectangle id="playerInfo4" thickness="0" left="-250" top="-250">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
+            <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
+            <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
         </Rectangle>
         <Rectangle id="playerInfo5" thickness="0" left="-500" top="-200">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="ready" text="已准备" color="white" fontSize="24" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT"/>
+            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100"/>
+            <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
+            <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
         </Rectangle>
     </Rectangle>
     <Rectangle id="clockRect" isVisible="false" thickness="0">
         <Image source="assets/image/yyl_bg_clock.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         <TextBlock id="clockText" text="aa" color="white" fontSize="24"/>
-        <TextBlock id="waitForText" text="aa" color="white" fontSize="24" top="50"/>
+        <Rectangle id="waitForRect" thickness="0">
+            <Image name="waitForStart" source="assets/image/icon_waitgame.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100"/>
+            <TextBlock name="waitForRoll" text="点击骰盅摇骰子" color="white" fontSize="24" top="100px"/>
+            <TextBlock name="waitForCall" text="轮到你叫牌啦" color="white" fontSize="24" top="100px"/>
+            <TextBlock name="showResult" text="剔除结果展示" color="white" fontSize="24" top="100px"/>
+        </Rectangle>
     </Rectangle>
     <Rectangle thickness="0" width="210px" height="60px" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" top="-320">
         <Button id="returnBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="8">
@@ -97,6 +114,14 @@
                 <Image source="assets/image/point_big.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             </Button>
         </Rectangle>
+    </Rectangle>
+    <Rectangle id="winRect" thickness="0" isVisible="false">
+        <Image source="assets/image/win_pic.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <Image source="assets/image/win.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100"/>
+    </Rectangle>
+    <Rectangle id="loseRect" thickness="0" isVisible="false">
+        <Image source="assets/image/lose_pic.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <Image source="assets/image/lose.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100"/>
     </Rectangle>
     <Rectangle id="preparationRect" thickness="0" top="150" isVisible="false">
         <Button id="leaveBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-200">

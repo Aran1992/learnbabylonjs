@@ -62,7 +62,7 @@ export default class GUI {
 
     public onStartReadyForBamao(data) {
         this.xmlLoader.getNodeById("preparationRect").isVisible = true;
-        this.startClock(data.readyEndTime, "准备阶段");
+        this.startClock(data.readyEndTime, "waitForStart");
     }
 
     public onStartForBamao() {
@@ -92,12 +92,12 @@ export default class GUI {
             this.xmlLoader.getNodeById("DSPointsRect").isVisible = false;
             this.xmlLoader.getNodeById("DXPointsRect").isVisible = false;
         }
-        this.startClock(data.endTime, "剔除选择阶段");
+        this.startClock(data.endTime, "waitForCall");
     }
 
     public onEliminateOpeForBamao(data) {
         this.xmlLoader.getNodeById("pointsRect").isVisible = false;
-        this.startClock(data.endTime, "剔除结果展示");
+        this.startClock(data.endTime, "showResult");
     }
 
     private onLoaded() {
@@ -142,16 +142,19 @@ export default class GUI {
         const index = GameMgr.getPlayerIndex(info.seatNum);
         const playerInfo = this.xmlLoader.getNodeById(`playerInfo${index}`) as Rectangle;
         playerInfo.isVisible = true;
-        const nameText = playerInfo.getChildByName("name") as TextBlock;
-        nameText.text = info.nickname.toString();
-        const moneyText = playerInfo.getChildByName("money") as TextBlock;
-        moneyText.text = info.gold.toString();
-        const readyText = playerInfo.getChildByName("ready") as TextBlock;
-        readyText.isVisible = !!info.ready;
+        (playerInfo.getChildByName("name") as TextBlock).text = info.nickname.toString();
+        (playerInfo.getChildByName("money") as TextBlock).text = info.gold.toString();
+        playerInfo.getChildByName("ready").isVisible = !!info.ready;
     }
 
     private startClock(endTime: number, waitForText: string) {
-        this.xmlLoader.getNodeById("waitForText").text = waitForText || "";
+        const waitForRect = this.xmlLoader.getNodeById("waitForRect") as Rectangle;
+        if (waitForText) {
+            waitForRect.isVisible = true;
+            waitForRect.children.forEach(child => child.isVisible = child.name === waitForText);
+        } else {
+            waitForRect.isVisible = false;
+        }
         this.clockEndTime = endTime * 1000;
         this.onClock();
     }
