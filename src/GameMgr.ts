@@ -10,6 +10,7 @@ class GameMgr_ {
     public selfPlayerData: PlayerData;
     public otherPlayerDataList: PlayerData[] = [];
     public playerDataList: PlayerData[] = [];
+    public eliminateOpePlayerIndex;
     private gameScene: GameScene;
     private gui: GUI;
 
@@ -36,7 +37,7 @@ class GameMgr_ {
 
     public onEnterRoom(data) {
         const index = this.getPlayerIndexBySeat(data.seatNum);
-        this.otherPlayerDataList[index] = this.playerDataList[index] = data;
+        this.otherPlayerDataList[index] = this.playerDataList[index] = new PlayerData(data);
     }
 
     public onLeaveRoom(data) {
@@ -51,6 +52,10 @@ class GameMgr_ {
         this.playerDataList[this.getPlayerIndexByUid(data.uid)].ready = !!data.ready;
     }
 
+    public onEliminateStartForBamao(data) {
+        this.eliminateOpePlayerIndex = this.getPlayerIndexByUid(data.opeUid);
+    }
+
     public getPlayerIndexBySeat(seatNum: number): number {
         let index = seatNum - GameMgr.selfPlayerData.seatNum;
         if (index < 0) {
@@ -60,7 +65,7 @@ class GameMgr_ {
     }
 
     public getPlayerIndexByUid(uid: number): number {
-        return this.playerDataList.findIndex(player => player.uid === uid);
+        return this.playerDataList.findIndex(player => player && player.uid === uid);
     }
 
     public getPlayerDataByUid(uid: number): PlayerData {
@@ -89,25 +94,25 @@ class GameMgr_ {
                                     host: data.host,
                                     port: data.port,
                                 }, () => {
-                                    this.request("connector.entryHandler.login", {token: loginData.body.token}, () => {
+                                    this.request("connector.entryHandler.login", {token: loginData.body.token}, entryLoginData => {
                                         this.request("roomBamao.roomHandler.enterRoom", {
                                             gameId: 2,
                                             roomType: 1
-                                        }, data => {
+                                        }, enterRoomData => {
                                             this.inited = true;
                                             this.selfPlayerData =
                                                 this.playerDataList[0] =
                                                     new PlayerData({
                                                         uid: loginData.body.uid,
-                                                        nickname: "自己",
-                                                        gold: data.gold,
-                                                        seatNum: data.seatNum,
+                                                        nickname: entryLoginData.userData.nickname,
+                                                        gold: enterRoomData.gold,
+                                                        seatNum: enterRoomData.seatNum,
                                                         ready: false,
                                                     });
-                                            for (const uid in data.otherPlayerInfo) {
-                                                if (data.otherPlayerInfo.hasOwnProperty(uid)) {
-                                                    const playerData = data.otherPlayerInfo[uid];
-                                                    const index = this.getPlayerIndexBySeat(data.seatNum);
+                                            for (const uid in enterRoomData.otherPlayerInfo) {
+                                                if (enterRoomData.otherPlayerInfo.hasOwnProperty(uid)) {
+                                                    const playerData = enterRoomData.otherPlayerInfo[uid];
+                                                    const index = this.getPlayerIndexBySeat(playerData.seatNum);
                                                     this.otherPlayerDataList[index] =
                                                         this.playerDataList[index] =
                                                             new PlayerData(playerData);

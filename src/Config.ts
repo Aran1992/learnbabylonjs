@@ -1,6 +1,7 @@
 export default {
     bgImagePath: "assets/image/bg.jpg",
     uiXMLPath: "assets/layout/ui.xml",
+    pointImagePath:"assets/image/yyl_ludan_${point}.png",
     designWidth: 1280,
     designHeight: 720,
     friction: 0.1,

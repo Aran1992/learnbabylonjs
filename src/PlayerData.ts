@@ -9,7 +9,7 @@ export default class PlayerData {
     public ready: boolean;
     public diceCount: number;
 
-    constructor(data) {
+    constructor(data: { uid: number, gold: number, seatNum: number, nickname: string, ready: boolean }) {
         this.uid = data.uid;
         this.gold = data.gold;
         this.seatNum = data.seatNum;

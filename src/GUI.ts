@@ -76,13 +76,43 @@ export default class GUI {
             }
             this.xmlLoader.getNodeById("DSPointsRect").isVisible = false;
             this.xmlLoader.getNodeById("DXPointsRect").isVisible = false;
+            this.startClock(data.endTime, "waitForCall");
+        } else {
+            this.startClock(data.endTime, "waitForOtherCall");
         }
-        this.startClock(data.endTime, "waitForCall");
     }
 
     public onEliminateOpeForBamao(data) {
         this.xmlLoader.getNodeById("pointsRect").isVisible = false;
         this.startClock(data.endTime, "showResult");
+        const callResultRect = this.xmlLoader.getNodeById("callResultRect") as Rectangle;
+        callResultRect.isVisible = true;
+        const playerInfoPanel = this.xmlLoader.getNodeById(`playerInfo${GameMgr.eliminateOpePlayerIndex}`) as Rectangle;
+        callResultRect.left = playerInfoPanel.left;
+        callResultRect.top = playerInfoPanel.top;
+        const callResultDiceRect = this.xmlLoader.getNodeById("callResultDiceRect") as Rectangle;
+        callResultDiceRect.children.forEach((child: Image, i: number) => {
+            const point = data.removeDice[i];
+            if (point !== undefined) {
+                child.isVisible = true;
+                child.source = Config.pointImagePath.replace("${point}", point);
+            } else {
+                child.isVisible = false;
+            }
+        });
+        GameMgr.playerDataList.forEach((info, i) => {
+            if (info.ready) {
+                const diceRect = this.xmlLoader.getNodeById(`playerInfo${i}`).getChildByName("diceRect") as Rectangle;
+                diceRect.isVisible = true;
+                const curDiceRect = diceRect.getChildByName("curDiceRect") as Rectangle;
+                curDiceRect.children.forEach((child: Image, i) => {
+                    if (i > 0) {
+                        i--;
+                        child.source = Config.pointImagePath.replace("${point}", "1");
+                    }
+                });
+            }
+        });
     }
 
     public onGameOverForBamao() {

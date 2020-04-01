@@ -6,54 +6,174 @@
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-100px"/>
-            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
+            <Rectangle name="diceRect" thickness="0" isVisible="false">
+                <Rectangle name="curDiceRect" thickness="0">
+                    <TextBlock text="当前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+                <Rectangle name="befDiceRect" thickness="0" top="50">
+                    <TextBlock text="进行剔除前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+            </Rectangle>
         </Rectangle>
         <Rectangle id="playerInfo1" thickness="0" left="500" top="-200">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
+            <Rectangle name="diceRect" thickness="0" isVisible="false">
+                <Rectangle name="curDiceRect" thickness="0">
+                    <TextBlock text="当前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+                <Rectangle name="befDiceRect" thickness="0" top="50">
+                    <TextBlock text="进行剔除前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+            </Rectangle>
         </Rectangle>
         <Rectangle id="playerInfo2" thickness="0" left="250" top="-250">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
+            <Rectangle name="diceRect" thickness="0" isVisible="false">
+                <Rectangle name="curDiceRect" thickness="0">
+                    <TextBlock text="当前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+                <Rectangle name="befDiceRect" thickness="0" top="50">
+                    <TextBlock text="进行剔除前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+            </Rectangle>
         </Rectangle>
         <Rectangle id="playerInfo3" thickness="0" top="-300">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
-            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
+            <Rectangle name="diceRect" thickness="0" isVisible="false">
+                <Rectangle name="curDiceRect" thickness="0">
+                    <TextBlock text="当前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+                <Rectangle name="befDiceRect" thickness="0" top="50">
+                    <TextBlock text="进行剔除前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+            </Rectangle>
         </Rectangle>
         <Rectangle id="playerInfo4" thickness="0" left="-250" top="-250">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
-            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
+            <Rectangle name="diceRect" thickness="0" isVisible="false">
+                <Rectangle name="curDiceRect" thickness="0">
+                    <TextBlock text="当前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+                <Rectangle name="befDiceRect" thickness="0" top="50">
+                    <TextBlock text="进行剔除前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+            </Rectangle>
         </Rectangle>
         <Rectangle id="playerInfo5" thickness="0" left="-500" top="-200">
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100"/>
-            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
+            <Rectangle name="diceRect" thickness="0" isVisible="false">
+                <Rectangle name="curDiceRect" thickness="0">
+                    <TextBlock text="当前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+                <Rectangle name="befDiceRect" thickness="0" top="50">
+                    <TextBlock text="进行剔除前的骰子" color="green" fontSize="24" top="25" isVisible="false" left="-100"/>
+                    <Image name="dice0" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+                    <Image name="dice1" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="44"/>
+                    <Image name="dice2" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="88"/>
+                    <Image name="dice3" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="132"/>
+                    <Image name="dice4" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="176"/>
+                    <Image name="dice5" source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="220"/>
+                </Rectangle>
+            </Rectangle>
         </Rectangle>
     </Rectangle>
     <Rectangle id="clockRect" isVisible="false" thickness="0">
@@ -63,10 +183,11 @@
             <Image name="waitForStart" source="assets/image/icon_waitgame.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100"/>
             <TextBlock name="waitForRoll" text="点击骰盅摇骰子" color="white" fontSize="24" top="100px"/>
             <TextBlock name="waitForCall" text="轮到你叫牌啦" color="white" fontSize="24" top="100px"/>
+            <TextBlock name="waitForOtherCall" text="等待其他玩家叫牌" color="white" fontSize="24" top="100px"/>
             <TextBlock name="showResult" text="剔除结果展示" color="white" fontSize="24" top="100px"/>
         </Rectangle>
     </Rectangle>
-    <Rectangle thickness="0" width="210px" height="60px" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" top="-320">
+    <Rectangle id="controlRect" thickness="0" width="210px" height="60px" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" top="-320">
         <Button id="returnBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="8">
             <Image source="assets/image/return.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </Button>
@@ -76,6 +197,14 @@
         <Button id="helpBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="149">
             <Image source="assets/image/help.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </Button>
+    </Rectangle>
+    <Rectangle id="callResultRect" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" isVisible="false">
+        <Image source="assets/image/call_frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        <Rectangle id="callResultDiceRect" thickness="0">
+            <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="-50"/>
+            <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0"/>
+            <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL" left="50"/>
+        </Rectangle>
     </Rectangle>
     <Rectangle id="pointsRect" thickness="0" width="345px" height="44px" left="275" top="150" isVisible="false">
         <Rectangle id="numberPointsRect" thickness="0" isVisible="false">

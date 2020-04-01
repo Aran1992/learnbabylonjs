@@ -17,6 +17,5 @@ module.exports = {
         extensions: [
             '.ts'
         ]
-    },
-    devtool: "eval-source-map"
+    }
 };
