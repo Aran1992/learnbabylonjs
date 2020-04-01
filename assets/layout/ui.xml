@@ -6,6 +6,7 @@
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-100px"/>
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
         </Rectangle>
@@ -13,6 +14,7 @@
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
@@ -21,6 +23,7 @@
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
@@ -29,6 +32,7 @@
             <Image source="assets/image/frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
@@ -38,6 +42,7 @@
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100px"/>
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
         </Rectangle>
@@ -46,6 +51,7 @@
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="100"/>
+            <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" top="-100px" isVisible="false" />
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
         </Rectangle>

@@ -5,6 +5,7 @@ import PlayerCup from "./PlayerCup";
 import OtherCup from "./OtherCup";
 import EventMgr from "./EventMgr";
 import GameMgr from "./GameMgr";
+import PlayerData from "./PlayerData";
 
 export default class GameScene {
     private readonly scene: Scene;
@@ -61,25 +62,19 @@ export default class GameScene {
 
     public onGameInited() {
         if (this.loaded && GameMgr.inited) {
-            for (const uid in GameMgr.otherPlayerInfo) {
-                if (GameMgr.otherPlayerInfo.hasOwnProperty(uid)) {
-                    const info = GameMgr.otherPlayerInfo[uid];
-                    this.createCup(info);
-                }
-            }
+            GameMgr.otherPlayerDataList.forEach(info => info && this.createCup(info));
         }
     }
 
     public onEnterRoom(data) {
-        this.createCup(GameMgr.otherPlayerInfo[data.uid]);
+        this.createCup(GameMgr.getPlayerDataByUid(data.uid));
     }
 
-    public onLeaveRoom(data) {
-        const index = GameMgr.getPlayerIndex(data.seatNum);
+    public removePlayer(index: number) {
         const cup = this.otherCups[index];
         if (cup) {
             cup.dispose();
-            this.otherCups[index] = undefined;
+            delete this.otherCups[index];
         }
     }
 
@@ -89,32 +84,31 @@ export default class GameScene {
     }
 
     public onSendDiceForBamao(data) {
-        if (GameMgr.selfInfo.ready) {
+        if (GameMgr.selfPlayerData.ready) {
             this.playerCup.roll(data.dice.sort());
         }
-        for (const uid in GameMgr.otherPlayerInfo) {
-            if (GameMgr.otherPlayerInfo.hasOwnProperty(uid)) {
-                const info = GameMgr.otherPlayerInfo[uid];
-                if (info.ready) {
-                    const cup = this.otherCups[GameMgr.getPlayerIndex(info.seatNum)];
-                    if (cup) {
-                        cup.roll();
-                    }
+        GameMgr.otherPlayerDataList.forEach(info => {
+            if (info.ready) {
+                const cup = this.otherCups[info.index];
+                if (cup) {
+                    cup.roll();
                 }
             }
-        }
+        });
     }
 
     public onEliminateOpeForBamao(data) {
-        if (GameMgr.selfInfo.ready) {
+        if (GameMgr.selfPlayerData.ready) {
             this.playerCup.eliminate(data.removeDice);
         }
         for (const seat in data.befDice) {
             if (data.befDice.hasOwnProperty(seat)) {
                 const dice = data.befDice[seat];
-                const index = GameMgr.getPlayerIndex(seat);
-                if (this.otherCups[index]) {
-                    this.otherCups[index].eliminate(dice, data.removeDice || []);
+                const index = GameMgr.getPlayerIndexBySeat(parseInt(seat));
+                if (GameMgr.playerDataList[index].ready) {
+                    if (this.otherCups[index]) {
+                        this.otherCups[index].eliminate(dice, data.removeDice || []);
+                    }
                 }
             }
         }
@@ -133,8 +127,8 @@ export default class GameScene {
         this.onGameInited();
     }
 
-    private createCup(info) {
-        const index = GameMgr.getPlayerIndex(info.seatNum);
+    private createCup(info: PlayerData) {
+        const index = GameMgr.getPlayerIndexBySeat(info.seatNum);
         const [x, z] = Config.cups[index];
         this.otherCups[index] = new OtherCup(this.scene, new Vector3(x, 0, z),
             this.meshTable["touzi"], this.meshTable["shaizhong2"]);

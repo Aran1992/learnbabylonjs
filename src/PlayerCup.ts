@@ -70,11 +70,11 @@ export default class PlayerCup {
     private clear() {
         if (this.cup) {
             this.cup.dispose();
-            this.cup = undefined;
+            delete this.cup;
         }
         if (this.holder) {
             this.holder.dispose();
-            this.holder = undefined;
+            delete this.holder;
         }
         if (this.dices) {
             this.dices.forEach(dice => dice.dispose());
@@ -246,7 +246,7 @@ export default class PlayerCup {
             if (this.frame >= 180) {
                 this.cup.physicsImpostor.dispose();
                 this.holder.dispose();
-                this.holder = undefined;
+                delete this.holder;
                 this.dices.forEach(dice => dice.disposePhysicsImpostor());
                 this.scene.unregisterBeforeRender(this.onFrameHandler);
                 if (!this.dices.some(dice => !dice.isStatic)) {

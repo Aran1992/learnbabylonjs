@@ -1,6 +1,7 @@
 import Config from "./Config";
 import {AdvancedDynamicTexture, Button, Image, Rectangle, TextBlock, XmlLoader} from "babylonjs-gui";
 import GameMgr from "./GameMgr";
+import PlayerData from "./PlayerData";
 
 export default class GUI {
     private xmlLoader: XmlLoader;
@@ -33,31 +34,21 @@ export default class GUI {
     public onGameInited() {
         if (this.loaded && GameMgr.inited) {
             this.xmlLoader.getNodeById("loadingRect").isVisible = false;
-            this.updatePlayerInfo(GameMgr.selfInfo);
-            for (const uid in GameMgr.otherPlayerInfo) {
-                if (GameMgr.otherPlayerInfo.hasOwnProperty(uid)) {
-                    const info = GameMgr.otherPlayerInfo[uid];
-                    this.updatePlayerInfo(info);
-                }
-            }
+            GameMgr.playerDataList.forEach(info => this.updatePlayerInfo(info));
         }
     }
 
     public onEnterRoom(data) {
-        this.updatePlayerInfo(GameMgr.otherPlayerInfo[data.uid]);
+        this.updatePlayerInfo(GameMgr.getPlayerDataByUid(data.uid));
     }
 
-    public onLeaveRoom(data) {
-        const info = GameMgr.otherPlayerInfo[data.uid];
-        if (info) {
-            const index = GameMgr.getPlayerIndex(info.seatNum);
-            const playerInfo = this.xmlLoader.getNodeById(`playerInfo${index}`) as Rectangle;
-            playerInfo.isVisible = false;
-        }
+    public removePlayer(index: number) {
+        const playerInfo = this.xmlLoader.getNodeById(`playerInfo${index}`) as Rectangle;
+        playerInfo.isVisible = false;
     }
 
     public onReadyForBamao(data) {
-        this.updatePlayerInfo(GameMgr.otherPlayerInfo[data.uid]);
+        this.updatePlayerInfo(GameMgr.getPlayerDataByUid(data.uid));
     }
 
     public onStartReadyForBamao(data) {
@@ -66,22 +57,16 @@ export default class GUI {
     }
 
     public onStartForBamao() {
-        this.updatePlayerInfo(GameMgr.selfInfo);
-        for (const uid in GameMgr.otherPlayerInfo) {
-            if (GameMgr.otherPlayerInfo.hasOwnProperty(uid)) {
-                const info = GameMgr.otherPlayerInfo[uid];
-                this.updatePlayerInfo(info);
-            }
-        }
+        GameMgr.playerDataList.forEach(info => this.updatePlayerInfo(info));
     }
 
     public onSelfReady() {
         this.xmlLoader.getNodeById("preparationRect").isVisible = false;
-        this.updatePlayerInfo(GameMgr.selfInfo);
+        this.updatePlayerInfo(GameMgr.selfPlayerData);
     }
 
     public onEliminateStartForBamao(data) {
-        if (data.opeUid === GameMgr.selfInfo.uid) {
+        if (data.opeUid === GameMgr.selfPlayerData.uid) {
             this.points = [];
             this.xmlLoader.getNodeById("pointsRect").isVisible = true;
             // todo 根据阶段显示不同的拔毛条件
@@ -98,6 +83,10 @@ export default class GUI {
     public onEliminateOpeForBamao(data) {
         this.xmlLoader.getNodeById("pointsRect").isVisible = false;
         this.startClock(data.endTime, "showResult");
+    }
+
+    public onGameOverForBamao() {
+
     }
 
     private onLoaded() {
@@ -138,13 +127,15 @@ export default class GUI {
         button.onPointerUpObservable.add(callback);
     }
 
-    private updatePlayerInfo(info) {
-        const index = GameMgr.getPlayerIndex(info.seatNum);
+    private updatePlayerInfo(info: PlayerData) {
+        const index = GameMgr.getPlayerIndexBySeat(info.seatNum);
         const playerInfo = this.xmlLoader.getNodeById(`playerInfo${index}`) as Rectangle;
         playerInfo.isVisible = true;
         (playerInfo.getChildByName("name") as TextBlock).text = info.nickname.toString();
         (playerInfo.getChildByName("money") as TextBlock).text = info.gold.toString();
         playerInfo.getChildByName("ready").isVisible = !!info.ready;
+        // todo 初始化的时候玩家也需要根据当前的骰子数量显示自己的状态
+        playerInfo.getChildByName("dead").isVisible = info.diceCount === 0;
     }
 
     private startClock(endTime: number, waitForText: string) {

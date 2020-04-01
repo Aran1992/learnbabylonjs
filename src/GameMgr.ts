@@ -1,13 +1,15 @@
 import GameScene from "./GameScene";
 import GUI from "./GUI";
 import Config from "./Config";
+import PlayerData from "./PlayerData";
 
 declare const pomelo;
 
 class GameMgr_ {
     public inited: boolean;
-    public selfInfo;
-    public otherPlayerInfo;
+    public selfPlayerData: PlayerData;
+    public otherPlayerDataList: PlayerData[] = [];
+    public playerDataList: PlayerData[] = [];
     private gameScene: GameScene;
     private gui: GUI;
 
@@ -20,8 +22,8 @@ class GameMgr_ {
 
     public ready() {
         this.request("roomBamao.roomHandler.ready", {}, (data) => {
+            this.selfPlayerData.ready = !!data.ready;
             if (data.ready) {
-                this.selfInfo.ready = true;
                 this.gui.onSelfReady();
             }
         });
@@ -33,23 +35,42 @@ class GameMgr_ {
     }
 
     public onEnterRoom(data) {
-        this.otherPlayerInfo[data.uid] = data;
+        const index = this.getPlayerIndexBySeat(data.seatNum);
+        this.otherPlayerDataList[index] = this.playerDataList[index] = data;
+    }
+
+    public onLeaveRoom(data) {
+        const index = this.getPlayerIndexByUid(data.uid);
+        this.gameScene.removePlayer(index);
+        this.gui.removePlayer(index);
+        delete this.otherPlayerDataList[index];
+        delete this.playerDataList[index];
     }
 
     public onReadyForBamao(data) {
-        this.otherPlayerInfo[data.uid].ready = data.ready;
+        this.playerDataList[this.getPlayerIndexByUid(data.uid)].ready = !!data.ready;
     }
 
-    public getPlayerIndex(seatNum) {
-        let index = seatNum - GameMgr.selfInfo.seatNum;
+    public getPlayerIndexBySeat(seatNum: number): number {
+        let index = seatNum - GameMgr.selfPlayerData.seatNum;
         if (index < 0) {
             index = Config.cups.length + index;
         }
         return index;
     }
 
+    public getPlayerIndexByUid(uid: number): number {
+        return this.playerDataList.findIndex(player => player.uid === uid);
+    }
+
+    public getPlayerDataByUid(uid: number): PlayerData {
+        return this.playerDataList[this.getPlayerIndexByUid(uid)];
+    }
+
     private requestInitData() {
-        fetch("http://192.168.18.80:28302/products/dwc_29.json").then(initResponse => {
+        const ip = "111.229.243.99";
+        // const ip = "192.168.18.80";
+        fetch(`http://${ip}:28302/products/dwc_29.json`).then(initResponse => {
             initResponse.json().then(initData => {
                 fetch(`http://${initData.platSvrHost}:${initData.platSvrPort}`, {
                     method: "POST",
@@ -68,20 +89,30 @@ class GameMgr_ {
                                     host: data.host,
                                     port: data.port,
                                 }, () => {
-                                    this.request("connector.entryHandler.login", {token: loginData.body.token}, data => {
+                                    this.request("connector.entryHandler.login", {token: loginData.body.token}, () => {
                                         this.request("roomBamao.roomHandler.enterRoom", {
                                             gameId: 2,
                                             roomType: 1
                                         }, data => {
                                             this.inited = true;
-                                            this.selfInfo = {
-                                                uid: loginData.body.uid,
-                                                nickname: "自己",
-                                                gold: data.gold,
-                                                seatNum: data.seatNum,
-                                                ready: false,
-                                            };
-                                            this.otherPlayerInfo = data.otherPlayerInfo;
+                                            this.selfPlayerData =
+                                                this.playerDataList[0] =
+                                                    new PlayerData({
+                                                        uid: loginData.body.uid,
+                                                        nickname: "自己",
+                                                        gold: data.gold,
+                                                        seatNum: data.seatNum,
+                                                        ready: false,
+                                                    });
+                                            for (const uid in data.otherPlayerInfo) {
+                                                if (data.otherPlayerInfo.hasOwnProperty(uid)) {
+                                                    const playerData = data.otherPlayerInfo[uid];
+                                                    const index = this.getPlayerIndexBySeat(data.seatNum);
+                                                    this.otherPlayerDataList[index] =
+                                                        this.playerDataList[index] =
+                                                            new PlayerData(playerData);
+                                                }
+                                            }
                                             this.gameScene.onGameInited();
                                             this.gui.onGameInited();
                                         });

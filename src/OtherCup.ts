@@ -63,7 +63,7 @@ export default class OtherCup {
     private clear() {
         if (this.cup) {
             this.cup.dispose();
-            this.cup = undefined;
+            delete this.cup;
         }
         if (this.dices) {
             this.dices.forEach(dice => dice.dispose());
