@@ -54,6 +54,11 @@ class GameMgr_ {
 
     public onEliminateStartForBamao(data) {
         this.eliminateOpePlayerIndex = this.getPlayerIndexByUid(data.opeUid);
+        // todo 设置自己的骰子
+    }
+
+    public onEliminateOpeForBamao() {
+        // todo 设置所有人的之前和之后的骰子
     }
 
     public getPlayerIndexBySeat(seatNum: number): number {

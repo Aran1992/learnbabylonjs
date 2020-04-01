@@ -108,7 +108,12 @@ export default class GUI {
                 curDiceRect.children.forEach((child: Image, i) => {
                     if (i > 0) {
                         i--;
-                        child.source = Config.pointImagePath.replace("${point}", "1");
+                        if (info.dices[i] !== undefined) {
+                            child.isVisible = true;
+                            child.source = Config.pointImagePath.replace("${point}", "1");
+                        } else {
+                            child.isVisible = false;
+                        }
                     }
                 });
             }
