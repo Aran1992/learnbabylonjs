@@ -7,8 +7,10 @@ export default class PlayerData {
     public seatNum: number;
     public nickname: string;
     public ready: boolean;
+    public dead: boolean;
     public diceCount: number;
-    public dices: number[];
+    public dice: number[];
+    public befDice: number[];
 
     constructor(data: { uid: number, gold: number, seatNum: number, nickname: string, ready: boolean }) {
         this.uid = data.uid;
@@ -16,6 +18,7 @@ export default class PlayerData {
         this.seatNum = data.seatNum;
         this.nickname = data.nickname;
         this.ready = data.ready;
+        this.dead = false;
         this.diceCount = Config.cup.initCount;
     }
 

@@ -1,13 +1,17 @@
 import Config from "./Config";
-import {AdvancedDynamicTexture, Button, Image, Rectangle, TextBlock, XmlLoader} from "babylonjs-gui";
+import {AdvancedDynamicTexture, Button, Image, Rectangle, XmlLoader} from "babylonjs-gui";
 import GameMgr from "./GameMgr";
 import PlayerData from "./PlayerData";
+import PlayerInfoPanel from "./PlayerInfoPanel";
 
 export default class GUI {
     private xmlLoader: XmlLoader;
     private loaded: boolean;
     private clockEndTime: number;
     private points: number[];
+    private selfPlayerInfoPanel: PlayerInfoPanel;
+    private playerInfoPanelList: PlayerInfoPanel[] = [];
+    private otherPlayerInfoPanelList: PlayerInfoPanel[] = [];
 
     constructor() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -65,11 +69,16 @@ export default class GUI {
         this.updatePlayerInfo(GameMgr.selfPlayerData);
     }
 
+    public onSendDiceForBamao() {
+        GameMgr.playerDataList.forEach(info => this.updatePlayerInfo(info));
+        this.xmlLoader.getNodeById("callResultRect").isVisible = false;
+        this.xmlLoader.getNodeById("pointsRect").isVisible = false;
+    }
+
     public onEliminateStartForBamao(data) {
         if (data.opeUid === GameMgr.selfPlayerData.uid) {
             this.points = [];
             this.xmlLoader.getNodeById("pointsRect").isVisible = true;
-            // todo 根据阶段显示不同的拔毛条件
             this.xmlLoader.getNodeById("numberPointsRect").isVisible = true;
             for (let i = 1; i <= 6; i++) {
                 (this.xmlLoader.getNodeById(`point${i}`) as Button).getChildByName("selected").isVisible = false;
@@ -80,6 +89,7 @@ export default class GUI {
         } else {
             this.startClock(data.endTime, "waitForOtherCall");
         }
+        this.selfPlayerInfoPanel.refresh(GameMgr.selfPlayerData);
     }
 
     public onEliminateOpeForBamao(data) {
@@ -87,48 +97,43 @@ export default class GUI {
         this.startClock(data.endTime, "showResult");
         const callResultRect = this.xmlLoader.getNodeById("callResultRect") as Rectangle;
         callResultRect.isVisible = true;
-        const playerInfoPanel = this.xmlLoader.getNodeById(`playerInfo${GameMgr.eliminateOpePlayerIndex}`) as Rectangle;
-        callResultRect.left = playerInfoPanel.left;
-        callResultRect.top = playerInfoPanel.top;
-        const callResultDiceRect = this.xmlLoader.getNodeById("callResultDiceRect") as Rectangle;
-        callResultDiceRect.children.forEach((child: Image, i: number) => {
-            const point = data.removeDice[i];
-            if (point !== undefined) {
-                child.isVisible = true;
-                child.source = Config.pointImagePath.replace("${point}", point);
-            } else {
-                child.isVisible = false;
-            }
-        });
+        if (GameMgr.eliminateOpePlayerIndex !== undefined) {
+            const playerInfoPanel = this.xmlLoader.getNodeById(`playerInfo${GameMgr.eliminateOpePlayerIndex}`) as Rectangle;
+            callResultRect.left = playerInfoPanel.left;
+            callResultRect.top = playerInfoPanel.top;
+            const callResultDiceRect = this.xmlLoader.getNodeById("callResultDiceRect") as Rectangle;
+            callResultDiceRect.children.forEach((child: Image, i: number) => {
+                const point = data.removeDice[i];
+                if (point !== undefined) {
+                    child.isVisible = true;
+                    child.source = Config.pointImagePath.replace("${point}", point);
+                } else {
+                    child.isVisible = false;
+                }
+            });
+        }
         GameMgr.playerDataList.forEach((info, i) => {
-            if (info.ready) {
-                const diceRect = this.xmlLoader.getNodeById(`playerInfo${i}`).getChildByName("diceRect") as Rectangle;
-                diceRect.isVisible = true;
-                const curDiceRect = diceRect.getChildByName("curDiceRect") as Rectangle;
-                curDiceRect.children.forEach((child: Image, i) => {
-                    if (i > 0) {
-                        i--;
-                        if (info.dices[i] !== undefined) {
-                            child.isVisible = true;
-                            child.source = Config.pointImagePath.replace("${point}", "1");
-                        } else {
-                            child.isVisible = false;
-                        }
-                    }
-                });
-            }
+            this.playerInfoPanelList[i].refresh(info);
         });
     }
 
     public onGameOverForBamao() {
-
+        // 自己没骰子了就可以撤了
+        // 可是这样子好像好没结算
     }
 
     private onLoaded() {
         setInterval(this.onClock.bind(this), 1000);
         for (let i = 0; i < Config.cups.length; i++) {
             const playerInfo = this.xmlLoader.getNodeById(`playerInfo${i}`) as Rectangle;
-            playerInfo.isVisible = false;
+            const playerInfoPanel = new PlayerInfoPanel(playerInfo);
+            this.playerInfoPanelList.push(playerInfoPanel);
+            playerInfoPanel.isVisible = false;
+            if (i === 0) {
+                this.selfPlayerInfoPanel = playerInfoPanel;
+            } else {
+                this.otherPlayerInfoPanelList[i] = playerInfoPanel;
+            }
         }
         this.onClick(this.xmlLoader.getNodeById("startBtn"), this.onClickStartBtn.bind(this));
         for (let i = 1; i <= 6; i++) {
@@ -164,13 +169,8 @@ export default class GUI {
 
     private updatePlayerInfo(info: PlayerData) {
         const index = GameMgr.getPlayerIndexBySeat(info.seatNum);
-        const playerInfo = this.xmlLoader.getNodeById(`playerInfo${index}`) as Rectangle;
-        playerInfo.isVisible = true;
-        (playerInfo.getChildByName("name") as TextBlock).text = info.nickname.toString();
-        (playerInfo.getChildByName("money") as TextBlock).text = info.gold.toString();
-        playerInfo.getChildByName("ready").isVisible = !!info.ready;
-        // todo 初始化的时候玩家也需要根据当前的骰子数量显示自己的状态
-        playerInfo.getChildByName("dead").isVisible = info.diceCount === 0;
+        this.playerInfoPanelList[index].isVisible = true;
+        this.playerInfoPanelList[index].refresh(info);
     }
 
     private startClock(endTime: number, waitForText: string) {

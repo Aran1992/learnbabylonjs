@@ -7,6 +7,7 @@ declare const pomelo;
 
 class GameMgr_ {
     public inited: boolean;
+    public isInPreparationStep: boolean;
     public selfPlayerData: PlayerData;
     public otherPlayerDataList: PlayerData[] = [];
     public playerDataList: PlayerData[] = [];
@@ -48,17 +49,53 @@ class GameMgr_ {
         delete this.playerDataList[index];
     }
 
+    public onStartReadyForBamao() {
+        this.isInPreparationStep = true;
+        this.playerDataList.forEach(info => info.ready = false);
+    }
+
     public onReadyForBamao(data) {
         this.playerDataList[this.getPlayerIndexByUid(data.uid)].ready = !!data.ready;
     }
 
-    public onEliminateStartForBamao(data) {
-        this.eliminateOpePlayerIndex = this.getPlayerIndexByUid(data.opeUid);
-        // todo 设置自己的骰子
+    public onStartForBamao() {
+        this.isInPreparationStep = false;
+        this.playerDataList.forEach(info => {
+            delete info.dice;
+            delete info.befDice;
+            delete info.dead;
+        });
     }
 
-    public onEliminateOpeForBamao() {
-        // todo 设置所有人的之前和之后的骰子
+    public onSendDiceForBamao(data) {
+        this.selfPlayerData.dice = data.dice.sort();
+        delete this.selfPlayerData.befDice;
+        this.otherPlayerDataList.forEach(info => {
+            delete info.dice;
+            delete info.befDice;
+        })
+    }
+
+    public onEliminateStartForBamao(data) {
+        this.eliminateOpePlayerIndex = this.getPlayerIndexByUid(data.opeUid);
+    }
+
+    public onEliminateOpeForBamao(data) {
+        data.playerSeatList.forEach((seatNum) => {
+            const index = this.getPlayerIndexBySeat(seatNum);
+            const info = this.playerDataList[index];
+            const befDice = data.befDice[seatNum] || [];
+            if (befDice.length !== 0) {
+                info.befDice = befDice.sort();
+                info.dice = info.befDice.filter(point => data.removeDice.indexOf(point) === -1);
+                if (info.dice.length === 0) {
+                    info.dead = true;
+                }
+            } else {
+                delete info.befDice;
+                delete info.dice;
+            }
+        });
     }
 
     public getPlayerIndexBySeat(seatNum: number): number {

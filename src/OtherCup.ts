@@ -33,8 +33,12 @@ export default class OtherCup {
     }
 
     public dispose() {
-        this.cup.dispose();
-        this.dices.forEach(dice => dice.dispose());
+        if (this.cup) {
+            this.cup.dispose();
+        }
+        if (this.dices) {
+            this.dices.forEach(dice => dice.dispose());
+        }
     }
 
     public reset() {
