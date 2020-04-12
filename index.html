@@ -1,131 +1,79 @@
-<!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta charset="utf-8" content="text/html" http-equiv="Content-Type"/>
-    <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
-          name="viewport"/>
-    <title>Babylon - Getting Started</title>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title>小新快跑</title>
     <style>
-        html, body {
-            overflow: hidden;
+        #content {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            margin: 0;
-            padding: 0;
         }
 
-        canvas {
-            width: 100%;
-            height: 100%;
-            touch-action: none;
+        #myiframe {
             position: absolute;
-        }
-
-        #loadingSceneDiv {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            background-image: url("assets/image/loading/bg.jpg");
-            background-position: center;
-            background-size: cover;
-        }
-
-        #emptyImg, #fillDiv {
-            height: 4%;
-            position: absolute;
-            bottom: 10%;
-        }
-
-        #textImg {
-            height: 5.6%;
-            position: absolute;
-            bottom: 20%;
-        }
-
-        #fillDiv {
-            background-image: url("assets/image/loading/fill.png");
-            background-position: left;
-            background-size: cover;
+            left: 0;
+            top: 0;
+            border: none;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 1800;
         }
     </style>
 </head>
+
 <body>
-<canvas id="canvas"></canvas>
-<div id="loadingSceneDiv">
-    <img id="emptyImg" src="assets/image/loading/empty.png"/>
-    <div id="fillDiv" hidden></div>
-    <img id="textImg" src="assets/image/loading/text.png"/>
+
+<div id="content">
+    <iframe id="myiframe" src="./game.html"></iframe>
 </div>
 <script>
-    const loadingSceneDiv = document.getElementById("loadingSceneDiv");
-    const emptyImg = document.getElementById("emptyImg");
-    const fillDiv = document.getElementById("fillDiv");
-    const textImg = document.getElementById("textImg");
-    let fullWidth = 0;
-    let curPercent = 0;
-    let targetPercent = 0;
-    let animationID;
-    let loadingUILoaded = false;
-
-    function centerImg(img, callback) {
-        img.onload = () => {
-            const left = (window.innerWidth - img.clientWidth) / 2;
-            img.style.left = left + "px";
-            if (callback) {
-                callback();
+    var isLandscapeGame = true;
+    // 利用 CSS3 旋转 对根容器逆时针旋转 90 度
+    var detectOrient = function () {
+        var width = document.documentElement.clientWidth,
+            height = document.documentElement.clientHeight,
+            $wrapper = document.getElementById("content"),
+            style = "";
+        if (isLandscapeGame) {
+            if (width >= height) { // 横屏
+                style += "width:" + width + "px;";  // 注意旋转后的宽高切换
+                style += "height:" + height + "px;";
+                style += "-webkit-transform: rotate(0); transform: rotate(0);";
+                style += "-webkit-transform-origin: 0 0;";
+                style += "transform-origin: 0 0;";
+            } else { // 竖屏
+                style += "width:" + height + "px;";
+                style += "height:" + width + "px;";
+                style += "-webkit-transform: rotate(90deg); transform: rotate(90deg);";
+                // 注意旋转中点的处理
+                style += "-webkit-transform-origin: " + width / 2 + "px " + width / 2 + "px;";
+                style += "transform-origin: " + width / 2 + "px " + width / 2 + "px;";
             }
-        };
-    }
-
-    function onEmptyImgLoaded() {
-        fillDiv.style.width = emptyImg.clientWidth + "px";
-        fillDiv.style.height = emptyImg.clientHeight + "px";
-        fillDiv.style.left = emptyImg.style.left;
-        fillDiv.hidden = false;
-        fullWidth = emptyImg.clientWidth;
-        loadingUILoaded = true;
-        setPercent(0);
-        addPercent(0.1);
-    }
-
-    function setPercent(percent) {
-        curPercent = percent;
-        fillDiv.style.width = fullWidth * percent + "px";
-    }
-
-    function addPercent(percent) {
-        targetPercent += percent;
-        if (loadingUILoaded) {
-            if (animationID === undefined) {
-                animationID = requestAnimationFrame(onFrame);
-            }
-        }
-    }
-
-    function onFrame() {
-        curPercent += 0.01;
-        if (curPercent >= 1) {
-            curPercent = 1;
-        }
-        setPercent(curPercent);
-        if (curPercent >= targetPercent) {
-            animationID = undefined;
         } else {
-            animationID = requestAnimationFrame(onFrame);
+            if (width <= height) {
+                style += "width:" + width + "px;";
+                style += "height:" + height + "px;";
+                style += "-webkit-transform: rotate(0); transform: rotate(0);";
+                style += "-webkit-transform-origin: 0 0;";
+                style += "transform-origin: 0 0;";
+            } else {
+                style += "width:" + height + "px;";
+                style += "height:" + width + "px;";
+                style += "-webkit-transform: rotate(90deg); transform: rotate(90deg);";
+                style += "-webkit-transform-origin: " + width / 2 + "px " + width / 2 + "px;";
+                style += "transform-origin: " + width / 2 + "px " + width / 2 + "px;";
+            }
         }
-        if (curPercent >= 1) {
-            loadingSceneDiv.hidden = true;
-        }
-    }
-
-    centerImg(textImg);
-    centerImg(emptyImg, onEmptyImgLoaded);
+        $wrapper.style.cssText = style;
+    };
+    window.onresize = detectOrient;
+    detectOrient();
 </script>
-<div id="scriptsDiv">
-    <script src="lib/protobuf.js" onload="addPercent(0.1);"></script>
-    <script src="lib/pomelo-client.js" onload="addPercent(0.1);"></script>
-    <script src="lib/cannon.min.js" onload="addPercent(0.1);"></script>
-    <script src="dist/bundle.js" onload="addPercent(0.1);"></script>
-</div>
 </body>
+
 </html>
