@@ -7,6 +7,8 @@ import EventMgr from "./EventMgr";
 import GameMgr from "./GameMgr";
 import PlayerData from "./PlayerData";
 
+declare const addPercent;
+
 export default class GameScene {
     private readonly scene: Scene;
     private playerCup: PlayerCup;
@@ -115,6 +117,7 @@ export default class GameScene {
     // }
 
     private onSceneLoaded() {
+        addPercent(0.2);
         const [playerCup] = Config.cups;
         this.playerCup = new PlayerCup(this.scene, new Vector3(playerCup[0], 0, playerCup[1]),
             this.meshTable["touzi"], this.meshTable["shaizhong"]);

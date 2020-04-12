@@ -4,6 +4,8 @@ import GameMgr from "./GameMgr";
 import PlayerData from "./PlayerData";
 import PlayerInfoPanel from "./PlayerInfoPanel";
 
+declare const addPercent;
+
 export default class GUI {
     private xmlLoader: XmlLoader;
     private loaded: boolean;
@@ -144,6 +146,7 @@ export default class GUI {
         this.onClick(this.xmlLoader.getNodeById("point_small"), () => this.onClickSinglePoint([1, 2, 3]));
         this.onClick(this.xmlLoader.getNodeById("point_big"), () => this.onClickSinglePoint([4, 5, 6]));
         this.loaded = true;
+        addPercent(0.2);
         this.onGameInited();
     }
 

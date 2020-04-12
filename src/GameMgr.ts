@@ -4,6 +4,7 @@ import Config from "./Config";
 import PlayerData from "./PlayerData";
 
 declare const pomelo;
+declare const addPercent;
 
 class GameMgr_ {
     public inited: boolean;
@@ -160,6 +161,7 @@ class GameMgr_ {
                                                             new PlayerData(playerData);
                                                 }
                                             }
+                                            addPercent(0.2);
                                             this.gameScene.onGameInited();
                                             this.gui.onGameInited();
                                         });
