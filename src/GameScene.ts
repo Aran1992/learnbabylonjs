@@ -80,6 +80,18 @@ export default class GameScene {
         }
     }
 
+    public selfRoll() {
+        this.playerCup.roll([]);
+    }
+
+    public otherPlayersRandomRoll() {
+        const now = new Date().getTime();
+        const diff = GameMgr.rollFinalTime - now;
+        this.otherCups.forEach(cup => {
+            setTimeout(() => cup.roll(), diff * Math.random());
+        });
+    }
+
     // public onStartForBamao() {
     //     this.playerCup.reset(Config.cup.initCount);
     //     this.otherCups.forEach(cup => cup && cup.reset());

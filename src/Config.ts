@@ -2,14 +2,17 @@ export default {
     bgImagePath: "assets/image/bg.jpg",
     uiXMLPath: "assets/layout/ui.xml",
     pointImagePath: "assets/image/yyl_ludan_${point}.png",
+    startAnimationDuration: 1000,
+    rollAnimationDuration: 1000,
+    eliminateDuration: 2000,
     designWidth: 1280,
     designHeight: 720,
-    friction: 0.1,
-    restitution: 0.1,
     camera: {
         pos: [0, 12, -12],
         target: [0, 0, -4]
     },
+    friction: 0.1,
+    restitution: 0.1,
     cup: {
         initCount: 6,
         texturePath: "assets/image/bg.png",

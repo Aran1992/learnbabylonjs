@@ -3,19 +3,23 @@ import {AdvancedDynamicTexture, Button, Image, Rectangle, XmlLoader} from "babyl
 import GameMgr from "./GameMgr";
 import PlayerData from "./PlayerData";
 import PlayerInfoPanel from "./PlayerInfoPanel";
+import GameScene from "./GameScene";
 
 declare const addPercent;
 
 export default class GUI {
     private xmlLoader: XmlLoader;
+    private gameScene: GameScene;
     private loaded: boolean;
     private clockEndTime: number;
+    private clockCallback: CallableFunction;
     private points: number[];
     private selfPlayerInfoPanel: PlayerInfoPanel;
     private playerInfoPanelList: PlayerInfoPanel[] = [];
     private otherPlayerInfoPanelList: PlayerInfoPanel[] = [];
 
-    constructor() {
+    constructor(gameScene: GameScene) {
+        this.gameScene = gameScene;
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
         let renderScale;
         if (canvas.width / canvas.height > Config.designWidth / Config.designHeight) {
@@ -59,11 +63,13 @@ export default class GUI {
 
     public onStartReadyForBamao(data) {
         this.xmlLoader.getNodeById("preparationRect").isVisible = true;
-        this.startClock(data.readyEndTime, "waitForStart");
+        this.startClock(data.readyEndTime * 1000, "waitForStart");
     }
 
     public onStartForBamao() {
         GameMgr.playerDataList.forEach(info => this.updatePlayerInfo(info));
+        this.xmlLoader.getNodeById("startTextBlock").isVisible = true;
+        setTimeout(this.onStartAnimationEnded.bind(this), Config.startAnimationDuration);
     }
 
     public onSelfReady() {
@@ -87,16 +93,16 @@ export default class GUI {
             }
             this.xmlLoader.getNodeById("DSPointsRect").isVisible = false;
             this.xmlLoader.getNodeById("DXPointsRect").isVisible = false;
-            this.startClock(data.endTime, "waitForCall");
+            this.startClock(data.endTime * 1000, "waitForCall");
         } else {
-            this.startClock(data.endTime, "waitForOtherCall");
+            this.startClock(data.endTime * 1000, "waitForOtherCall");
         }
         this.selfPlayerInfoPanel.refresh(GameMgr.selfPlayerData);
     }
 
     public onEliminateOpeForBamao(data) {
         this.xmlLoader.getNodeById("pointsRect").isVisible = false;
-        this.startClock(data.endTime, "showResult");
+        this.startClock(data.endTime * 1000, "showResult");
         const callResultRect = this.xmlLoader.getNodeById("callResultRect") as Rectangle;
         callResultRect.isVisible = true;
         if (GameMgr.eliminateOpePlayerIndex !== undefined) {
@@ -124,8 +130,14 @@ export default class GUI {
         // 可是这样子好像好没结算
     }
 
+    private onStartAnimationEnded() {
+        this.xmlLoader.getNodeById("startTextBlock").isVisible = false;
+        this.startClock(GameMgr.rollFinalTime, "waitForRoll", this.onClickRollRect.bind(this));
+        this.gameScene.otherPlayersRandomRoll();
+    }
+
     private onLoaded() {
-        setInterval(this.onClock.bind(this), 1000);
+        setInterval(this.onClock.bind(this), 100);
         for (let i = 0; i < Config.cups.length; i++) {
             const playerInfo = this.xmlLoader.getNodeById(`playerInfo${i}`) as Rectangle;
             const playerInfoPanel = new PlayerInfoPanel(playerInfo);
@@ -138,6 +150,7 @@ export default class GUI {
             }
         }
         this.onClick(this.xmlLoader.getNodeById("startBtn"), this.onClickStartBtn.bind(this));
+        this.onClick(this.xmlLoader.getNodeById("rollRect"), this.onClickRollRect.bind(this));
         for (let i = 1; i <= 6; i++) {
             this.onClick(this.xmlLoader.getNodeById(`point${i}`), () => this.onClickDoublePoint(i));
         }
@@ -152,6 +165,11 @@ export default class GUI {
 
     private onClickStartBtn() {
         GameMgr.ready();
+    }
+
+    private onClickRollRect() {
+        this.stopClock();
+        this.gameScene.selfRoll();
     }
 
     private onClickDoublePoint(point: number) {
@@ -176,7 +194,7 @@ export default class GUI {
         this.playerInfoPanelList[index].refresh(info);
     }
 
-    private startClock(endTime: number, waitForText: string) {
+    private startClock(endTime: number, waitForText: string, callback?: CallableFunction) {
         const waitForRect = this.xmlLoader.getNodeById("waitForRect") as Rectangle;
         if (waitForText) {
             waitForRect.isVisible = true;
@@ -184,7 +202,14 @@ export default class GUI {
         } else {
             waitForRect.isVisible = false;
         }
-        this.clockEndTime = endTime * 1000;
+        this.clockEndTime = endTime;
+        this.clockCallback = callback;
+        this.onClock();
+    }
+
+    private stopClock() {
+        this.clockEndTime = 0;
+        delete this.clockCallback;
         this.onClock();
     }
 
@@ -195,6 +220,10 @@ export default class GUI {
             this.xmlLoader.getNodeById("clockText").text = remain.toString();
         } else {
             this.xmlLoader.getNodeById("clockRect").isVisible = false;
+            if (this.clockCallback) {
+                this.clockCallback();
+                delete this.clockCallback;
+            }
         }
     }
 }

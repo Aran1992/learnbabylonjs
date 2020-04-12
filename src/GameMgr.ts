@@ -12,14 +12,19 @@ class GameMgr_ {
     public selfPlayerData: PlayerData;
     public otherPlayerDataList: PlayerData[] = [];
     public playerDataList: PlayerData[] = [];
-    public eliminateOpePlayerIndex;
+    public eliminateOpePlayerIndex: number;
+    public eliminateEndTime: number;
     private gameScene: GameScene;
     private gui: GUI;
+
+    public get rollFinalTime(): number {
+        return GameMgr.eliminateEndTime - Config.rollAnimationDuration - Config.eliminateDuration;
+    }
 
     init() {
         this.register();
         this.gameScene = new GameScene();
-        this.gui = new GUI();
+        this.gui = new GUI(this.gameScene);
         this.requestInitData();
     }
 
@@ -79,6 +84,7 @@ class GameMgr_ {
 
     public onEliminateStartForBamao(data) {
         this.eliminateOpePlayerIndex = this.getPlayerIndexByUid(data.opeUid);
+        this.eliminateEndTime = data.endTime * 1000;
     }
 
     public onEliminateOpeForBamao(data) {
@@ -185,10 +191,10 @@ class GameMgr_ {
 
     private register() {
         [
-            "onStartReadyForBamao",
             "onEnterRoom",
-            "onReadyForBamao",
             "onLeaveRoom",
+            "onStartReadyForBamao",
+            "onReadyForBamao",
             "onStartForBamao",
             "onSendDiceForBamao",
             "onEliminateStartForBamao",
