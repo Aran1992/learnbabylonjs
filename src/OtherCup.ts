@@ -55,6 +55,7 @@ export default class OtherCup {
         this.scene.registerBeforeRender(this.onFrameHandler);
     }
 
+
     public eliminate(befDice: number[], removeDices: number[], callback?: CallableFunction) {
         this.dices = this.createDices(befDice, this.diceModelTemplate, this.position);
         this.playOpen(() => {
@@ -78,7 +79,7 @@ export default class OtherCup {
     private playOpen(callback: CallableFunction) {
         const frameHandler = () => {
             const mesh = this.cup.getChildMeshes()[0].getChildMeshes()[0];
-            mesh.visibility -= 1 / 60;
+            mesh.visibility -= 1 / (Config.openCupDuration / 1000 * Config.fps);
             if (mesh.visibility <= 0) {
                 this.scene.unregisterBeforeRender(frameHandler);
                 callback();
@@ -89,6 +90,8 @@ export default class OtherCup {
 
     private playEliminate(removeDices: number[], callback: CallableFunction) {
         let count = 0;
+        console.log("removeDices", removeDices);
+        console.log("dice.point", this.dices.map(dice => dice.point));
         this.dices.forEach(dice => {
             if (removeDices.indexOf(dice.point) !== -1) {
                 count++;

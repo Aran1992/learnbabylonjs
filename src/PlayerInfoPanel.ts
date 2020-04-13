@@ -48,17 +48,18 @@ export default class PlayerInfoPanel {
         this.dead.isVisible = playerData.dead;
         this.winMoney.isVisible = false;
         this.loseMoney.isVisible = false;
-        if (playerData.dice) {
-            this.diceRect.isVisible = true;
-            this.curDicePanel.refresh(playerData.dice);
-            if (playerData.befDice) {
-                this.befDiceRect.isVisible = true;
-                this.befDicePanel.refresh(playerData.befDice);
-            } else {
-                this.befDiceRect.isVisible = false;
-            }
-        } else {
-            this.diceRect.isVisible = false;
-        }
+        this.diceRect.isVisible = false;
+        // if (playerData.dice) {
+        //     this.diceRect.isVisible = true;
+        //     this.curDicePanel.refresh(playerData.dice);
+        //     if (playerData.befDice) {
+        //         this.befDiceRect.isVisible = true;
+        //         this.befDicePanel.refresh(playerData.befDice);
+        //     } else {
+        //         this.befDiceRect.isVisible = false;
+        //     }
+        // } else {
+        //     this.diceRect.isVisible = false;
+        // }
     }
 }

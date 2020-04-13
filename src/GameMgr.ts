@@ -9,6 +9,7 @@ declare const addPercent;
 class GameMgr_ {
     public inited: boolean;
     public isInPreparationStep: boolean;
+    public startAnimation: boolean;
     public selfPlayerData: PlayerData;
     public otherPlayerDataList: PlayerData[] = [];
     public playerDataList: PlayerData[] = [];
@@ -79,7 +80,7 @@ class GameMgr_ {
         this.otherPlayerDataList.forEach(info => {
             delete info.dice;
             delete info.befDice;
-        })
+        });
     }
 
     public onEliminateStartForBamao(data) {
@@ -202,7 +203,7 @@ class GameMgr_ {
             "onGameOverForBamao",
         ].forEach(event => {
             pomelo.on(event, (...args) => {
-                console.log("pomelo event", event, ...args);
+                console.log(new Date().getTime(), "pomelo event", event, ...args);
                 [this, this.gameScene, this.gui].forEach(mgr => mgr[event] && mgr[event](...args));
             });
         });

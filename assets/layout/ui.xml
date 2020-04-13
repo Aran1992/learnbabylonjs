@@ -6,7 +6,7 @@
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL"
-                   top="-100px"/>
+                   top="-100"/>
             <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" isVisible="false"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
@@ -42,7 +42,7 @@
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" isVisible="false"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL"
-                   top="100px"/>
+                   top="100"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
             <Rectangle name="diceRect" thickness="0" top="80">
@@ -77,7 +77,7 @@
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" isVisible="false"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL"
-                   top="100px"/>
+                   top="100"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
             <Rectangle name="diceRect" thickness="0" top="80">
@@ -112,7 +112,7 @@
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" isVisible="false"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL"
-                   top="100px"/>
+                   top="100"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
             <Rectangle name="diceRect" thickness="0" top="80">
@@ -146,7 +146,7 @@
             <TextBlock name="name" text="玩家名字" color="white" fontSize="24" top="-25"/>
             <TextBlock name="money" text="金钱" color="white" fontSize="24" top="25"/>
             <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL"
-                   top="100px"/>
+                   top="100"/>
             <TextBlock name="dead" text="没骰子了" color="red" fontSize="24" isVisible="false"/>
             <TextBlock name="winMoney" text="+a232323" color="red" fontSize="24" top="25" isVisible="false"/>
             <TextBlock name="loseMoney" text="-a232323" color="green" fontSize="24" top="25" isVisible="false"/>
@@ -218,11 +218,11 @@
         <Rectangle id="waitForRect" thickness="0">
             <Image name="waitForStart" source="assets/image/icon_waitgame.png" autoScale="true"
                    stretch="Image.STRETCH_FILL" top="100"/>
-            <TextBlock name="waitForCall" text="轮到你叫牌啦" color="white" fontSize="24" top="100px"/>
-            <TextBlock name="waitForOtherCall" text="等待其他玩家叫牌" color="white" fontSize="24" top="100px"/>
-            <TextBlock name="showResult" text="剔除结果展示" color="white" fontSize="24" top="100px"/>
+            <TextBlock name="waitForCall" text="轮到你叫牌啦" color="white" fontSize="24" top="100"/>
+            <TextBlock name="waitForOtherCall" text="等待其他玩家叫牌" color="white" fontSize="24" top="100"/>
+            <TextBlock name="showResult" text="剔除结果展示" color="white" fontSize="24" top="100"/>
             <Rectangle id="rollRect" name="waitForRoll" thickness="0" isVisible="false">
-                <TextBlock text="点击摇一摇" color="yellow" fontSize="50" top="200px" left="250px"/>
+                <TextBlock text="点击摇一摇" color="yellow" fontSize="50" top="200" left="250"/>
             </Rectangle>
         </Rectangle>
     </Rectangle>
@@ -234,66 +234,6 @@
             <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </StackPanel>
-    </Rectangle>
-    <Rectangle id="pointsRect" thickness="0" width="345px" height="44px" left="275" top="150" isVisible="false">
-        <Rectangle id="numberPointsRect" thickness="0" isVisible="false">
-            <Button id="point1" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="0">
-                <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                <Image name="selected" source="assets/image/point_change.png" autoScale="true"
-                       stretch="Image.STRETCH_FILL"/>
-            </Button>
-            <Button id="point2" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="44">
-                <Image source="assets/image/yyl_ludan_2.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                <Image name="selected" source="assets/image/point_change.png" autoScale="true"
-                       stretch="Image.STRETCH_FILL"/>
-            </Button>
-            <Button id="point3" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="88">
-                <Image source="assets/image/yyl_ludan_3.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                <Image name="selected" source="assets/image/point_change.png" autoScale="true"
-                       stretch="Image.STRETCH_FILL"/>
-            </Button>
-            <Button id="point4" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="132">
-                <Image source="assets/image/yyl_ludan_4.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                <Image name="selected" source="assets/image/point_change.png" autoScale="true"
-                       stretch="Image.STRETCH_FILL"/>
-            </Button>
-            <Button id="point5" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="176">
-                <Image source="assets/image/yyl_ludan_5.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                <Image name="selected" source="assets/image/point_change.png" autoScale="true"
-                       stretch="Image.STRETCH_FILL"/>
-            </Button>
-            <Button id="point6" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="220">
-                <Image source="assets/image/yyl_ludan_6.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                <Image name="selected" source="assets/image/point_change.png" autoScale="true"
-                       stretch="Image.STRETCH_FILL"/>
-            </Button>
-        </Rectangle>
-        <Rectangle id="DSPointsRect" thickness="0" isVisible="false">
-            <Button id="point_single" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="0">
-                <Image source="assets/image/point_single.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            </Button>
-            <Button id="point_double" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="44">
-                <Image source="assets/image/point_double.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            </Button>
-        </Rectangle>
-        <Rectangle id="DXPointsRect" thickness="0" isVisible="false">
-            <Button id="point_small" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="0">
-                <Image source="assets/image/point_small.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            </Button>
-            <Button id="point_big" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-                    horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="44">
-                <Image source="assets/image/point_big.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            </Button>
-        </Rectangle>
     </Rectangle>
     <Rectangle id="winRect" thickness="0" isVisible="false">
         <Image source="assets/image/win_pic.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
@@ -308,11 +248,91 @@
             <Image source="assets/image/start.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </Button>
     </Rectangle>
-    <Rectangle id="loadingRect" background="black" alpha="0.5">
-        <TextBlock text="loading..." fontSize="100" color="white"/>
-    </Rectangle>
     <TextBlock id="startTextBlock" text="游戏开始" color="yellow" fontSize="100" isVisible="false"/>
     <TextBlock id="yourTurnText" text="轮到你了" color="yellow" fontSize="100" isVisible="false"/>
+    <Rectangle id="pointsRect" isVisible="false">
+        <Rectangle thickness="5" width="360px" height="180px" left="400" top="250">
+            <TextBlock text="选择去除的骰子类型，单点可选2个" fontSize="22" color="white" left="0" top="-60"/>
+            <StackPanel id="numberPointsRect" left="-90" top="20">
+                <StackPanel isVertical="false" width="132px" height="44px">
+                    <Button id="point1" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                        <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                        <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                               stretch="Image.STRETCH_FILL"/>
+                    </Button>
+                    <Button id="point2" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                        <Image source="assets/image/yyl_ludan_2.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                        <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                               stretch="Image.STRETCH_FILL"/>
+                    </Button>
+                    <Button id="point3" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                        <Image source="assets/image/yyl_ludan_3.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                        <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                               stretch="Image.STRETCH_FILL"/>
+                    </Button>
+                </StackPanel>
+                <StackPanel isVertical="false" width="132px" height="44px">
+                    <Button id="point4" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                        <Image source="assets/image/yyl_ludan_4.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                        <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                               stretch="Image.STRETCH_FILL"/>
+                    </Button>
+                    <Button id="point5" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                        <Image source="assets/image/yyl_ludan_5.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                        <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                               stretch="Image.STRETCH_FILL"/>
+                    </Button>
+                    <Button id="point6" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                        <Image source="assets/image/yyl_ludan_6.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                        <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                               stretch="Image.STRETCH_FILL"/>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+            <TextBlock text="或" fontSize="30" color="black" left="0" top="20"/>
+            <StackPanel id="DSPointsRect" left="45" top="20">
+                <Button id="point_single" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                    <Image source="assets/image/point_single.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                    <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                           stretch="Image.STRETCH_FILL"/>
+                </Button>
+                <Button id="point_double" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                    <Image source="assets/image/point_double.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                    <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                           stretch="Image.STRETCH_FILL"/>
+                </Button>
+            </StackPanel>
+            <TextBlock text="或" fontSize="30" color="black" left="90" top="20"/>
+            <StackPanel id="DXPointsRect" left="135" top="20">
+                <Button id="point_small" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                    <Image source="assets/image/point_small.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                    <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                           stretch="Image.STRETCH_FILL"/>
+                </Button>
+                <Button id="point_big" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+                    <Image source="assets/image/point_big.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                    <Image name="selected" source="assets/image/point_change.png" autoScale="true"
+                           stretch="Image.STRETCH_FILL"/>
+                </Button>
+            </StackPanel>
+        </Rectangle>
+        <Rectangle>
+            <StackPanel isVertical="false" width="220px" height="44px">
+                <Image source="assets/image/yyl_ludan_4.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                <Rectangle width="44px" height="44px" thickness="0">
+                    <TextBlock text="+" fontSize="30" color="black"/>
+                </Rectangle>
+                <Image source="assets/image/yyl_ludan_4.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                <Rectangle width="44px" height="44px" thickness="0">
+                    <TextBlock text="+" fontSize="30" color="black"/>
+                </Rectangle>
+                <Image source="assets/image/yyl_ludan_4.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            </StackPanel>
+            <Button id="callBtn" thickness="5" width="100px" height="50px" top="75">
+                <TextBlock text="叫点" fontSize="30" color="black"/>
+            </Button>
+        </Rectangle>
+    </Rectangle>
     <Rectangle id="controlRect" thickness="0" width="210px" height="60px"
                horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" top="-320">
         <Button id="returnBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
@@ -328,4 +348,6 @@
             <Image source="assets/image/help.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </Button>
     </Rectangle>
+    <Rectangle id="loadingRect" background="black" alpha="0.5"/>
+    <TextBlock id="hasLeaveText" text="您已离开房间" fontSize="50" color="red" isVisible="false"/>
 </root>

@@ -52,6 +52,10 @@ export default class PlayerDice {
         return this.sides.sort((a, b) => Util.getWorldPosition(b.mesh).y - Util.getWorldPosition(a.mesh).y)[0].point;
     }
 
+    public set point(point: number) {
+        this.mesh.rotationQuaternion = new Vector3(...Config.dice.sides.find(side => side.point === point).rotation).toQuaternion();
+    }
+
     public set position(p: Vector3) {
         this.mesh.position = p;
     }
@@ -70,12 +74,28 @@ export default class PlayerDice {
     }
 
     public playEliminate(callback: CallableFunction) {
+        let count = Config.diceDisappearAnimation.twinkTimes;
+        const mesh = this.mesh.getChildMeshes()[0].getChildMeshes()[0];
+        let delta = -1 / (Config.diceDisappearAnimation.duration / 1000 / (count * 2 - 1) * Config.fps);
         const frameHandler = () => {
-            const mesh = this.mesh.getChildMeshes()[0].getChildMeshes()[0];
-            mesh.visibility -= 1 / 60;
-            if (mesh.visibility <= 0) {
-                this.scene.unregisterBeforeRender(frameHandler);
-                callback();
+            if (delta < 0) {
+                mesh.visibility += delta;
+                if (mesh.visibility <= 0) {
+                    mesh.visibility = 0;
+                    count--;
+                    if (count === 0) {
+                        this.scene.unregisterBeforeRender(frameHandler);
+                        callback();
+                    } else {
+                        delta = -delta;
+                    }
+                }
+            } else {
+                mesh.visibility += delta;
+                if (mesh.visibility >= 1) {
+                    mesh.visibility = 1;
+                    delta = -delta;
+                }
             }
         };
         this.scene.registerBeforeRender(frameHandler);

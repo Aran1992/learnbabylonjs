@@ -81,52 +81,49 @@ export default class GameScene {
     }
 
     public selfRoll() {
-        this.playerCup.roll([]);
+        if (GameMgr.selfPlayerData.ready) {
+            this.playerCup.roll(GameMgr.selfPlayerData.dice);
+        }
     }
 
     public otherPlayersRandomRoll() {
         const now = new Date().getTime();
         const diff = GameMgr.rollFinalTime - now;
-        this.otherCups.forEach(cup => {
-            setTimeout(() => cup.roll(), diff * Math.random());
+        GameMgr.otherPlayerDataList.forEach((data, i) => {
+            if (data.ready) {
+                const cup = this.otherCups[i];
+                setTimeout(() => cup.roll(), diff * Math.random());
+            }
         });
     }
 
-    // public onStartForBamao() {
-    //     this.playerCup.reset(Config.cup.initCount);
-    //     this.otherCups.forEach(cup => cup && cup.reset());
-    // }
-    //
-    // public onSendDiceForBamao(data) {
-    //     if (GameMgr.selfPlayerData.ready) {
-    //         this.playerCup.roll(data.dice.sort());
-    //     }
-    //     GameMgr.otherPlayerDataList.forEach(info => {
-    //         if (info.ready) {
-    //             const cup = this.otherCups[info.index];
-    //             if (cup) {
-    //                 cup.roll();
-    //             }
-    //         }
-    //     });
-    // }
-    //
-    // public onEliminateOpeForBamao(data) {
-    //     if (GameMgr.selfPlayerData.ready) {
-    //         this.playerCup.eliminate(data.removeDice);
-    //     }
-    //     for (const seat in data.befDice) {
-    //         if (data.befDice.hasOwnProperty(seat)) {
-    //             const dice = data.befDice[seat];
-    //             const index = GameMgr.getPlayerIndexBySeat(parseInt(seat));
-    //             if (GameMgr.playerDataList[index].ready) {
-    //                 if (this.otherCups[index]) {
-    //                     this.otherCups[index].eliminate(dice, data.removeDice || []);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    public onStartForBamao() {
+        this.playerCup.reset(Config.cup.initCount);
+        this.otherCups.forEach(cup => cup && cup.reset());
+    }
+
+    public onEliminateStartForBamao() {
+        if (!GameMgr.startAnimation) {
+            this.playerCup.reset();
+            this.otherCups.forEach(cup => cup && cup.reset());
+            this.otherPlayersRandomRoll();
+        }
+    }
+
+    public onEliminateOpeForBamao(data) {
+        if (GameMgr.selfPlayerData.ready) {
+            this.playerCup.eliminate(data.removeDice);
+        }
+        for (const seat in data.befDice) {
+            if (data.befDice.hasOwnProperty(seat)) {
+                const dice = data.befDice[seat];
+                const index = GameMgr.getPlayerIndexBySeat(parseInt(seat));
+                if (this.otherCups[index]) {
+                    this.otherCups[index].eliminate(dice, data.removeDice || []);
+                }
+            }
+        }
+    }
 
     private onSceneLoaded() {
         addPercent(0.2);

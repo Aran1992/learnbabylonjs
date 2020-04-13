@@ -30,9 +30,9 @@
             background-size: cover;
         }
 
-        #emptyImg, #fillDiv {
-            height: 4%;
+        #emptyImg {
             position: absolute;
+            height: 4.2%;
             bottom: 10%;
         }
 
@@ -43,6 +43,9 @@
         }
 
         #fillDiv {
+            position: absolute;
+            height: 2.5%;
+            bottom: 10%;
             background-image: url("assets/image/loading/fill.png");
             background-position: left;
             background-size: cover;
@@ -53,7 +56,7 @@
 <canvas id="canvas"></canvas>
 <div id="loadingSceneDiv">
     <img id="emptyImg" src="assets/image/loading/empty.png"/>
-    <div id="fillDiv" hidden></div>
+    <div hidden id="fillDiv"></div>
     <img id="textImg" src="assets/image/loading/text.png"/>
 </div>
 <script>
@@ -122,10 +125,10 @@
     centerImg(emptyImg, onEmptyImgLoaded);
 </script>
 <div id="scriptsDiv">
-    <script src="lib/protobuf.js" onload="addPercent(0.1);"></script>
-    <script src="lib/pomelo-client.js" onload="addPercent(0.1);"></script>
-    <script src="lib/cannon.min.js" onload="addPercent(0.1);"></script>
-    <script src="dist/bundle.js" onload="addPercent(0.1);"></script>
+    <script onload="addPercent(0.1);" src="lib/protobuf.js"></script>
+    <script onload="addPercent(0.1);" src="lib/pomelo-client.js"></script>
+    <script onload="addPercent(0.1);" src="lib/cannon.min.js"></script>
+    <script onload="addPercent(0.1);" src="dist/bundle.js"></script>
 </div>
 </body>
 </html>

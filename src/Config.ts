@@ -1,4 +1,10 @@
 export default {
+    fps: 60,
+    openCupDuration: 1000,
+    diceDisappearAnimation: {
+        twinkTimes: 3,
+        duration: 1000,
+    },
     bgImagePath: "assets/image/bg.jpg",
     uiXMLPath: "assets/layout/ui.xml",
     pointImagePath: "assets/image/yyl_ludan_${point}.png",
@@ -64,12 +70,12 @@ export default {
         modelSize: 0.005875,
         scale: 0.5 / 0.005875,
         sides: [
-            {point: 4, position: [1, 0, 0],},
-            {point: 3, position: [-1, 0, 0],},
-            {point: 5, position: [0, 1, 0],},
-            {point: 1, position: [0, -1, 0],},
-            {point: 2, position: [0, 0, 1],},
-            {point: 6, position: [0, 0, -1],},
+            {point: 4, position: [1, 0, 0], rotation: [0, 0, Math.PI / 2,],},
+            {point: 3, position: [-1, 0, 0], rotation: [0, 0, -Math.PI / 2,],},
+            {point: 5, position: [0, 1, 0], rotation: [0, 0, 0,]},
+            {point: 1, position: [0, -1, 0], rotation: [Math.PI, 0, 0,],},
+            {point: 2, position: [0, 0, 1], rotation: [-Math.PI / 2, 0, 0,],},
+            {point: 6, position: [0, 0, -1], rotation: [Math.PI / 2, 0, 0,],},
         ],
     },
     cups: [

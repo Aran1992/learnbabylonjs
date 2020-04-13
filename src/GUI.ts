@@ -17,6 +17,7 @@ export default class GUI {
     private selfPlayerInfoPanel: PlayerInfoPanel;
     private playerInfoPanelList: PlayerInfoPanel[] = [];
     private otherPlayerInfoPanelList: PlayerInfoPanel[] = [];
+    private clockEndedCallback: CallableFunction;
 
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
@@ -55,6 +56,10 @@ export default class GUI {
     public removePlayer(index: number) {
         const playerInfo = this.xmlLoader.getNodeById(`playerInfo${index}`) as Rectangle;
         playerInfo.isVisible = false;
+        if (index === 0) {
+            this.xmlLoader.getNodeById("loadingRect").isVisible = true;
+            this.xmlLoader.getNodeById("hasLeaveText").isVisible = true;
+        }
     }
 
     public onReadyForBamao(data) {
@@ -67,6 +72,7 @@ export default class GUI {
     }
 
     public onStartForBamao() {
+        GameMgr.startAnimation = true;
         GameMgr.playerDataList.forEach(info => this.updatePlayerInfo(info));
         this.xmlLoader.getNodeById("startTextBlock").isVisible = true;
         setTimeout(this.onStartAnimationEnded.bind(this), Config.startAnimationDuration);
@@ -83,21 +89,10 @@ export default class GUI {
         this.xmlLoader.getNodeById("pointsRect").isVisible = false;
     }
 
-    public onEliminateStartForBamao(data) {
-        if (data.opeUid === GameMgr.selfPlayerData.uid) {
-            this.points = [];
-            this.xmlLoader.getNodeById("pointsRect").isVisible = true;
-            this.xmlLoader.getNodeById("numberPointsRect").isVisible = true;
-            for (let i = 1; i <= 6; i++) {
-                (this.xmlLoader.getNodeById(`point${i}`) as Button).getChildByName("selected").isVisible = false;
-            }
-            this.xmlLoader.getNodeById("DSPointsRect").isVisible = false;
-            this.xmlLoader.getNodeById("DXPointsRect").isVisible = false;
-            this.startClock(data.endTime * 1000, "waitForCall");
-        } else {
-            this.startClock(data.endTime * 1000, "waitForOtherCall");
+    public onEliminateStartForBamao() {
+        if (!GameMgr.startAnimation) {
+            this.startClock(GameMgr.rollFinalTime, "waitForRoll", this.onClickRollRect.bind(this));
         }
-        this.selfPlayerInfoPanel.refresh(GameMgr.selfPlayerData);
     }
 
     public onEliminateOpeForBamao(data) {
@@ -131,6 +126,7 @@ export default class GUI {
     }
 
     private onStartAnimationEnded() {
+        GameMgr.startAnimation = false;
         this.xmlLoader.getNodeById("startTextBlock").isVisible = false;
         this.startClock(GameMgr.rollFinalTime, "waitForRoll", this.onClickRollRect.bind(this));
         this.gameScene.otherPlayersRandomRoll();
@@ -151,7 +147,7 @@ export default class GUI {
         }
         this.onClick(this.xmlLoader.getNodeById("startBtn"), this.onClickStartBtn.bind(this));
         this.onClick(this.xmlLoader.getNodeById("rollRect"), this.onClickRollRect.bind(this));
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= Config.dice.sides.length; i++) {
             this.onClick(this.xmlLoader.getNodeById(`point${i}`), () => this.onClickDoublePoint(i));
         }
         this.onClick(this.xmlLoader.getNodeById("point_single"), () => this.onClickSinglePoint([1, 3, 5]));
@@ -170,6 +166,22 @@ export default class GUI {
     private onClickRollRect() {
         this.stopClock();
         this.gameScene.selfRoll();
+    }
+
+    private onAllPlayerRollEnded() {
+        if (GameMgr.eliminateOpePlayerIndex === GameMgr.selfPlayerData.uid) {
+            this.points = [];
+            this.xmlLoader.getNodeById("pointsRect").isVisible = true;
+            for (let i = 1; i <= Config.dice.sides.length; i++) {
+                (this.xmlLoader.getNodeById(`point${i}`) as Button).getChildByName("selected").isVisible = false;
+            }
+            // this.xmlLoader.getNodeById("numberPointsRect").isVisible = true;
+            // this.xmlLoader.getNodeById("DSPointsRect").isVisible = false;
+            // this.xmlLoader.getNodeById("DXPointsRect").isVisible = false;
+            this.startClock(GameMgr.eliminateEndTime * 1000, "waitForCall");
+        } else {
+            this.startClock(GameMgr.eliminateEndTime * 1000, "waitForOtherCall");
+        }
     }
 
     private onClickDoublePoint(point: number) {

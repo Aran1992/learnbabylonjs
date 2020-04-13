@@ -26,6 +26,7 @@ export default class PlayerCup {
         [80, () => Math.random()],
         [90, undefined],
     ];
+    private targetPoints: number[];
 
     constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh, cupModelTemplate: AbstractMesh) {
         this.scene = scene;
@@ -37,23 +38,22 @@ export default class PlayerCup {
         this.dices = this.createDices(this.count, this.diceModelTemplate, this.position, false);
     }
 
-    public reset(count: number) {
+    public reset(count?: number) {
         this.clear();
-        this.count = count;
+        this.count = count === undefined ? this.count : count;
         this.cup = this.createCup(this.position, this.cupModelTemplate, false);
         this.dices = this.createDices(this.count, this.diceModelTemplate, this.position, false);
     }
 
-    public roll(dices: number[]) {
-        this.cup.dispose();
+    public roll(points: number[]) {
+        this.targetPoints = points;
+        this.clear();
         this.cup = this.createCup(this.position, this.cupModelTemplate, true);
         const {joint, holder} = this.createHingeJoint(this.cup, this.cup.position);
         this.joint = joint;
         this.holder = holder;
-        this.dices.forEach(dice => dice.dispose());
         this.dices = this.createDices(this.count, this.diceModelTemplate, this.position, true);
-        //1,4,4,5,6
-        this.shakeList = [[10, -5.682770889356593], [20, 5.261282736873518], [30, -4.521011282358746], [40, 4.501058969542266], [50, -2.061774020530656], [60, 2.339427333998123], [70, -0.5115494559287483], [80, 0.2445071835686432], [90, null]];
+        this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && creator()]);
         this.frame = 0;
         this.onFrameHandler = this.onFrame.bind(this);
         this.scene.registerBeforeRender(this.onFrameHandler);
@@ -85,7 +85,7 @@ export default class PlayerCup {
     private playOpen(callback: CallableFunction) {
         const frameHandler = () => {
             const mesh = this.cup.getChildMeshes()[0].getChildMeshes()[0];
-            mesh.visibility -= 1 / 60;
+            mesh.visibility -= 1 / (Config.openCupDuration / 1000 * Config.fps);
             if (mesh.visibility <= 0) {
                 this.scene.unregisterBeforeRender(frameHandler);
                 callback();
@@ -243,12 +243,14 @@ export default class PlayerCup {
                 this.joint.setMotor(0);
                 this.cup.rotationQuaternion = new Quaternion();
             }
-            if (this.frame >= 180) {
+            if (this.frame >= Config.rollAnimationDuration / 1000 * Config.fps) {
                 this.cup.physicsImpostor.dispose();
                 this.holder.dispose();
                 delete this.holder;
                 this.dices.forEach(dice => dice.disposePhysicsImpostor());
                 this.scene.unregisterBeforeRender(this.onFrameHandler);
+                // 按照摇的指定需求 将骰子转成指定的方向
+                this.dices.forEach((dice, i) => dice.point = this.targetPoints[i]);
                 if (!this.dices.some(dice => !dice.isStatic)) {
                     console.log(this.dices.map(dice => dice.point).sort().join(","));
                 } else {
