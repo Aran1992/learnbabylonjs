@@ -82,7 +82,10 @@ export default class GameScene {
 
     public selfRoll() {
         if (GameMgr.selfPlayerData.ready) {
-            this.playerCup.roll(GameMgr.selfPlayerData.dice);
+            this.playerCup.roll(GameMgr.selfPlayerData.dice, () => {
+                GameMgr.selfPlayerData.rolled = true;
+                this.onPlayerRollEnded();
+            });
         }
     }
 
@@ -92,7 +95,12 @@ export default class GameScene {
         GameMgr.otherPlayerDataList.forEach((data, i) => {
             if (data.ready) {
                 const cup = this.otherCups[i];
-                setTimeout(() => cup.roll(), diff * Math.random());
+                const timeout = diff * Math.random();
+                console.log("timeout", timeout);
+                setTimeout(() => cup.roll(() => {
+                    GameMgr.otherPlayerDataList[i].rolled = true;
+                    this.onPlayerRollEnded();
+                }), timeout);
             }
         });
     }
@@ -103,11 +111,8 @@ export default class GameScene {
     }
 
     public onEliminateStartForBamao() {
-        if (!GameMgr.startAnimation) {
-            this.playerCup.reset();
-            this.otherCups.forEach(cup => cup && cup.reset());
-            this.otherPlayersRandomRoll();
-        }
+        this.playerCup.reset();
+        this.otherCups.forEach(cup => cup && cup.reset());
     }
 
     public onEliminateOpeForBamao(data) {
@@ -144,5 +149,11 @@ export default class GameScene {
         const [x, z] = Config.cups[index];
         this.otherCups[index] = new OtherCup(this.scene, new Vector3(x, 0, z),
             this.meshTable["touzi"], this.meshTable["shaizhong2"]);
+    }
+
+    private onPlayerRollEnded() {
+        if (GameMgr.isAllPlayerRollEnded) {
+            EventMgr.notify("AllPlayerRollEnded");
+        }
     }
 }

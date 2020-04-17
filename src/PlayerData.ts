@@ -11,6 +11,7 @@ export default class PlayerData {
     public diceCount: number;
     public dice: number[];
     public befDice: number[];
+    public rolled: boolean;
 
     constructor(data: { uid: number, gold: number, seatNum: number, nickname: string, ready: boolean }) {
         this.uid = data.uid;

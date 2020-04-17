@@ -22,6 +22,10 @@ class GameMgr_ {
         return GameMgr.eliminateEndTime - Config.rollAnimationDuration - Config.eliminateDuration;
     }
 
+    public get isAllPlayerRollEnded(): boolean {
+        return !this.playerDataList.some(player => !player.rolled);
+    }
+
     init() {
         this.register();
         this.gameScene = new GameScene();
@@ -81,6 +85,7 @@ class GameMgr_ {
             delete info.dice;
             delete info.befDice;
         });
+        this.playerDataList.forEach(info => info.rolled = false);
     }
 
     public onEliminateStartForBamao(data) {
@@ -123,8 +128,9 @@ class GameMgr_ {
     }
 
     private requestInitData() {
-        const ip = "111.229.243.99";
-        // const ip = "192.168.18.80";
+        // const ip = "111.229.243.99";
+        const ip = "192.168.18.80";
+        console.log("ip", ip);
         fetch(`http://${ip}:28302/products/dwc_29.json`).then(initResponse => {
             initResponse.json().then(initData => {
                 fetch(`http://${initData.platSvrHost}:${initData.platSvrPort}`, {

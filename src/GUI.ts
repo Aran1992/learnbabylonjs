@@ -1,9 +1,11 @@
 import Config from "./Config";
-import {AdvancedDynamicTexture, Button, Image, Rectangle, XmlLoader} from "babylonjs-gui";
+import {AdvancedDynamicTexture, Image, Rectangle, XmlLoader} from "babylonjs-gui";
 import GameMgr from "./GameMgr";
 import PlayerData from "./PlayerData";
 import PlayerInfoPanel from "./PlayerInfoPanel";
+import ChoosePointPanel from "./ChoosePointPanel";
 import GameScene from "./GameScene";
+import EventMgr from "./EventMgr";
 
 declare const addPercent;
 
@@ -13,11 +15,9 @@ export default class GUI {
     private loaded: boolean;
     private clockEndTime: number;
     private clockCallback: CallableFunction;
-    private points: number[];
     private selfPlayerInfoPanel: PlayerInfoPanel;
     private playerInfoPanelList: PlayerInfoPanel[] = [];
-    private otherPlayerInfoPanelList: PlayerInfoPanel[] = [];
-    private clockEndedCallback: CallableFunction;
+    private choosePointPanel: ChoosePointPanel;
 
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
@@ -40,6 +40,8 @@ export default class GUI {
         foreground.renderScale = renderScale;
         this.xmlLoader = new XmlLoader();
         this.xmlLoader.loadLayout(Config.uiXMLPath, foreground, this.onLoaded.bind(this));
+
+        EventMgr.register("AllPlayerRollEnded", this.onAllPlayerRollEnded.bind(this));
     }
 
     public onGameInited() {
@@ -86,17 +88,15 @@ export default class GUI {
     public onSendDiceForBamao() {
         GameMgr.playerDataList.forEach(info => this.updatePlayerInfo(info));
         this.xmlLoader.getNodeById("callResultRect").isVisible = false;
-        this.xmlLoader.getNodeById("pointsRect").isVisible = false;
+        this.choosePointPanel.isVisible = false;
     }
 
     public onEliminateStartForBamao() {
-        if (!GameMgr.startAnimation) {
-            this.startClock(GameMgr.rollFinalTime, "waitForRoll", this.onClickRollRect.bind(this));
-        }
+        this.onRollStart();
     }
 
     public onEliminateOpeForBamao(data) {
-        this.xmlLoader.getNodeById("pointsRect").isVisible = false;
+        this.choosePointPanel.isVisible = false;
         this.startClock(data.endTime * 1000, "showResult");
         const callResultRect = this.xmlLoader.getNodeById("callResultRect") as Rectangle;
         callResultRect.isVisible = true;
@@ -128,8 +128,16 @@ export default class GUI {
     private onStartAnimationEnded() {
         GameMgr.startAnimation = false;
         this.xmlLoader.getNodeById("startTextBlock").isVisible = false;
-        this.startClock(GameMgr.rollFinalTime, "waitForRoll", this.onClickRollRect.bind(this));
-        this.gameScene.otherPlayersRandomRoll();
+        this.onRollStart();
+    }
+
+    private onRollStart() {
+        if (!GameMgr.startAnimation && GameMgr.eliminateEndTime) {
+            if (GameMgr.selfPlayerData.ready) {
+                this.startClock(GameMgr.rollFinalTime, "waitForRoll", this.onClickRollRect.bind(this));
+            }
+            this.gameScene.otherPlayersRandomRoll();
+        }
     }
 
     private onLoaded() {
@@ -141,19 +149,11 @@ export default class GUI {
             playerInfoPanel.isVisible = false;
             if (i === 0) {
                 this.selfPlayerInfoPanel = playerInfoPanel;
-            } else {
-                this.otherPlayerInfoPanelList[i] = playerInfoPanel;
             }
         }
-        this.onClick(this.xmlLoader.getNodeById("startBtn"), this.onClickStartBtn.bind(this));
+        this.choosePointPanel = new ChoosePointPanel(this.xmlLoader);
+        this.onClick(this.xmlLoader.getNodeById("prepareBtn"), this.onClickStartBtn.bind(this));
         this.onClick(this.xmlLoader.getNodeById("rollRect"), this.onClickRollRect.bind(this));
-        for (let i = 1; i <= Config.dice.sides.length; i++) {
-            this.onClick(this.xmlLoader.getNodeById(`point${i}`), () => this.onClickDoublePoint(i));
-        }
-        this.onClick(this.xmlLoader.getNodeById("point_single"), () => this.onClickSinglePoint([1, 3, 5]));
-        this.onClick(this.xmlLoader.getNodeById("point_double"), () => this.onClickSinglePoint([2, 4, 6]));
-        this.onClick(this.xmlLoader.getNodeById("point_small"), () => this.onClickSinglePoint([1, 2, 3]));
-        this.onClick(this.xmlLoader.getNodeById("point_big"), () => this.onClickSinglePoint([4, 5, 6]));
         this.loaded = true;
         addPercent(0.2);
         this.onGameInited();
@@ -169,31 +169,15 @@ export default class GUI {
     }
 
     private onAllPlayerRollEnded() {
-        if (GameMgr.eliminateOpePlayerIndex === GameMgr.selfPlayerData.uid) {
-            this.points = [];
-            this.xmlLoader.getNodeById("pointsRect").isVisible = true;
-            for (let i = 1; i <= Config.dice.sides.length; i++) {
-                (this.xmlLoader.getNodeById(`point${i}`) as Button).getChildByName("selected").isVisible = false;
+        if (GameMgr.isAllPlayerRollEnded) {
+            if (GameMgr.eliminateOpePlayerIndex === GameMgr.getPlayerIndexByUid(GameMgr.selfPlayerData.uid)) {
+                this.choosePointPanel.isVisible = true;
+                this.choosePointPanel.reset();
+                this.startClock(GameMgr.eliminateEndTime, "waitForCall");
+            } else {
+                this.startClock(GameMgr.eliminateEndTime, "waitForOtherCall");
             }
-            // this.xmlLoader.getNodeById("numberPointsRect").isVisible = true;
-            // this.xmlLoader.getNodeById("DSPointsRect").isVisible = false;
-            // this.xmlLoader.getNodeById("DXPointsRect").isVisible = false;
-            this.startClock(GameMgr.eliminateEndTime * 1000, "waitForCall");
-        } else {
-            this.startClock(GameMgr.eliminateEndTime * 1000, "waitForOtherCall");
         }
-    }
-
-    private onClickDoublePoint(point: number) {
-        (this.xmlLoader.getNodeById(`point${point}`) as Button).getChildByName("selected").isVisible = true;
-        this.points.push(point);
-        if (this.points.length === 2) {
-            GameMgr.eliminate(this.points);
-        }
-    }
-
-    private onClickSinglePoint(points: number[]) {
-        GameMgr.eliminate(points);
     }
 
     private onClick(button, callback) {
@@ -239,5 +223,3 @@ export default class GUI {
         }
     }
 }
-
-

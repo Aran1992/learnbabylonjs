@@ -1,4 +1,6 @@
 export default {
+    maxSelectPoint: 2,
+    maxChoosePoint: 3,
     fps: 60,
     openCupDuration: 1000,
     diceDisappearAnimation: {
@@ -80,10 +82,10 @@ export default {
     },
     cups: [
         [0, -7],
-        [9, -3],
+        [9.5, -2],
         [5, -0.5],
-        [0, 1],
+        [0, 0.5],
         [-5, -0.5],
-        [-9, -3],
+        [-9.5, -2],
     ],
 };

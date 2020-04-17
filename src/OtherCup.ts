@@ -23,6 +23,7 @@ export default class OtherCup {
         [80, () => 1 * Math.random()],
         [90, undefined],
     ];
+    private rollEndedCallback: CallableFunction;
 
     constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh, cupModelTemplate: AbstractMesh) {
         this.scene = scene;
@@ -46,7 +47,8 @@ export default class OtherCup {
         this.cup = this.createCup(this.position, this.cupModelTemplate);
     }
 
-    public roll() {
+    public roll(callback: CallableFunction) {
+        this.rollEndedCallback = callback;
         this.clear();
         this.cup = this.createCup(this.position, this.cupModelTemplate);
         this.shakeList = this.createShakeList.map(([frame, creator]) => [frame, creator && (creator() * 0.01)]);
@@ -54,7 +56,6 @@ export default class OtherCup {
         this.onFrameHandler = this.onFrame.bind(this);
         this.scene.registerBeforeRender(this.onFrameHandler);
     }
-
 
     public eliminate(befDice: number[], removeDices: number[], callback?: CallableFunction) {
         this.dices = this.createDices(befDice, this.diceModelTemplate, this.position);
@@ -149,6 +150,12 @@ export default class OtherCup {
             }
             if (!flag) {
                 this.cup.rotation.z = 0;
+            }
+            if (this.frame >= Config.rollAnimationDuration / 1000 * Config.fps) {
+                this.scene.unregisterBeforeRender(this.onFrameHandler);
+                if (this.rollEndedCallback) {
+                    this.rollEndedCallback();
+                }
             }
             this.frame++;
         } else {

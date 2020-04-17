@@ -27,6 +27,7 @@ export default class PlayerCup {
         [90, undefined],
     ];
     private targetPoints: number[];
+    private rollEndedCallback: CallableFunction;
 
     constructor(scene: Scene, position: Vector3, diceModelTemplate: AbstractMesh, cupModelTemplate: AbstractMesh) {
         this.scene = scene;
@@ -45,7 +46,8 @@ export default class PlayerCup {
         this.dices = this.createDices(this.count, this.diceModelTemplate, this.position, false);
     }
 
-    public roll(points: number[]) {
+    public roll(points: number[], callback?: CallableFunction) {
+        this.rollEndedCallback = callback;
         this.targetPoints = points;
         this.clear();
         this.cup = this.createCup(this.position, this.cupModelTemplate, true);
@@ -249,12 +251,14 @@ export default class PlayerCup {
                 delete this.holder;
                 this.dices.forEach(dice => dice.disposePhysicsImpostor());
                 this.scene.unregisterBeforeRender(this.onFrameHandler);
-                // 按照摇的指定需求 将骰子转成指定的方向
                 this.dices.forEach((dice, i) => dice.point = this.targetPoints[i]);
                 if (!this.dices.some(dice => !dice.isStatic)) {
                     console.log(this.dices.map(dice => dice.point).sort().join(","));
                 } else {
                     console.log();
+                }
+                if (this.rollEndedCallback) {
+                    this.rollEndedCallback();
                 }
             }
             this.frame++;
