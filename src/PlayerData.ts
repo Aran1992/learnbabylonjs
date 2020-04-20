@@ -26,4 +26,8 @@ export default class PlayerData {
     public get index(): number {
         return GameMgr.getPlayerIndexByUid(this.uid);
     }
+
+    public get isThinking(): boolean {
+        return GameMgr.eliminateOpePlayerIndex === GameMgr.getPlayerIndexByUid(this.uid);
+    }
 }

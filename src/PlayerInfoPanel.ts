@@ -7,12 +7,14 @@ export default class PlayerInfoPanel {
     private name: TextBlock;
     private money: TextBlock;
     private ready: Image;
+    private thinking: Image;
 
     constructor(playerInfoRect: Rectangle) {
         this.playerInfoRect = playerInfoRect;
         this.name = this.playerInfoRect.getChildByName("name") as TextBlock;
         this.money = this.playerInfoRect.getChildByName("money") as TextBlock;
         this.ready = this.playerInfoRect.getChildByName("ready") as Image;
+        this.thinking = this.playerInfoRect.getChildByName("thinking") as Image;
     }
 
     public get isVisible(): boolean {
@@ -27,5 +29,6 @@ export default class PlayerInfoPanel {
         this.name.text = playerData.nickname;
         this.money.text = playerData.gold.toString();
         this.ready.isVisible = playerData.ready && GameMgr.isInPreparationStep;
+        this.thinking.isVisible = playerData.isThinking;
     }
 }
