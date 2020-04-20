@@ -6,6 +6,7 @@ import PlayerInfoPanel from "./PlayerInfoPanel";
 import ChoosePointPanel from "./ChoosePointPanel";
 import GameScene from "./GameScene";
 import EventMgr from "./EventMgr";
+import CallResultPanel from "./CallResultPanel";
 
 declare const addPercent;
 
@@ -18,6 +19,7 @@ export default class GUI {
     private selfPlayerInfoPanel: PlayerInfoPanel;
     private playerInfoPanelList: PlayerInfoPanel[] = [];
     private choosePointPanel: ChoosePointPanel;
+    private callResultPanel: CallResultPanel;
 
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
@@ -89,6 +91,7 @@ export default class GUI {
         GameMgr.playerDataList.forEach(info => this.updatePlayerInfo(info));
         this.xmlLoader.getNodeById("callResultRect").isVisible = false;
         this.choosePointPanel.isVisible = false;
+        this.callResultPanel.hide();
     }
 
     public onEliminateStartForBamao() {
@@ -101,19 +104,7 @@ export default class GUI {
         const callResultRect = this.xmlLoader.getNodeById("callResultRect") as Rectangle;
         callResultRect.isVisible = true;
         if (GameMgr.eliminateOpePlayerIndex !== undefined) {
-            const playerInfoPanel = this.xmlLoader.getNodeById(`playerInfo${GameMgr.eliminateOpePlayerIndex}`) as Rectangle;
-            callResultRect.left = playerInfoPanel.left;
-            callResultRect.top = playerInfoPanel.top;
-            const callResultDiceRect = this.xmlLoader.getNodeById("callResultDiceRect") as Rectangle;
-            callResultDiceRect.children.forEach((child: Image, i: number) => {
-                const point = data.removeDice[i];
-                if (point !== undefined) {
-                    child.isVisible = true;
-                    child.source = Config.pointImagePath.replace("${point}", point);
-                } else {
-                    child.isVisible = false;
-                }
-            });
+            this.callResultPanel.show(GameMgr.eliminateOpePlayerIndex, data.removeDice);
         }
         GameMgr.playerDataList.forEach((info, i) => {
             this.playerInfoPanelList[i].refresh(info);
@@ -152,6 +143,7 @@ export default class GUI {
             }
         }
         this.choosePointPanel = new ChoosePointPanel(this.xmlLoader);
+        this.callResultPanel = new CallResultPanel(this.xmlLoader);
         this.onClick(this.xmlLoader.getNodeById("prepareBtn"), this.onClickStartBtn.bind(this));
         this.onClick(this.xmlLoader.getNodeById("rollRect"), this.onClickRollRect.bind(this));
         this.loaded = true;
