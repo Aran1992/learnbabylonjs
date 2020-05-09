@@ -35,7 +35,7 @@ export default class OtherDice {
     }
 
     public set point(point: number) {
-        this.mesh.rotationQuaternion = new Vector3(...Config.dice.sides.find(side => side.point === point).rotation).toQuaternion();
+        this.mesh.rotationQuaternion = new Vector3(...Config.dice.sides.filter(side => side.point === point)[0].rotation).toQuaternion();
     }
 
     public dispose() {

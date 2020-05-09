@@ -120,7 +120,13 @@ class GameMgr_ {
     }
 
     public getPlayerIndexByUid(uid: number): number {
-        return this.playerDataList.findIndex(player => player && player.uid === uid);
+        let index = undefined;
+        this.playerDataList.forEach((player, i) => {
+            if (player && player.uid === uid) {
+                index = i;
+            }
+        });
+        return index;
     }
 
     public getPlayerDataByUid(uid: number): PlayerData {

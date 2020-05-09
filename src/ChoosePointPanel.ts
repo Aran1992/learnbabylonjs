@@ -1,4 +1,4 @@
-import {Button, Control, Image, Rectangle, XmlLoader} from "babylonjs-gui";
+import {Button, Image, Rectangle, XmlLoader} from "babylonjs-gui";
 import Config from "./Config";
 import GameMgr from "./GameMgr";
 import Util from "./Util";
@@ -12,7 +12,7 @@ export default class ChoosePointPanel {
     private bigBtn: Button;
     private singleBtn: Button;
     private doubleBtn: Button;
-    private points: Set<number>;
+    private points: number[];
     private isSmall: boolean;
     private isSingle: boolean;
     private type: string;
@@ -52,7 +52,7 @@ export default class ChoosePointPanel {
     private getSelectedPoints(): number[] {
         switch (this.type) {
             case "point": {
-                return Array.from(this.points).sort();
+                return this.points.sort();
             }
             case "singleDouble": {
                 return this.isSingle ? [1, 3, 5] : [2, 4, 6];
@@ -87,7 +87,7 @@ export default class ChoosePointPanel {
     private refresh() {
         this.pointBtn.forEach((btn, point) => {
             btn.getChildByName("selected").isVisible
-                = this.type === "point" && this.points.has(point);
+                = this.type === "point" && this.points.indexOf(point) !== -1;
         });
         this.singleBtn.getChildByName("selected").isVisible
             = this.type === "singleDouble" && this.isSingle;
@@ -103,14 +103,13 @@ export default class ChoosePointPanel {
     private clickPointBtn(point: number) {
         if (this.type !== "point") {
             this.type = "point";
-            this.points = new Set();
-            this.points.add(point);
-        } else if (this.points.has(point)) {
-            this.points.delete(point);
-        } else if (this.points.size >= Config.maxSelectPoint) {
+            this.points = [point];
+        } else if (this.points.indexOf(point) !== -1) {
+            Util.removeItemFromArray(this.points, point);
+        } else if (this.points.length >= Config.maxSelectPoint) {
 
         } else {
-            this.points.add(point);
+            this.points.push(point);
         }
         this.refresh();
     }
@@ -133,9 +132,5 @@ export default class ChoosePointPanel {
 
     private onClickCallBtn() {
         GameMgr.eliminate(this.getSelectedPoints());
-    }
-
-    private onClick(button: Control, callback) {
-        button.onPointerUpObservable.add(callback);
     }
 }
