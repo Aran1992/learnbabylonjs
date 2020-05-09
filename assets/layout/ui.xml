@@ -55,7 +55,6 @@
         <TextBlock id="clockText" text="aa" color="black" fontSize="24" top="-2"/>
         <Rectangle id="waitForRect" thickness="0">
             <TextBlock name="waitForCall" text="倒计时结束前进行准备" color="white" fontSize="24" top="75"/>
-            <Image name="waitForStart" source="assets/image/icon_waitgame.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
             <TextBlock name="waitForCall" text="轮到你叫牌啦" color="white" fontSize="24" top="75"/>
             <Image name="waitForOtherCall" source="assets/image/wait_other_call_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
             <Image name="showResult" source="assets/image/wait_eliminate_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
@@ -233,21 +232,22 @@
         </Button>
         <Image source="assets/image/setting/text_music.png" autoScale="true" stretch="Image.STRETCH_FILL" left="-150" top="-75"/>
         <Image source="assets/image/setting/text_sound.png" autoScale="true" stretch="Image.STRETCH_FILL" left="-150" top="50"/>
-        <Button id="closeMusicBtn" thickness="0" width="200px" height="100px" top="-75" left="90" isVisible="false">
+        <Button id="openMusicBtn" thickness="0" width="200px" height="100px" top="-75" left="90" isVisible="false">
             <Image source="assets/image/setting/close_btn.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <Image source="assets/image/setting/close_text.png" autoScale="true" stretch="Image.STRETCH_FILL" left="-40" top="7"/>
         </Button>
-        <Button id="openMusicBtn" thickness="0" width="200px" height="100px" top="-75" left="90">
+        <Button id="closeMusicBtn" thickness="0" width="200px" height="100px" top="-75" left="90">
             <Image source="assets/image/setting/open_btn.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <Image source="assets/image/setting/open_text.png" autoScale="true" stretch="Image.STRETCH_FILL" left="40" top="7"/>
         </Button>
-        <Button id="closeSoundBtn" thickness="0" width="200px" height="100px" top="50" left="90">
+        <Button id="openSoundBtn" thickness="0" width="200px" height="100px" top="50" left="90">
             <Image source="assets/image/setting/close_btn.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <Image source="assets/image/setting/close_text.png" autoScale="true" stretch="Image.STRETCH_FILL" left="-40" top="7"/>
         </Button>
-        <Button id="openSoundBtn" thickness="0" width="200px" height="100px" top="50" left="90" isVisible="false">
+        <Button id="closeSoundBtn" thickness="0" width="200px" height="100px" top="50" left="90" isVisible="false">
             <Image source="assets/image/setting/open_btn.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <Image source="assets/image/setting/open_text.png" autoScale="true" stretch="Image.STRETCH_FILL" left="40" top="7"/>
         </Button>
     </Rectangle>
+    <Rectangle id="startMusicBtn" thickness="0"/>
 </root>

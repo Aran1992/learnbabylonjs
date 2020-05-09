@@ -88,4 +88,11 @@ export default {
         [-5, -0.5],
         [-9.5, -2],
     ],
+    audioResTable: {
+        bgm: "assets/sound/yaoyaole_bgm.mp3",
+        click: "assets/sound/yaoyaole_click.mp3",
+        lose: "assets/sound/yaoyaole_end_lose.mp3",
+        win: "assets/sound/yaoyaole_end_win.mp3",
+        shake: "assets/sound/yaoyaole_shake_dice.mp3",
+    },
 };

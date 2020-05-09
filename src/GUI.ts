@@ -1,5 +1,5 @@
 import Config from "./Config";
-import {AdvancedDynamicTexture, Image, Rectangle, XmlLoader} from "babylonjs-gui";
+import {AdvancedDynamicTexture, Button, Image, Rectangle, XmlLoader} from "babylonjs-gui";
 import GameMgr from "./GameMgr";
 import PlayerData from "./PlayerData";
 import PlayerInfoPanel from "./PlayerInfoPanel";
@@ -7,6 +7,9 @@ import ChoosePointPanel from "./ChoosePointPanel";
 import GameScene from "./GameScene";
 import EventMgr from "./EventMgr";
 import CallResultPanel from "./CallResultPanel";
+import SettingPanel from "./SettingPanel";
+import SoundMgr from "./SoundMgr";
+import Util from "./Util";
 
 declare const addPercent;
 
@@ -20,6 +23,15 @@ export default class GUI {
     private playerInfoPanelList: PlayerInfoPanel[] = [];
     private choosePointPanel: ChoosePointPanel;
     private callResultPanel: CallResultPanel;
+
+    private startMusicBtn: Button;
+
+    private returnBtn: Button;
+    private helpBtn: Button;
+    private helpPanel: Rectangle;
+    private closeHelpBtn: Button;
+    private settingBtn: Button;
+    private settingPanel: SettingPanel;
 
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
@@ -42,6 +54,8 @@ export default class GUI {
         foreground.renderScale = renderScale;
         this.xmlLoader = new XmlLoader();
         this.xmlLoader.loadLayout(Config.uiXMLPath, foreground, this.onLoaded.bind(this));
+
+        SoundMgr.loadAudioRes(Util.values(Config.audioResTable), this.onAudioResLoaded.bind(this));
 
         EventMgr.register("AllPlayerRollEnded", this.onAllPlayerRollEnded.bind(this));
     }
@@ -132,6 +146,23 @@ export default class GUI {
     }
 
     private onLoaded() {
+        this.startMusicBtn = this.xmlLoader.getNodeById("startMusicBtn");
+        Util.onClick(this.startMusicBtn, this.onClickStartMusicBtn.bind(this), {playSound: false});
+
+        this.returnBtn = this.xmlLoader.getNodeById("returnBtn");
+        Util.onClick(this.returnBtn, this.onClickReturnBtn.bind(this));
+
+        this.helpBtn = this.xmlLoader.getNodeById("helpBtn");
+        Util.onClick(this.helpBtn, this.onClickHelpBtn.bind(this));
+        this.helpPanel = this.xmlLoader.getNodeById("helpPanel");
+        this.closeHelpBtn = this.xmlLoader.getNodeById("closeHelpBtn");
+        Util.onClick(this.closeHelpBtn, this.closeHelpBtnClick.bind(this));
+
+        this.settingBtn = this.xmlLoader.getNodeById("settingBtn");
+        Util.onClick(this.settingBtn, this.onClickSettingBtn.bind(this));
+        this.settingPanel = new SettingPanel(this.xmlLoader);
+        this.settingPanel.isVisible = false;
+
         setInterval(this.onClock.bind(this), 100);
         for (let i = 0; i < Config.cups.length; i++) {
             const playerInfo = this.xmlLoader.getNodeById(`playerInfo${i}`) as Rectangle;
@@ -144,11 +175,26 @@ export default class GUI {
         }
         this.choosePointPanel = new ChoosePointPanel(this.xmlLoader);
         this.callResultPanel = new CallResultPanel(this.xmlLoader);
-        this.onClick(this.xmlLoader.getNodeById("prepareBtn"), this.onClickStartBtn.bind(this));
-        this.onClick(this.xmlLoader.getNodeById("rollRect"), this.onClickRollRect.bind(this));
+        Util.onClick(this.xmlLoader.getNodeById("prepareBtn"), this.onClickStartBtn.bind(this));
+        Util.onClick(this.xmlLoader.getNodeById("rollRect"), this.onClickRollRect.bind(this), {playSound: false});
         this.loaded = true;
-        addPercent(0.2);
+        addPercent(0.1);
         this.onGameInited();
+    }
+
+    private onClickReturnBtn() {
+    }
+
+    private onClickHelpBtn() {
+        this.helpPanel.isVisible = true;
+    }
+
+    private closeHelpBtnClick() {
+        this.helpPanel.isVisible = false;
+    }
+
+    private onClickSettingBtn() {
+        this.settingPanel.isVisible = true;
     }
 
     private onClickStartBtn() {
@@ -158,6 +204,7 @@ export default class GUI {
     private onClickRollRect() {
         this.stopClock();
         this.gameScene.selfRoll();
+        SoundMgr.playSound(Config.audioResTable.shake);
     }
 
     private onAllPlayerRollEnded() {
@@ -170,10 +217,6 @@ export default class GUI {
                 this.startClock(GameMgr.eliminateEndTime, "waitForOtherCall");
             }
         }
-    }
-
-    private onClick(button, callback) {
-        button.onPointerUpObservable.add(callback);
     }
 
     private updatePlayerInfo(info: PlayerData) {
@@ -213,5 +256,14 @@ export default class GUI {
                 delete this.clockCallback;
             }
         }
+    }
+
+    private onAudioResLoaded() {
+        addPercent(0.1);
+    }
+
+    private onClickStartMusicBtn() {
+        SoundMgr.playMusic(Config.audioResTable.bgm);
+        this.startMusicBtn.isVisible = false;
     }
 }

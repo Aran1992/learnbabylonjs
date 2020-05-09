@@ -1,6 +1,7 @@
 import {Button, Control, Image, Rectangle, XmlLoader} from "babylonjs-gui";
 import Config from "./Config";
 import GameMgr from "./GameMgr";
+import Util from "./Util";
 
 export default class ChoosePointPanel {
     private xmlLoader: XmlLoader;
@@ -21,18 +22,18 @@ export default class ChoosePointPanel {
         this.root = this.xmlLoader.getNodeById("pointsRect");
         for (let i = 1; i <= Config.dice.sides.length; i++) {
             this.pointBtn[i] = xmlLoader.getNodeById(`point${i}`);
-            this.onClick(this.pointBtn[i], () => this.clickPointBtn(i));
+            Util.onClick(this.pointBtn[i], () => this.clickPointBtn(i));
         }
         this.smallBtn = xmlLoader.getNodeById("point_small");
         this.bigBtn = xmlLoader.getNodeById("point_big");
         this.singleBtn = xmlLoader.getNodeById("point_single");
         this.doubleBtn = xmlLoader.getNodeById("point_double");
         this.callBtn = xmlLoader.getNodeById("callBtn");
-        this.onClick(this.singleBtn, () => this.onClickSingleDoubleBtn(true));
-        this.onClick(this.doubleBtn, () => this.onClickSingleDoubleBtn(false));
-        this.onClick(this.smallBtn, () => this.onClickSmallBigBtn(true));
-        this.onClick(this.bigBtn, () => this.onClickSmallBigBtn(false));
-        this.onClick(this.callBtn, () => this.onClickCallBtn());
+        Util.onClick(this.singleBtn, () => this.onClickSingleDoubleBtn(true));
+        Util.onClick(this.doubleBtn, () => this.onClickSingleDoubleBtn(false));
+        Util.onClick(this.smallBtn, () => this.onClickSmallBigBtn(true));
+        Util.onClick(this.bigBtn, () => this.onClickSmallBigBtn(false));
+        Util.onClick(this.callBtn, () => this.onClickCallBtn());
         this.refresh();
     }
 
