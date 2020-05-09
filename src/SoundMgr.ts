@@ -1,6 +1,8 @@
 import EventMgr from "./EventMgr";
 import Util from "./Util";
 
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+
 class BufferLoader {
     private context: AudioContext;
     private urlList: string[] = [];
@@ -32,7 +34,7 @@ class BufferLoader {
                     if (++loader.loadCount === loader.urlList.length)
                         loader.onload(loader.bufferList);
                 }
-            ).then();
+            );
         };
 
         request.onerror = function () {
@@ -58,6 +60,7 @@ class SoundMgr_ {
     private musicSource: AudioBufferSourceNode;
 
     constructor() {
+        // @ts-ignore
         this.context = new AudioContext();
         EventMgr.register("GameStop", this.onGameStop.bind(this));
         EventMgr.register("GameStart", this.onGameStart.bind(this));
