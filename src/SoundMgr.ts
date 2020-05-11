@@ -88,7 +88,7 @@ class SoundMgr_ {
     }
 
     public closeMusic() {
-        localStorage.isMusicOpen = true;
+        localStorage.isMusicOpen = false;
         this.muteMusic(true);
     }
 
