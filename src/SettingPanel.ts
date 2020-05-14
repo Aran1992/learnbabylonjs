@@ -1,5 +1,5 @@
 import {Rectangle} from "babylonjs-gui/2D/controls/rectangle";
-import {Control, XmlLoader} from "babylonjs-gui";
+import {XmlLoader} from "babylonjs-gui";
 import {Button} from "babylonjs-gui/2D/controls/button";
 import SoundMgr from "./SoundMgr";
 import Util from "./Util";
@@ -17,15 +17,15 @@ export default class SettingPanel {
         this.xmlLoader = xmlLoader;
         this.root = this.xmlLoader.getNodeById("settingPanel");
         this.closeSettingBtn = this.xmlLoader.getNodeById("closeSettingBtn");
-        Util.onClick(this.closeSettingBtn, this.onClickCloseSettingBtn.bind(this));
+        Util.onClick(this.closeSettingBtn, this.onClickCloseSettingBtn);
         this.closeMusicBtn = this.xmlLoader.getNodeById("closeMusicBtn");
-        Util.onClick(this.closeMusicBtn, this.closeMusicBtnClick.bind(this));
+        Util.onClick(this.closeMusicBtn, this.closeMusicBtnClick);
         this.openMusicBtn = this.xmlLoader.getNodeById("openMusicBtn");
-        Util.onClick(this.openMusicBtn, this.openMusicBtnClick.bind(this));
+        Util.onClick(this.openMusicBtn, this.openMusicBtnClick);
         this.closeSoundBtn = this.xmlLoader.getNodeById("closeSoundBtn");
-        Util.onClick(this.closeSoundBtn, this.closeSoundBtnClick.bind(this));
+        Util.onClick(this.closeSoundBtn, this.closeSoundBtnClick);
         this.openSoundBtn = this.xmlLoader.getNodeById("openSoundBtn");
-        Util.onClick(this.openSoundBtn, this.openSoundBtnClick.bind(this));
+        Util.onClick(this.openSoundBtn, this.openSoundBtnClick);
         this.refresh();
     }
 
@@ -33,26 +33,26 @@ export default class SettingPanel {
         this.root.isVisible = visible;
     }
 
-    private onClickCloseSettingBtn() {
+    private onClickCloseSettingBtn = () => {
         this.isVisible = false;
     }
 
-    private closeMusicBtnClick() {
+    private closeMusicBtnClick = () => {
         SoundMgr.closeMusic();
         this.refresh();
     }
 
-    private openMusicBtnClick() {
+    private openMusicBtnClick = () => {
         SoundMgr.openMusic();
         this.refresh();
     }
 
-    private closeSoundBtnClick() {
+    private closeSoundBtnClick = () => {
         SoundMgr.closeSound();
         this.refresh();
     }
 
-    private openSoundBtnClick() {
+    private openSoundBtnClick = () => {
         SoundMgr.openSound();
         this.refresh();
     }
@@ -72,9 +72,5 @@ export default class SettingPanel {
             this.openSoundBtn.isVisible = true;
             this.closeSoundBtn.isVisible = false;
         }
-    }
-
-    private onClick(button: Control, callback) {
-        button.onPointerUpObservable.add(callback);
     }
 }

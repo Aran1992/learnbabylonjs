@@ -1,9 +1,10 @@
 import {Button, Image, Rectangle, XmlLoader} from "babylonjs-gui";
 import Config from "./Config";
-import GameMgr from "./GameMgr";
 import Util from "./Util";
+import DataMgr from "./DataMgr";
 
 export default class ChoosePointPanel {
+    private dataMgr: DataMgr;
     private xmlLoader: XmlLoader;
     private root: Rectangle;
     private callBtn: Button;
@@ -17,9 +18,10 @@ export default class ChoosePointPanel {
     private isSingle: boolean;
     private type: string;
 
-    constructor(xmlLoader: XmlLoader) {
+    constructor(dataMgr: DataMgr, xmlLoader: XmlLoader) {
+        this.dataMgr = dataMgr;
         this.xmlLoader = xmlLoader;
-        this.root = this.xmlLoader.getNodeById("pointsRect");
+        this.root = this.xmlLoader.getNodeById("callRect");
         for (let i = 1; i <= Config.dice.sides.length; i++) {
             this.pointBtn[i] = xmlLoader.getNodeById(`point${i}`);
             Util.onClick(this.pointBtn[i], () => this.clickPointBtn(i));
@@ -37,16 +39,17 @@ export default class ChoosePointPanel {
         this.refresh();
     }
 
-    public set isVisible(visible: boolean) {
-        this.root.isVisible = visible;
-    }
-
-    public reset() {
+    public show() {
+        this.root.isVisible = true;
         delete this.points;
         delete this.isSmall;
         delete this.isSingle;
         delete this.type;
         this.refresh();
+    }
+
+    public hide() {
+        this.root.isVisible = false;
     }
 
     private getSelectedPoints(): number[] {
@@ -131,6 +134,6 @@ export default class ChoosePointPanel {
     }
 
     private onClickCallBtn() {
-        GameMgr.eliminate(this.getSelectedPoints());
+        this.dataMgr.eliminate(this.getSelectedPoints());
     }
 }

@@ -11,7 +11,7 @@ export default class CallResultPanel {
 
     constructor(xmlLoader: XmlLoader) {
         this.xmlLoader = xmlLoader;
-        this.root = this.xmlLoader.getNodeById("callResultRect");
+        this.root = this.xmlLoader.getNodeById("showRect");
         this.left = this.root.getChildByName("left") as Rectangle;
         this.right = this.root.getChildByName("right") as Rectangle;
 
@@ -20,7 +20,8 @@ export default class CallResultPanel {
 
     show(index: number, points: number[]) {
         this.root.isVisible = true;
-        const playerInfoPanel = this.xmlLoader.getNodeById(`playerInfo${index}`) as Rectangle;
+        const allPlayerInfoPanel = this.xmlLoader.getNodeById(`allPlayerInfoPanel`) as Rectangle;
+        const playerInfoPanel = allPlayerInfoPanel.children[index];
         const panelLeft = parseInt(playerInfoPanel.left as string);
         const panelTop = parseInt(playerInfoPanel.top as string);
         let isLeft = true;

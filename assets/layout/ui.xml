@@ -1,130 +1,41 @@
 <?xml version="1.0"?>
 <root>
-    <Rectangle id="playerInfoPanel" thickness="0">
-        <Rectangle id="playerInfo0" thickness="0" top="250" left="-250">
-            <Image source="assets/image/my_frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="#e9b841" fontSize="24" top="-20"/>
-            <Image source="assets/image/icon_gold.png" autoScale="true" stretch="Image.STRETCH_FILL" top="20" left="-75"/>
-            <TextBlock name="money" text="-+1234" color="#e9b841" fontSize="24" top="20"/>
-            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-100"/>
-            <Image name="thinking" source="assets/image/thinking_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-80"/>
-        </Rectangle>
-        <Rectangle id="playerInfo1" thickness="0" left="500" top="-180">
-            <Image source="assets/image/other_frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="#e9b841" fontSize="22" top="-18"/>
-            <Image source="assets/image/icon_gold.png" top="18" left="-50" width="36px" height="35px"/>
-            <TextBlock name="money" text="-+1234" color="#e9b841" fontSize="22" top="18"/>
-            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
-            <Image name="thinking" source="assets/image/thinking_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-60"/>
-        </Rectangle>
-        <Rectangle id="playerInfo2" thickness="0" left="250" top="-220">
-            <Image source="assets/image/other_frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="#e9b841" fontSize="22" top="-18"/>
-            <Image source="assets/image/icon_gold.png" top="18" left="-50" width="36px" height="35px"/>
-            <TextBlock name="money" text="-+1234" color="#e9b841" fontSize="22" top="18"/>
-            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
-            <Image name="thinking" source="assets/image/thinking_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-60"/>
-        </Rectangle>
-        <Rectangle id="playerInfo3" thickness="0" top="-260">
-            <Image source="assets/image/other_frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="#e9b841" fontSize="22" top="-18"/>
-            <Image source="assets/image/icon_gold.png" top="18" left="-50" width="36px" height="35px"/>
-            <TextBlock name="money" text="-+1234" color="#e9b841" fontSize="22" top="18"/>
-            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
-            <Image name="thinking" source="assets/image/thinking_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-60"/>
-        </Rectangle>
-        <Rectangle id="playerInfo4" thickness="0" left="-250" top="-220">
-            <Image source="assets/image/other_frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="#e9b841" fontSize="22" top="-18"/>
-            <Image source="assets/image/icon_gold.png" top="18" left="-50" width="36px" height="35px"/>
-            <TextBlock name="money" text="-+1234" color="#e9b841" fontSize="22" top="18"/>
-            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
-            <Image name="thinking" source="assets/image/thinking_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-60"/>
-        </Rectangle>
-        <Rectangle id="playerInfo5" thickness="0" left="-500" top="-180">
-            <Image source="assets/image/other_frame.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <TextBlock name="name" text="玩家名字" color="#e9b841" fontSize="22" top="-18"/>
-            <Image source="assets/image/icon_gold.png" top="18" left="-50" width="36px" height="35px"/>
-            <TextBlock name="money" text="-+1234" color="#e9b841" fontSize="22" top="18"/>
-            <Image name="ready" source="assets/image/icon_ready.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
-            <Image name="thinking" source="assets/image/thinking_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-60"/>
-        </Rectangle>
+    <Rectangle id="allPlayerInfoPanel">
+        <Rectangle top="250" left="-250"/>
+        <Rectangle left="500" top="-180"/>
+        <Rectangle left="250" top="-220"/>
+        <Rectangle top="-260"/>
+        <Rectangle left="-250" top="-220"/>
+        <Rectangle left="-500" top="-180"/>
     </Rectangle>
-    <Rectangle id="clockRect" thickness="0">
-        <Image source="assets/image/yyl_bg_clock.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-        <TextBlock id="clockText" text="aa" color="black" fontSize="24" top="-2"/>
-        <Rectangle id="waitForRect" thickness="0">
-            <TextBlock name="waitForCall" text="倒计时结束前进行准备" color="white" fontSize="24" top="75"/>
-            <TextBlock name="waitForCall" text="轮到你叫牌啦" color="white" fontSize="24" top="75"/>
-            <Image name="waitForOtherCall" source="assets/image/wait_other_call_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
-            <Image name="showResult" source="assets/image/wait_eliminate_text.png" autoScale="true" stretch="Image.STRETCH_FILL" top="75"/>
-            <Rectangle id="rollRect" name="waitForRoll" thickness="0">
-                <Image source="assets/image/click_roll.png" autoScale="true" stretch="Image.STRETCH_FILL" top="150" left="275"/>
-            </Rectangle>
-        </Rectangle>
-    </Rectangle>
-    <Rectangle id="callResultRect" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-350" top="-265">
-        <Rectangle name="left" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
-            <Image source="assets/image/calL_result_bg_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <StackPanel ignoreLayoutWarnings="true" name="stack" isVertical="false" left="12" top="-5">
-                <Rectangle thickness="0" width="50px" height="50px">
-                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                </Rectangle>
-                <Rectangle thickness="0" width="50px" height="50px">
-                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                </Rectangle>
-                <Rectangle thickness="0" width="50px" height="50px">
-                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                </Rectangle>
-            </StackPanel>
-        </Rectangle>
-        <Rectangle name="right" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
-            <Image source="assets/image/calL_result_bg_2.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <StackPanel ignoreLayoutWarnings="true" name="stack" isVertical="false" left="-12" top="-5">
-                <Rectangle thickness="0" width="50px" height="50px">
-                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                </Rectangle>
-                <Rectangle thickness="0" width="50px" height="50px">
-                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                </Rectangle>
-                <Rectangle thickness="0" width="50px" height="50px">
-                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-                </Rectangle>
-            </StackPanel>
-        </Rectangle>
-    </Rectangle>
-    <Rectangle id="winRect" thickness="0" isVisible="false">
-        <Image source="assets/image/win_pic.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-    </Rectangle>
-    <Rectangle id="loseRect" thickness="0" isVisible="false">
-        <Image source="assets/image/lose_pic.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-    </Rectangle>
-    <Rectangle id="preparationRect" thickness="0" top="50" isVisible="false">
-        <Button id="prepareBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="125">
+
+    <Rectangle id="readyRect" thickness="0" top="50" isVisible="false">
+        <Button id="readyBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="125">
             <Image source="assets/image/start.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </Button>
         <Button id="changeBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-125">
             <Image source="assets/image/change.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         </Button>
+        <Button id="changeBtnInCenter" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+            <Image source="assets/image/change.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
     </Rectangle>
-    <Image id="startTextBlock" source="assets/image/game_start_text.png" autoScale="true" stretch="Image.STRETCH_FILL" isVisible="false"/>
-    <Image id="yourTurnText" source="assets/image/your_turn_text.png" autoScale="true" stretch="Image.STRETCH_FILL" isVisible="false"/>
-    <Button id="returnBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-            horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="20"
-            verticalAlignment="Control.VERTICAL_ALIGNMENT_TOP" top="20">
-        <Image source="assets/image/return.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-    </Button>
-    <Button id="settingBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-            horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT" left="-20"
-            verticalAlignment="Control.VERTICAL_ALIGNMENT_TOP" top="12">
-        <Image source="assets/image/setting.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-    </Button>
-    <Button id="helpBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
-            horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT" left="-100"
-            verticalAlignment="Control.VERTICAL_ALIGNMENT_TOP" top="12">
-        <Image source="assets/image/help.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-    </Button>
-    <Rectangle id="pointsRect" thickness="0" isVisible="false">
+
+    <Image id="startRect" source="assets/image/game_start_text.png" autoScale="true" stretch="Image.STRETCH_FILL" isVisible="false"/>
+
+    <Rectangle id="rollRect" thickness="0">
+        <Rectangle id="rollRemainTimeRect" thickness="0">
+            <Image source="assets/image/yyl_bg_clock.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            <TextBlock id="rollRemainTimeText" text="aa" color="black" fontSize="24" top="-2"/>
+        </Rectangle>
+        <Rectangle id="rollBtn" thickness="0">
+            <Image source="assets/image/click_roll.png" autoScale="true" stretch="Image.STRETCH_FILL" top="150" left="275"/>
+        </Rectangle>
+    </Rectangle>
+
+    <Image id="yourTurnRect" source="assets/image/your_turn_text.png" autoScale="true" stretch="Image.STRETCH_FILL" isVisible="false"/>
+    <Image id="waitForOtherCall" source="assets/image/wait_other_call_text.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+    <Rectangle id="callRect" thickness="0" isVisible="false">
         <Rectangle thickness="0" width="400px" height="200px" left="400" top="250">
             <Image source="assets/image/choose_dice_bg.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
             <Image source="assets/image/choose_text.png" autoScale="true" stretch="Image.STRETCH_FILL" left="0" top="-60"/>
@@ -196,8 +107,6 @@
         </Rectangle>
         <Rectangle thickness="0" width="400px" height="220px">
             <Image source="assets/image/choose_dice_center_bg.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-            <Image source="assets/image/yyl_bg_clock.png" autoScale="true" stretch="Image.STRETCH_FILL" left="-150"/>
-            <TextBlock text="aa" color="black" fontSize="24" left="-150" top="-2"/>
             <StackPanel ignoreLayoutWarnings="true" isVertical="false" height="44px">
                 <Image id="showPoint0" source="assets/image/yyl_ludan_4.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
                 <Rectangle id="connect1" width="22px" height="44px" thickness="0">
@@ -215,15 +124,63 @@
             </Button>
         </Rectangle>
     </Rectangle>
-    <Rectangle id="loadingRect" background="black" alpha="0.5" isVisible="false"/>
-    <TextBlock id="hasLeaveText" text="您已离开房间" fontSize="50" color="red" isVisible="false"/>
-    <Rectangle id="helpPanel" thickness="0" isVisible="false">
-        <Image source="assets/image/help/bg.png" autoScale="true" stretch="Image.STRETCH_FILL" top="25"/>
-        <Image source="assets/image/help/title.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-275"/>
-        <Button id="closeHelpBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="550" top="-275">
-            <Image source="assets/image/close_btn.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
-        </Button>
+
+    <Rectangle id="showRect" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="-350" top="-265">
+        <Rectangle name="left" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+            <Image source="assets/image/calL_result_bg_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            <StackPanel ignoreLayoutWarnings="true" name="stack" isVertical="false" left="12" top="-5">
+                <Rectangle thickness="0" width="50px" height="50px">
+                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                </Rectangle>
+                <Rectangle thickness="0" width="50px" height="50px">
+                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                </Rectangle>
+                <Rectangle thickness="0" width="50px" height="50px">
+                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                </Rectangle>
+            </StackPanel>
+        </Rectangle>
+        <Rectangle name="right" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true">
+            <Image source="assets/image/calL_result_bg_2.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+            <StackPanel ignoreLayoutWarnings="true" name="stack" isVertical="false" left="-12" top="-5">
+                <Rectangle thickness="0" width="50px" height="50px">
+                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                </Rectangle>
+                <Rectangle thickness="0" width="50px" height="50px">
+                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                </Rectangle>
+                <Rectangle thickness="0" width="50px" height="50px">
+                    <Image source="assets/image/yyl_ludan_1.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+                </Rectangle>
+            </StackPanel>
+        </Rectangle>
     </Rectangle>
+
+    <Rectangle id="winRect" thickness="0" isVisible="false">
+        <Image source="assets/image/win_pic.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+    </Rectangle>
+    <Rectangle id="loseRect" thickness="0" isVisible="false">
+        <Image source="assets/image/lose_pic.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+    </Rectangle>
+    <Rectangle id="drawRect" thickness="0" isVisible="false">
+        <TextBlock text="和局" fontSize="100" colr="red"/>
+    </Rectangle>
+
+    <Button id="returnBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
+            horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_LEFT" left="20"
+            verticalAlignment="Control.VERTICAL_ALIGNMENT_TOP" top="20">
+        <Image source="assets/image/return.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+    </Button>
+    <Button id="settingBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
+            horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT" left="-20"
+            verticalAlignment="Control.VERTICAL_ALIGNMENT_TOP" top="12">
+        <Image source="assets/image/setting.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+    </Button>
+    <Button id="helpBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true"
+            horizontalAlignment="Control.HORIZONTAL_ALIGNMENT_RIGHT" left="-100"
+            verticalAlignment="Control.VERTICAL_ALIGNMENT_TOP" top="12">
+        <Image source="assets/image/help.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+    </Button>
     <Rectangle id="settingPanel" thickness="0" isVisible="false">
         <Image source="assets/image/setting/bg.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
         <Image source="assets/image/setting/title.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-235"/>
@@ -249,5 +206,19 @@
             <Image source="assets/image/setting/open_text.png" autoScale="true" stretch="Image.STRETCH_FILL" left="40" top="7"/>
         </Button>
     </Rectangle>
-    <Rectangle id="startMusicBtn" thickness="0"/>
+    <Rectangle id="helpPanel" thickness="0" isVisible="false">
+        <Image source="assets/image/help/bg.png" autoScale="true" stretch="Image.STRETCH_FILL" top="25"/>
+        <Image source="assets/image/help/title.png" autoScale="true" stretch="Image.STRETCH_FILL" top="-275"/>
+        <Button id="closeHelpBtn" thickness="0" adaptWidthToChildren="true" adaptHeightToChildren="true" left="550" top="-275">
+            <Image source="assets/image/close_btn.png" autoScale="true" stretch="Image.STRETCH_FILL"/>
+        </Button>
+    </Rectangle>
+
+    <TextBlock id="hasLeaveText" text="您已离开房间" fontSize="50" color="red" isVisible="false"/>
+
+    <Rectangle id="loadingRect" background="black" alpha="0.5" isVisible="false"/>
+
+    <Rectangle id="leaveRect" background="black" alpha="0.5" isVisible="false">
+        <TextBlock text="您已离开房间" fontSize="100" color="red"/>
+    </Rectangle>
 </root>

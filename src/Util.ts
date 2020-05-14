@@ -38,4 +38,26 @@ export default class Util {
             callback();
         });
     }
+
+    public static setTimeout(callback: CallableFunction, timeout: number) {
+        const start = new Date().getTime();
+        const end = start + timeout;
+        let frameID;
+        const handler = () => {
+            frameID = requestAnimationFrame(() => {
+                const cur = new Date().getTime();
+                if (cur >= end) {
+                    callback();
+                } else {
+                    handler();
+                }
+            });
+        };
+        handler();
+        return {
+            clearTimeout: () => {
+                cancelAnimationFrame(frameID);
+            }
+        };
+    }
 }

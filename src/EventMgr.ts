@@ -1,14 +1,16 @@
+import {Event} from "./Event";
+
 class EventMgr_ {
     private eventTable = {};
 
-    public register(event: string, handler: CallableFunction) {
+    public register(event: Event, handler: CallableFunction) {
         if (this.eventTable[event] === undefined) {
             this.eventTable[event] = [];
         }
         this.eventTable[event].push(handler);
     }
 
-    public unregister(event: string, handler: CallableFunction) {
+    public unregister(event: Event, handler: CallableFunction) {
         const list = this.eventTable[event];
         if (list) {
             const index = list.indexOf(handler);
@@ -18,7 +20,8 @@ class EventMgr_ {
         }
     }
 
-    public notify(event: string, ...args) {
+    public notify(event: Event, ...args) {
+        console.log("EventMgr.notify", Event[event], ...args);
         const list = this.eventTable[event];
         if (list) {
             list.forEach(handler => handler(...args));

@@ -2,10 +2,9 @@ import Config from "./Config";
 import {AdvancedDynamicTexture, Button, Image, Rectangle, XmlLoader} from "babylonjs-gui";
 import GameMgr from "./GameMgr";
 import PlayerData from "./PlayerData";
-import PlayerInfoPanel from "./PlayerInfoPanel";
+import PlayerDataPanel from "./PlayerDataPanel";
 import ChoosePointPanel from "./ChoosePointPanel";
 import GameScene from "./GameScene";
-import EventMgr from "./EventMgr";
 import CallResultPanel from "./CallResultPanel";
 import SettingPanel from "./SettingPanel";
 import SoundMgr from "./SoundMgr";
@@ -19,8 +18,8 @@ export default class GUI {
     private loaded: boolean;
     private clockEndTime: number;
     private clockCallback: CallableFunction;
-    private selfPlayerInfoPanel: PlayerInfoPanel;
-    private playerInfoPanelList: PlayerInfoPanel[] = [];
+    private selfPlayerInfoPanel: PlayerDataPanel;
+    private playerInfoPanelList: PlayerDataPanel[] = [];
     private choosePointPanel: ChoosePointPanel;
     private callResultPanel: CallResultPanel;
 
@@ -56,8 +55,6 @@ export default class GUI {
         this.xmlLoader.loadLayout(Config.uiXMLPath, foreground, this.onLoaded.bind(this));
 
         SoundMgr.loadAudioRes(Util.values(Config.audioResTable), this.onAudioResLoaded.bind(this));
-
-        EventMgr.register("AllPlayerRollEnded", this.onAllPlayerRollEnded.bind(this));
     }
 
     public onGameInited() {
@@ -104,7 +101,6 @@ export default class GUI {
     public onSendDiceForBamao() {
         GameMgr.playerDataList.forEach(info => this.updatePlayerInfo(info));
         this.xmlLoader.getNodeById("callResultRect").isVisible = false;
-        this.choosePointPanel.isVisible = false;
         this.callResultPanel.hide();
     }
 
@@ -113,7 +109,6 @@ export default class GUI {
     }
 
     public onEliminateOpeForBamao(data) {
-        this.choosePointPanel.isVisible = false;
         this.startClock(data.endTime * 1000, "showResult");
         const callResultRect = this.xmlLoader.getNodeById("callResultRect") as Rectangle;
         callResultRect.isVisible = true;
@@ -166,20 +161,24 @@ export default class GUI {
         setInterval(this.onClock.bind(this), 100);
         for (let i = 0; i < Config.cups.length; i++) {
             const playerInfo = this.xmlLoader.getNodeById(`playerInfo${i}`) as Rectangle;
-            const playerInfoPanel = new PlayerInfoPanel(playerInfo);
+            const playerInfoPanel = new PlayerDataPanel(playerInfo);
             this.playerInfoPanelList.push(playerInfoPanel);
             playerInfoPanel.isVisible = false;
             if (i === 0) {
                 this.selfPlayerInfoPanel = playerInfoPanel;
             }
         }
-        this.choosePointPanel = new ChoosePointPanel(this.xmlLoader);
         this.callResultPanel = new CallResultPanel(this.xmlLoader);
         Util.onClick(this.xmlLoader.getNodeById("prepareBtn"), this.onClickStartBtn.bind(this));
         Util.onClick(this.xmlLoader.getNodeById("rollRect"), this.onClickRollRect.bind(this), {playSound: false});
         this.loaded = true;
         addPercent(0.1);
         this.onGameInited();
+    }
+
+    private onClickStartMusicBtn() {
+        SoundMgr.playMusic(Config.audioResTable.bgm);
+        this.startMusicBtn.isVisible = false;
     }
 
     private onClickReturnBtn() {
@@ -210,8 +209,6 @@ export default class GUI {
     private onAllPlayerRollEnded() {
         if (GameMgr.isAllPlayerRollEnded) {
             if (GameMgr.eliminateOpePlayerIndex === GameMgr.getPlayerIndexByUid(GameMgr.selfPlayerData.uid)) {
-                this.choosePointPanel.isVisible = true;
-                this.choosePointPanel.reset();
                 this.startClock(GameMgr.eliminateEndTime, "waitForCall");
             } else {
                 this.startClock(GameMgr.eliminateEndTime, "waitForOtherCall");
@@ -260,10 +257,5 @@ export default class GUI {
 
     private onAudioResLoaded() {
         addPercent(0.1);
-    }
-
-    private onClickStartMusicBtn() {
-        SoundMgr.playMusic(Config.audioResTable.bgm);
-        this.startMusicBtn.isVisible = false;
     }
 }

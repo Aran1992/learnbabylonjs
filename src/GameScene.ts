@@ -3,7 +3,6 @@ import "babylonjs-loaders";
 import Config from "./Config";
 import PlayerCup from "./PlayerCup";
 import OtherCup from "./OtherCup";
-import EventMgr from "./EventMgr";
 import GameMgr from "./GameMgr";
 import PlayerData from "./PlayerData";
 
@@ -57,7 +56,6 @@ export default class GameScene {
             "onGameInited"
         ].forEach(event => {
             if (this[event]) {
-                EventMgr.register(event, this[event].bind(this));
             }
         });
     }
@@ -153,7 +151,6 @@ export default class GameScene {
 
     private onPlayerRollEnded() {
         if (GameMgr.isAllPlayerRollEnded) {
-            EventMgr.notify("AllPlayerRollEnded");
         }
     }
 }

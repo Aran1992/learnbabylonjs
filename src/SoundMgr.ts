@@ -1,4 +1,3 @@
-import EventMgr from "./EventMgr";
 import Util from "./Util";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -62,8 +61,8 @@ class SoundMgr_ {
     constructor() {
         // @ts-ignore
         this.context = new AudioContext();
-        EventMgr.register("GameStop", this.onGameStop.bind(this));
-        EventMgr.register("GameStart", this.onGameStart.bind(this));
+        // EventMgr.register("GameStop", this.onGameStop.bind(this));
+        // EventMgr.register("GameStart", this.onGameStart.bind(this));
     }
 
     public get isSoundOpen(): boolean {
