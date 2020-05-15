@@ -92,7 +92,7 @@ export default class View {
     private createScene() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
-        const engine = new Engine(canvas, true, null, true);
+        const engine = new Engine(canvas);
 
         const scene = new Scene(engine);
         this.scene = scene;

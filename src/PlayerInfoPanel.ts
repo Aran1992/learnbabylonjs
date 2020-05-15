@@ -16,6 +16,8 @@ export default class PlayerInfoPanel {
     private noDiceText: TextBlock;
     private animationID: number;
     private endedTime: number;
+    private clockRect: Rectangle;
+    private clockImage: Image;
 
     constructor(index: number, panel: Rectangle, params) {
         this.index = index;
@@ -65,15 +67,26 @@ export default class PlayerInfoPanel {
         this.thinkingIcon.stretch = Image.STRETCH_FILL;
         this.thinkingIcon.top = params.thinkingIcon.top;
 
-        this.remainTimeText = new TextBlock();
-        this.panel.addControl(this.remainTimeText);
-        this.remainTimeText.color = "red";
-        this.remainTimeText.text = "123";
-
         this.noDiceText = new TextBlock();
         this.panel.addControl(this.noDiceText);
         this.noDiceText.color = "red";
         this.noDiceText.text = "没有骰子了";
+
+        this.clockRect = new Rectangle();
+        this.panel.addControl(this.clockRect);
+        this.clockRect.thickness = 0;
+        this.clockRect.left = 120;
+
+        this.clockImage = new Image();
+        this.clockRect.addControl(this.clockImage);
+        this.clockImage.source = "assets/image/yyl_bg_clock.png";
+        this.clockImage.autoScale = true;
+        this.clockImage.stretch = Image.STRETCH_FILL;
+
+        this.remainTimeText = new TextBlock();
+        this.clockRect.addControl(this.remainTimeText);
+        this.remainTimeText.color = "red";
+        this.remainTimeText.text = "123";
 
         this.panel.isVisible = false;
     }
@@ -87,7 +100,7 @@ export default class PlayerInfoPanel {
         this.moneyText.text = playerInfo.money.toString();
         this.readyIcon.isVisible = false;
         this.thinkingIcon.isVisible = false;
-        this.remainTimeText.isVisible = false;
+        this.clockRect.isVisible = false;
         this.noDiceText.isVisible = false;
         if (this.animationID !== undefined) {
             cancelAnimationFrame(this.animationID);
@@ -146,11 +159,11 @@ export default class PlayerInfoPanel {
     public onFrame = () => {
         const remainTime = this.endedTime - new Date().getTime();
         if (remainTime > 0) {
-            this.remainTimeText.isVisible = true;
+            this.clockRect.isVisible = true;
             this.remainTimeText.text = Math.ceil(remainTime / 1000).toString();
             this.animationID = requestAnimationFrame(this.onFrame);
         } else {
-            this.remainTimeText.isVisible = false;
+            this.clockRect.isVisible = false;
         }
     }
 }

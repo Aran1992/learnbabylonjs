@@ -114,7 +114,7 @@ export default {
     otherPlayerInfoPanel: {
         frameImage: {source: "assets/image/other_frame.png"},
         nameText: {fontSize: 22, top: -18},
-        moneyIcon: {width: 36, height: 35, top: 18, left: -50},
+        moneyIcon: {width: 30, height: 30, top: 18, left: -55},
         moneyText: {fontSize: 22, top: 18},
         readyIcon: {top: 75},
         thinkingIcon: {top: -60},

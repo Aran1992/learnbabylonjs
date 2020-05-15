@@ -42,24 +42,23 @@ export default class DataMgr {
 
     public init() {
         this.register();
-        this.requestInitData();
+        this.requestInitData().catch((...args) => {
+            console.log(args);
+        });
     }
 
     public ready() {
-        this.request("roomBamao.roomHandler.ready", {}, () => {
+        this.request("roomBamao.roomHandler.ready").then(() => {
             this.onReadyForBamao({uid: this.selfPlayerInfo.uid});
         });
     }
 
     public change() {
-        this.request("roomBamao.roomHandler.exitRoom", {}, () => {
-
-        });
+        this.request("roomBamao.roomHandler.exitRoom");
     }
 
     public eliminate(target: number[]) {
-        this.request("roomBamao.roomHandler.eliminate", {target}, () => {
-        });
+        this.request("roomBamao.roomHandler.eliminate", {target});
     }
 
     public getPlayerIndexBySeat(seat: number): number {
@@ -86,98 +85,88 @@ export default class DataMgr {
         EventMgr.notify(Event.StageChange, newStage, oldStage);
     }
 
-    private requestInitData() {
+    private async requestInitData() {
         console.log("ip", Config.ip);
-        fetch(`http://${Config.ip}:28302/products/dwc_29.json`).then(initResponse => {
-            initResponse.json().then(initData => {
-                console.log("获取初始信息", initData);
-                fetch(`http://${initData.platSvrHost}:${initData.platSvrPort}`, {
-                    method: "POST",
-                    headers: [["Content-Type", "application/json;charset=utf-8"]],
-                    body: JSON.stringify({
-                        head: {route: "http.ReqLogin", msgindex: 0, token: null},
-                        body: {plat: 2, username: "lzd1", password: "123456"},
-                    })
-                }).then(loginResponse => {
-                    loginResponse.json().then(loginData => {
-                        console.log("登陆平台", loginData);
-                        pomelo.init({host: initData.gameSvrHost, port: initData.gameSvrPort,}, () => {
-                            this.request("gate.gateHandler.queryEntry", {}, data => {
-                                pomelo.disconnect();
-                                pomelo.init({
-                                    host: Config.ip,
-                                    port: data.port,
-                                }, () => {
-                                    this.request("connector.entryHandler.login", {token: loginData.body.token}, entryLoginData => {
-                                        this.request("roomBamao.roomHandler.enterRoom", {
-                                            gameId: 2,
-                                            roomType: 1
-                                        }, enterRoomData => {
-                                            this.serverTimeDiff = new Date().getTime() - enterRoomData.serverTime;
-                                            this.selfDice = enterRoomData.dice;
-                                            this.gameRound = enterRoomData.gameRound;
-                                            this.lastCallUid = enterRoomData.lastCallUid;
-
-                                            const info = new PlayerInfo();
-                                            info.uid = entryLoginData.userData.uid;
-
-                                            info.seat = enterRoomData.seatNum || 0;
-                                            info.name = entryLoginData.userData.nickname;
-                                            info.money = enterRoomData.gold;
-                                            info.ready = !!enterRoomData.ready;
-                                            this.selfPlayerInfo =
-                                                this.playerInfoList[this.selfPlayerIndex] = info;
-
-                                            for (const uid in enterRoomData.otherPlayerInfo) {
-                                                if (enterRoomData.otherPlayerInfo.hasOwnProperty(uid)) {
-                                                    const data = enterRoomData.otherPlayerInfo[uid];
-                                                    const index = this.getPlayerIndexBySeat(data.seatNum);
-                                                    const info = new PlayerInfo();
-                                                    info.uid = data.uid;
-                                                    info.seat = data.seatNum;
-                                                    info.name = data.nickname;
-                                                    info.money = data.gold;
-                                                    info.ready = !!data.ready;
-                                                    info.dices = data.dice;
-                                                    info.diceCount = data.diceCount;
-                                                    this.playerInfoList[index] = info;
-                                                }
-                                            }
-
-                                            // todo 将服务器的状态转为客户端的状态
-                                            if (enterRoomData.gameState === ServerState.Ready) {
-                                                this.curStage = EStage.Ready;
-                                            } else if (enterRoomData.gameState === ServerState.PlayMV) {
-                                                this.curStage = EStage.Start;
-                                            } else if (enterRoomData.gameState === ServerState.EliminateStart) {
-                                                this.updateCallAndRollState();
-                                                // 断线重连的时候无论如何都认为是摇了
-                                                this.playerInfoList.forEach(info => {
-                                                    info.rolled = true;
-                                                });
-                                                const cur = new Date().getTime();
-                                                if (cur < this.rollEndedTime) {
-                                                    this.curStage = EStage.Roll;
-                                                } else {
-                                                    this.curStage = EStage.Call;
-                                                }
-                                            } else if (enterRoomData.gameState === ServerState.EliminateResult
-                                                || enterRoomData.gameState === ServerState.GameOver) {
-                                                this.curStage = EStage.Show;
-                                            }
-                                            this.initDataReceived = true;
-                                            if (this.initDataReceivedCallback) {
-                                                this.initDataReceivedCallback();
-                                            }
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
+        const initResponse = await fetch(`http://${Config.ip}:28302/products/dwc_28.json`);
+        const initData = await initResponse.json();
+        const loginResponse = await fetch(`http://${initData.platSvrHost}:${initData.platSvrPort}`, {
+            method: "POST",
+            headers: [["Content-Type", "application/json;charset=utf-8"]],
+            body: JSON.stringify({
+                head: {route: "http.ReqLogin", msgindex: 0, token: null},
+                body: {plat: 2, username: "lzd1", password: "123456"},
+            })
         });
+        const loginData = await loginResponse.json();
+        await this.pomeloInit({host: initData.gameSvrHost, port: initData.gameSvrPort,});
+        const entryData = await this.request("gate.gateHandler.queryEntry");
+        pomelo.disconnect();
+        await this.pomeloInit({host: entryData.host, port: entryData.port,});
+        const entryLoginData = await this.request("connector.entryHandler.login", {token: loginData.body.token});
+        if (entryLoginData.status) {
+            alert("服务器状态异常");
+            return;
+        }
+        const enterRoomData = await this.request("roomBamao.roomHandler.enterRoom", {gameId: 2, roomType: 1});
+        if (enterRoomData.code) {
+            alert(enterRoomData.des);
+            return;
+        }
+        this.serverTimeDiff = new Date().getTime() - enterRoomData.serverTime;
+        this.selfDice = enterRoomData.dice;
+        this.gameRound = enterRoomData.gameRound;
+        this.lastCallUid = enterRoomData.lastCallUid;
+
+        const info = new PlayerInfo();
+        info.uid = entryLoginData.userData.uid;
+
+        info.seat = enterRoomData.seatNum || 0;
+        info.name = entryLoginData.userData.nickname;
+        info.money = enterRoomData.gold;
+        info.ready = !!enterRoomData.ready;
+        this.selfPlayerInfo =
+            this.playerInfoList[this.selfPlayerIndex] = info;
+
+        for (const uid in enterRoomData.otherPlayerInfo) {
+            if (enterRoomData.otherPlayerInfo.hasOwnProperty(uid)) {
+                const data = enterRoomData.otherPlayerInfo[uid];
+                const index = this.getPlayerIndexBySeat(data.seatNum);
+                const info = new PlayerInfo();
+                info.uid = data.uid;
+                info.seat = data.seatNum;
+                info.name = data.nickname;
+                info.money = data.gold;
+                info.ready = !!data.ready;
+                info.dices = data.dice;
+                info.diceCount = data.diceCount;
+                this.playerInfoList[index] = info;
+            }
+        }
+
+        if (enterRoomData.gameState === ServerState.Ready) {
+            this.curStage = EStage.Ready;
+        } else if (enterRoomData.gameState === ServerState.PlayMV) {
+            this.curStage = EStage.Start;
+        } else if (enterRoomData.gameState === ServerState.EliminateStart) {
+            this.updateCallAndRollState();
+            // 断线重连的时候无论如何都认为是摇了
+            this.playerInfoList.forEach(info => {
+                info.rolled = true;
+            });
+            const cur = new Date().getTime();
+            if (cur < this.rollEndedTime) {
+                this.curStage = EStage.Roll;
+            } else {
+                this.curStage = EStage.Call;
+            }
+        } else if (enterRoomData.gameState === ServerState.EliminateResult
+            || enterRoomData.gameState === ServerState.GameOver) {
+            this.curStage = EStage.Show;
+        }
+        this.initDataReceived = true;
+        if (this.initDataReceivedCallback) {
+            this.initDataReceivedCallback();
+        }
     }
 
     private onEnterRoom(data) {
@@ -329,11 +318,21 @@ export default class DataMgr {
         });
     }
 
-    private request(name, data, callback) {
-        console.log("pomelo request", name, data);
-        pomelo.request(name, data, (...args) => {
-            console.log("pomelo response", name, ...args);
-            callback(...args);
+    private async request(name, data = {}) {
+        return new Promise<any>((resolve) => {
+            console.log("pomelo request", name, data);
+            pomelo.request(name, data, (...args) => {
+                console.log("pomelo response", name, ...args);
+                resolve(...args);
+            });
+        });
+    }
+
+    private async pomeloInit(data) {
+        return new Promise((resolve) => {
+            pomelo.init(data, () => {
+                resolve();
+            });
         });
     }
 

@@ -1,6 +1,12 @@
 import DataMgr from "./DataMgr";
 import View from "./View";
 
+// todo 全局的错误捕获 上报
+window.onerror = (...args) => {
+    console.log(...args);
+    alert(args);
+};
+
 class Main {
     private dataMgr: DataMgr;
     private view: View;
